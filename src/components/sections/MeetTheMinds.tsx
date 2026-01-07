@@ -12,7 +12,7 @@ type MeetCopy = {
   cta: { label: string; href: string }
 }
 
-type Variant = "stage" | "section"
+type Variant = "stage" | "section" | "hero-iris" | "hero-mini"
 
 // Centralized paths (from src/content/characters.ts)
 const characterImageByName: Record<string, string> = {
@@ -21,7 +21,13 @@ const characterImageByName: Record<string, string> = {
   Core: characters.core.image,
 }
 
-function StageTrio({ items }: { items: MeetCopy["items"] }) {
+function StageTrio({
+  items,
+  hideCaptions = false,
+}: {
+  items: MeetCopy["items"]
+  hideCaptions?: boolean
+}) {
   const ordered = ["Atom", "Iris", "Core"]
     .map((name) => items.find((i) => i.name === name))
     .filter(Boolean) as MeetCopy["items"]
@@ -74,9 +80,27 @@ function StageTrio({ items }: { items: MeetCopy["items"] }) {
                             strokeWidth="1.5"
                             opacity="0.6"
                           />
-                          <path d="M30,30 Q35,35 30,40" stroke="#22D3EE" strokeWidth="1" fill="none" opacity="0.5" />
-                          <path d="M25,45 Q30,48 25,52" stroke="#22D3EE" strokeWidth="1" fill="none" opacity="0.5" />
-                          <path d="M35,60 Q40,63 35,68" stroke="#22D3EE" strokeWidth="1" fill="none" opacity="0.5" />
+                          <path
+                            d="M30,30 Q35,35 30,40"
+                            stroke="#22D3EE"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
+                          <path
+                            d="M25,45 Q30,48 25,52"
+                            stroke="#22D3EE"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
+                          <path
+                            d="M35,60 Q40,63 35,68"
+                            stroke="#22D3EE"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
                         </svg>
                       </div>
 
@@ -100,9 +124,27 @@ function StageTrio({ items }: { items: MeetCopy["items"] }) {
                             strokeWidth="1.5"
                             opacity="0.6"
                           />
-                          <path d="M70,30 Q65,35 70,40" stroke="#FF4D9D" strokeWidth="1" fill="none" opacity="0.5" />
-                          <path d="M75,45 Q70,48 75,52" stroke="#FF4D9D" strokeWidth="1" fill="none" opacity="0.5" />
-                          <path d="M65,60 Q60,63 65,68" stroke="#FF4D9D" strokeWidth="1" fill="none" opacity="0.5" />
+                          <path
+                            d="M70,30 Q65,35 70,40"
+                            stroke="#FF4D9D"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
+                          <path
+                            d="M75,45 Q70,48 75,52"
+                            stroke="#FF4D9D"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
+                          <path
+                            d="M65,60 Q60,63 65,68"
+                            stroke="#FF4D9D"
+                            strokeWidth="1"
+                            fill="none"
+                            opacity="0.5"
+                          />
                         </svg>
                       </div>
 
@@ -145,7 +187,7 @@ function StageTrio({ items }: { items: MeetCopy["items"] }) {
                     />
                   </div>
 
-                  {/* Character image (NO cache freeze) */}
+                  {/* Character image */}
                   <Image
                     key={src}
                     src={src}
@@ -156,26 +198,6 @@ function StageTrio({ items }: { items: MeetCopy["items"] }) {
                     sizes="(min-width: 768px) 33vw, 100vw"
                     className="object-contain drop-shadow-[0_28px_70px_rgba(0,0,0,0.75)]"
                   />
-
-                  {/* Rim-light overlays (dark-only) */}
-                  <div className="pointer-events-none absolute inset-0">
-                    <div
-                      className="absolute inset-0 opacity-80 blur-[12px]"
-                      style={{
-                        filter: isCenter
-                          ? "drop-shadow(0 0 25px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(34,211,238,0.2))"
-                          : "drop-shadow(0 0 20px rgba(34,211,238,0.3))",
-                      }}
-                    />
-                    <div
-                      className="absolute inset-0 opacity-70 blur-[14px]"
-                      style={{
-                        filter: isCenter
-                          ? "drop-shadow(0 0 25px rgba(255,77,157,0.35)) drop-shadow(0 0 40px rgba(255,77,157,0.18))"
-                          : "drop-shadow(0 0 20px rgba(255,77,157,0.25))",
-                      }}
-                    />
-                  </div>
 
                   {/* Underline accent */}
                   <div className="pointer-events-none absolute left-1/2 top-[92%] h-[2px] w-32 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#22D3EE] to-transparent opacity-60 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
@@ -189,21 +211,70 @@ function StageTrio({ items }: { items: MeetCopy["items"] }) {
                   )}
                 </div>
 
-                {/* Caption */}
-                <figcaption className="mt-6 text-center">
-                  <p className="text-base font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                    {item.name}
-                  </p>
-                  <p className="mt-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    {item.role}
-                  </p>
-                </figcaption>
+                {/* Caption (optional) */}
+                {!hideCaptions && (
+                  <figcaption className="mt-6 text-center">
+                    <p className="text-base font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                      {item.name}
+                    </p>
+                    <p className="mt-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      {item.role}
+                    </p>
+                  </figcaption>
+                )}
               </figure>
             )
           })}
         </div>
 
-        <div className="mx-auto mt-10 h-px w-32 bg-gradient-to-r from-transparent via-[#22D3EE]/40 to-transparent shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+        {!hideCaptions && (
+          <div className="mx-auto mt-10 h-px w-32 bg-gradient-to-r from-transparent via-[#22D3EE]/40 to-transparent shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function HeroIris() {
+  const src = characters.iris.image
+
+  return (
+    <div className="pointer-events-none flex justify-center">
+      <div className="relative h-[240px] w-[240px] sm:h-[300px] sm:w-[300px] md:h-[340px] md:w-[340px]">
+        <Image
+          key={src}
+          src={src}
+          alt=""
+          fill
+          priority
+          unoptimized
+          sizes="(min-width: 768px) 360px, 320px"
+          className="object-contain drop-shadow-[0_28px_70px_rgba(0,0,0,0.75)]"
+        />
+      </div>
+    </div>
+  )
+}
+
+function HeroMiniTrio({ items }: { items: MeetCopy["items"] }) {
+  const atom = items.find((i) => i.name === "Atom")
+  const iris = items.find((i) => i.name === "Iris")
+  const core = items.find((i) => i.name === "Core")
+
+  const aSrc = atom ? characterImageByName[atom.name] : characters.atom.image
+  const iSrc = iris ? characterImageByName[iris.name] : characters.iris.image
+  const cSrc = core ? characterImageByName[core.name] : characters.core.image
+
+  return (
+    <div className="pointer-events-none flex justify-center gap-8 sm:gap-10">
+      <div className="relative h-[150px] w-[150px] sm:h-[170px] sm:w-[170px] md:h-[190px] md:w-[190px] opacity-90">
+        <Image src={aSrc} alt="" fill priority unoptimized className="object-contain" />
+      </div>
+      <div className="relative h-[170px] w-[170px] sm:h-[200px] sm:w-[200px] md:h-[230px] md:w-[230px] opacity-95">
+        <Image src={iSrc} alt="" fill priority unoptimized className="object-contain" />
+      </div>
+      <div className="relative h-[160px] w-[160px] sm:h-[185px] sm:w-[185px] md:h-[210px] md:w-[210px] opacity-95">
+        <Image src={cSrc} alt="" fill priority unoptimized className="object-contain" />
       </div>
     </div>
   )
@@ -220,6 +291,16 @@ export default function MeetTheMinds({
     return <StageTrio items={copy.items} />
   }
 
+  // ✅ Hero variants (no section, no names)
+  if (variant === "hero-iris") {
+    return <HeroIris />
+  }
+
+  if (variant === "hero-mini") {
+    return <HeroMiniTrio items={copy.items} />
+  }
+
+  // Default: full section
   return (
     <section className="border-t border-border/60 pt-12">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

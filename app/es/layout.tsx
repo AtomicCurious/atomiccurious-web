@@ -4,40 +4,29 @@ import SocialLinks from "@/components/SocialLinks"
 
 export default function EsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="min-h-dvh flex flex-col">
       <NavBarEs />
 
-      {/* ✅ NO offset because header is not fixed */}
-      <main className="w-full">{children}</main>
+      <main className="w-full flex-1">{children}</main>
 
       <footer className="border-t border-border/70 bg-bg">
-        <div className="mx-auto max-w-6xl px-6 py-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold tracking-tight text-text">
-                AtomicCurious
-              </p>
-              <p className="mt-1 text-sm text-muted">
-                Ciencia, tecnología y futuro — curiosidad con intención.
-              </p>
-              <p className="mt-4 text-sm text-muted">
-                © {new Date().getFullYear()} AtomicCurious
-              </p>
-            </div>
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <p className="text-[11px] text-muted leading-none whitespace-nowrap">
+            © {new Date().getFullYear()} AtomicCurious
+          </p>
 
-            <SocialLinks
-              title="Sigue el universo"
-              items={[
-                { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
-                { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
-                { label: "Instagram", href: "https://instagram.com/atomiccurious" },
-              ]}
-            />
-          </div>
-
-          <div className="mt-8 h-px w-full bg-gradient-to-r from-accent/0 via-accent/25 to-accent/0 opacity-70" />
+          <SocialLinks
+            variant="footer"
+            title="Sigue el universo"
+            items={[
+              { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
+              { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
+              { label: "Instagram", href: "https://instagram.com/atomiccurious" },
+            ]}
+          />
         </div>
       </footer>
-    </>
+    </div>
   )
 }
+

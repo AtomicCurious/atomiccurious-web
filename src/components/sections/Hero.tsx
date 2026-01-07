@@ -1,4 +1,5 @@
-import type { ReactNode } from "react"
+import type { ReactElement, ReactNode } from "react"
+import { Children, isValidElement } from "react"
 
 type HeroCopy = {
   eyebrow: string
@@ -8,27 +9,101 @@ type HeroCopy = {
   secondaryCta: { label: string; href: string }
 }
 
-export default function Hero({
-  copy,
-  children,
-}: {
+function HeroOverlay({ children }: { children: ReactNode }) {
+  return <>{children}</>
+}
+HeroOverlay.displayName = "HeroOverlay"
+
+type HeroProps = {
   copy: HeroCopy
   children?: ReactNode
-}) {
+}
+
+function Hero({ copy, children }: HeroProps) {
   const hasEyebrow = Boolean(copy.eyebrow && copy.eyebrow.trim().length > 0)
 
+  // Split children: <Hero.Overlay>...</Hero.Overlay> vs normal children
+  const overlayChildren: ReactNode[] = []
+  const belowChildren: ReactNode[] = []
+
+  Children.forEach(children, (child) => {
+    if (!child) return
+    if (isValidElement(child) && child.type === HeroOverlay) {
+      const overlayEl = child as ReactElement<{ children?: ReactNode }>
+      overlayChildren.push(overlayEl.props.children)
+    } else {
+      belowChildren.push(child)
+    }
+  })
+
+  /* =========================================================
+     TUNING CONTROLS (mueve/ancho/alto a voluntad)
+     ========================================================= */
+
+  // ✅ Más “peso” visual en desktop grande (sin romper mobile)
+  // Laptop → igual | 2xl → un poquito más ancho
+  const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
+
+  // Mantengo padding lateral razonable para que NO haya scroll horizontal
+  const STRIP_PX = "px-4 sm:px-6 lg:px-8"
+
+  // 20% menos: 520->416, 380->304
+  const GRID_COLS = "lg:grid-cols-[minmax(416px,1fr)_304px_minmax(416px,1fr)]"
+
+  // Gap compacto
+  const GRID_GAP = "gap-6 lg:gap-10"
+
+  // ✅ Micro-ajuste de altura (más editorial/compacto en desktop)
+  const CARD_MIN_H = "min-h-[208px] sm:min-h-[224px]"
+
+  // Aproximación 20% menos: p-6 -> p-5
+  const CARD_P = "p-5"
+
+  // Iris igual
+  const IRIS_TRANSLATE_Y = "translate-y-2"
+
+  /* =========================================================
+     CARD STYLE (editorial premium like your reference)
+     ========================================================= */
+
+  const CARD_BASE = [
+    "group relative h-full overflow-hidden rounded-[28px]",
+    "bg-[#050709]/55 backdrop-blur-xl",
+    "shadow-[0_0_0_1px_rgba(34,211,238,0.06),0_18px_60px_rgba(0,0,0,0.55)]",
+    "transition-all duration-300",
+  ].join(" ")
+
+  const CARD_HOVER_TEAL = [
+    "hover:-translate-y-0.5",
+    "hover:border-[#22D3EE]/45",
+    "hover:shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_22px_80px_rgba(0,0,0,0.65)]",
+  ].join(" ")
+
+  const CARD_HOVER_PINK = [
+    "hover:-translate-y-0.5",
+    "hover:border-[#FF4D9D]/35",
+    "hover:shadow-[0_0_0_1px_rgba(255,77,157,0.10),0_22px_80px_rgba(0,0,0,0.65)]",
+  ].join(" ")
+
+  const CARD_INNER_GLOW = "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+
+  const CARD_GRID_OVERLAY = `
+    pointer-events-none absolute inset-0 opacity-[0.05]
+    [background-image:linear-gradient(rgba(34,211,238,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.9)_1px,transparent_1px)]
+    [background-size:64px_64px]
+  `
+
   return (
-    <section className="relative w-full overflow-hidden bg-bg">
-      {/* Background (theme-aware) */}
+    <section className="relative w-full min-h-[calc(100dvh-72px-50px)] overflow-hidden overflow-x-clip bg-bg">
+      {/* Background */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Base */}
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
 
-        {/* LIGHT: paper glow (subtle) */}
+        {/* LIGHT glows */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.14),transparent_65%)] dark:hidden" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_85%_0%,rgb(var(--accent-alt)/0.12),transparent_60%)] dark:hidden" />
 
-        {/* DARK: your ultra vibrant neon layers */}
+        {/* DARK layers */}
         <div className="absolute inset-0 hidden dark:block">
           <div className="absolute inset-0 bg-gradient-to-b from-[#050709] via-[#0A0E12] to-bg" />
 
@@ -42,9 +117,8 @@ export default function Hero({
           <div className="absolute left-1/4 top-1/2 h-[500px] w-[500px] rounded-full bg-[rgba(139,92,246,0.12)] blur-[140px]" />
         </div>
 
-        {/* Particles (subtle in light, strong in dark) */}
+        {/* Particles */}
         <div className="absolute inset-0 opacity-25 dark:opacity-60">
-          {/* teal */}
           <div className="absolute left-[8%] top-[12%] h-3 w-3 rounded-full bg-accent/80 blur-[2px] shadow-[0_0_18px_rgb(var(--accent)/0.35)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-glow" />
           <div
             className="absolute left-[65%] top-[35%] h-4 w-4 rounded-full bg-accent/70 blur-[2px] shadow-[0_0_20px_rgb(var(--accent)/0.30)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_25px_rgba(34,211,238,0.8)] animate-glow"
@@ -55,7 +129,6 @@ export default function Hero({
             style={{ animationDelay: "0.5s" }}
           />
 
-          {/* magenta */}
           <div
             className="absolute right-[12%] top-[20%] h-2.5 w-2.5 rounded-full bg-accent-alt/70 blur-[1.5px] shadow-[0_0_16px_rgb(var(--accent-alt)/0.28)] dark:bg-[#FF4D9D] dark:blur-[2px] dark:shadow-[0_0_18px_rgba(255,77,157,0.8)] animate-glow"
             style={{ animationDelay: "1s" }}
@@ -66,10 +139,10 @@ export default function Hero({
           />
         </div>
 
-        {/* Grid (very subtle in light, visible in dark) */}
+        {/* Grid */}
         <div className="absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgb(var(--accent)/1)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--accent)/1)_1px,transparent_1px)] [background-size:56px_56px] dark:opacity-[0.08] dark:[background-size:50px_50px]" />
 
-        {/* Data lines (subtle in light, animated in dark) */}
+        {/* Data lines */}
         <div className="absolute left-0 top-[18%] h-px w-56 bg-gradient-to-r from-transparent via-accent to-transparent opacity-25 dark:h-[2px] dark:opacity-40 dark:animate-pulse" />
         <div
           className="absolute right-0 top-[55%] h-px w-64 bg-gradient-to-l from-transparent via-accent-alt to-transparent opacity-22 dark:h-[2px] dark:opacity-40 dark:animate-pulse"
@@ -77,79 +150,237 @@ export default function Hero({
         />
       </div>
 
-      {/* Content */}
-      <div className="relative mx-auto flex min-h-[92svh] w-full max-w-6xl items-center px-6 py-12 sm:px-10 sm:py-20">
-        <div className="w-full animate-slide-up">
-          <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-            {/* Eyebrow (only if text exists) */}
-            {hasEyebrow ? (
-              <div className="inline-flex items-center rounded-full border border-border/70 bg-surface-1/70 px-4 py-1.5 text-xs text-muted backdrop-blur-xl shadow-soft dark:border-[#22D3EE]/40 dark:bg-gradient-to-r dark:from-[#22D3EE]/15 dark:via-[#FF4D9D]/10 dark:to-[#22D3EE]/15 dark:shadow-[0_0_40px_rgba(34,211,238,0.3),inset_0_0_20px_rgba(34,211,238,0.1)]">
-                {copy.eyebrow}
-              </div>
-            ) : null}
-
-            {/* Headline */}
-            <h1 className="mt-8 text-balance text-4xl font-semibold tracking-tight text-text sm:text-6xl sm:leading-[1.08] dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)]">
-              {copy.headline}
-            </h1>
-
-            {/* Subheadline */}
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted sm:text-lg dark:text-gray-300">
-              {copy.subheadline}
-            </p>
-
-            {/* CTAs */}
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
-                href={copy.primaryCta.href}
-                className="
-                  group relative inline-flex items-center justify-center overflow-hidden rounded-xl
-                  bg-gradient-to-r from-accent via-accent to-accent-alt
-                  px-7 py-3.5 text-sm font-bold text-[rgb(var(--bg))]
-                  shadow-[0_12px_40px_rgb(var(--accent)/0.18)]
-                  transition-all hover:shadow-[0_18px_60px_rgb(var(--accent)/0.22)] hover:scale-[1.03]
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                  dark:from-[#22D3EE] dark:via-[#3BDBF0] dark:to-[#FF4D9D]
-                  dark:text-[#050709]
-                  dark:shadow-[0_0_50px_rgba(34,211,238,0.5),0_0_80px_rgba(255,77,157,0.3)]
-                  dark:hover:shadow-[0_0_70px_rgba(34,211,238,0.7),0_0_100px_rgba(255,77,157,0.5)]
-                "
-              >
-                <span className="relative z-10 flex items-center">
-                  {copy.primaryCta.label}
-                  <span className="ml-2 transition-transform group-hover:translate-x-1">
-                    ›
-                  </span>
-                </span>
-              </a>
-
-              <a
-                href={copy.secondaryCta.href}
-                className="
-                  group inline-flex items-center justify-center rounded-xl
-                  border border-border/80 bg-surface-1/70 px-7 py-3.5
-                  text-sm font-semibold text-text backdrop-blur-xl shadow-soft transition-all
-                  hover:border-accent/35 hover:bg-surface-2
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                  dark:border-2 dark:border-[#22D3EE]/40 dark:bg-[#0A0E12]/60 dark:text-white
-                  dark:hover:border-[#22D3EE]/60 dark:hover:bg-[#0A0E12]/80 dark:hover:shadow-[0_0_40px_rgba(34,211,238,0.3)]
-                "
-              >
-                {copy.secondaryCta.label}
-                <span className="ml-2 text-muted transition-transform group-hover:translate-x-1 dark:text-gray-400">
-                  ›
-                </span>
-              </a>
+      {/* ======================
+          TOP CONTENT (centrado)
+          ====================== */}
+      <div className="relative mx-auto w-full max-w-6xl px-6 pt-12 pb-6 sm:px-10 sm:pt-14">
+        <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center text-center animate-slide-up">
+          {hasEyebrow ? (
+            <div className="inline-flex items-center rounded-full border border-border/70 bg-surface-1/70 px-4 py-1.5 text-xs text-muted backdrop-blur-xl shadow-soft dark:border-[#22D3EE]/40 dark:bg-gradient-to-r dark:from-[#22D3EE]/15 dark:via-[#FF4D9D]/10 dark:to-[#22D3EE]/15 dark:shadow-[0_0_40px_rgba(34,211,238,0.3),inset_0_0_20px_rgba(34,211,238,0.1)]">
+              {copy.eyebrow}
             </div>
-          </div>
+          ) : null}
 
-          {/* Children (MeetTheMinds) */}
-          {children ? <div className="mt-16 sm:mt-20">{children}</div> : null}
+          <h1 className="mt-6 text-balance text-5xl font-semibold tracking-tight text-text sm:text-7xl sm:leading-[1.06] dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)]">
+            {copy.headline}
+          </h1>
+
+          <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-muted sm:text-xl dark:text-gray-300">
+            {copy.subheadline}
+          </p>
+
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <a
+              href={copy.primaryCta.href}
+              className="
+                group relative inline-flex items-center justify-center overflow-hidden rounded-xl
+                bg-gradient-to-r from-accent via-accent to-accent-alt
+                px-8 py-4 text-base font-bold text-[rgb(var(--bg))]
+                shadow-[0_12px_40px_rgb(var(--accent)/0.18)]
+                transition-all hover:shadow-[0_18px_60px_rgb(var(--accent)/0.22)] hover:scale-[1.03]
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                dark:from-[#22D3EE] dark:via-[#3BDBF0] dark:to-[#FF4D9D]
+                dark:text-[#050709]
+                dark:shadow-[0_0_50px_rgba(34,211,238,0.5),0_0_80px_rgba(255,77,157,0.3)]
+                dark:hover:shadow-[0_0_70px_rgba(34,211,238,0.7),0_0_100px_rgba(255,77,157,0.5)]
+              "
+            >
+              <span className="relative z-10 flex items-center">
+                {copy.primaryCta.label}
+                <span className="ml-2 transition-transform group-hover:translate-x-1">›</span>
+              </span>
+            </a>
+
+            <a
+              href={copy.secondaryCta.href}
+              className="
+                group inline-flex items-center justify-center rounded-xl
+                border border-border/80 bg-surface-1/70 px-8 py-4
+                text-base font-semibold text-text backdrop-blur-xl shadow-soft transition-all
+                hover:border-accent/35 hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                dark:border-2 dark:border-[#22D3EE]/40 dark:bg-[#0A0E12]/60 dark:text-white
+                dark:hover:border-[#22D3EE]/60 dark:hover:bg-[#0A0E12]/80 dark:hover:shadow-[0_0_40px_rgba(34,211,238,0.3)]
+              "
+            >
+              {copy.secondaryCta.label}
+              <span className="ml-2 text-muted transition-transform group-hover:translate-x-1 dark:text-gray-400">
+                ›
+              </span>
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Fade to content */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-bg/80 to-bg" />
+      {/* ======================
+          STRIP FULL WIDTH
+          ====================== */}
+      <div className="relative z-20 mt-8">
+        <div className={["mx-auto w-full", STRIP_MAX_W, STRIP_PX].join(" ")}>
+          <div className="relative">
+            <div className={["grid lg:items-stretch", GRID_GAP, GRID_COLS].join(" ")}>
+              {/* Left: Latest Post */}
+              <a
+                href="/en/posts/why-we-dream"
+                className={[
+                  CARD_BASE,
+                  "border border-[#22D3EE]/25",
+                  CARD_HOVER_TEAL,
+                  CARD_P,
+                  CARD_MIN_H,
+                ].join(" ")}
+              >
+                {/* Hover glow */}
+                <div className={CARD_INNER_GLOW}>
+                  <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(34,211,238,0.22)] blur-[70px]" />
+                  <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[80px]" />
+                </div>
+
+                {/* Subtle grid */}
+                <div className={CARD_GRID_OVERLAY} />
+
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#22D3EE]/25 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#22D3EE]" />
+                    LATEST EXPLORATION
+                  </div>
+
+                  <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
+                    Why we dream: the hidden purpose of sleep
+                  </h3>
+
+                  <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
+                    A cinematic overview of what science says about dreams—and why your brain keeps generating them.
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
+                      Curiosity · Atom
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
+                      Sleep / Mind
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
+                      2025-12-29
+                    </span>
+                  </div>
+
+                  <ul className="mt-3 space-y-2 text-sm text-gray-300">
+                    <li className="flex gap-2">
+                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-[#22D3EE]" />
+                      <span>Dreams are not random</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-[#FF4D9D]" />
+                      <span>Memory, emotion &amp; pattern-building</span>
+                    </li>
+                  </ul>
+
+                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
+                    Read exploration <span className="transition-transform group-hover:translate-x-1">›</span>
+                  </div>
+                </div>
+              </a>
+
+              {/* Center spacer (for Iris) */}
+              <div className="hidden lg:block" />
+
+              {/* Right: Calendar */}
+              <a
+                href="/en/resources/calendar-2026"
+                className={[
+                  "group relative h-full overflow-hidden rounded-[28px]",
+                  "bg-[#050709]/55 backdrop-blur-xl",
+                  "border border-[#FF4D9D]/18",
+                  "shadow-[0_0_0_1px_rgba(255,77,157,0.06),0_18px_60px_rgba(0,0,0,0.55)]",
+                  "transition-all duration-300",
+                  CARD_HOVER_PINK,
+                  CARD_P,
+                  CARD_MIN_H,
+                ].join(" ")}
+              >
+                {/* Hover glow */}
+                <div className={CARD_INNER_GLOW}>
+                  <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(34,211,238,0.12)] blur-[80px]" />
+                  <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.18)] blur-[70px]" />
+                </div>
+
+                {/* Subtle grid */}
+                <div className={CARD_GRID_OVERLAY} />
+
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D9D]" />
+                    FREE DOWNLOAD
+                  </div>
+
+                  <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D]">
+                    AtomicCurious Science Calendar 2026
+                  </h3>
+
+                  <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
+                    Official. Visual. Thought-provoking. A premium calendar to fuel your curiosity all year.
+                  </p>
+
+                  <div className="mt-3">
+                    <div className="relative mx-auto w-full max-w-[288px]">
+                      <div className="relative aspect-[20/9] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft">
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_20%,rgba(34,211,238,0.18),transparent_60%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_20%,rgba(255,77,157,0.18),transparent_60%)]" />
+
+                        <div className="absolute left-1/2 top-1/2 h-[72%] w-[80%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] rounded-xl border border-white/10 bg-white/5" />
+                        <div className="absolute left-1/2 top-1/2 h-[76%] w-[84%] -translate-x-1/2 -translate-y-1/2 rotate-[-2deg] rounded-xl border border-white/10 bg-white/5" />
+                        <div className="absolute left-1/2 top-1/2 h-[80%] w-[88%] -translate-x-1/2 -translate-y-1/2 rotate-[3deg] rounded-xl border border-white/10 bg-white/5" />
+
+                        <div className="absolute left-1/2 top-[18%] w-[78%] -translate-x-1/2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-center text-xs font-semibold tracking-wide text-white">
+                          Science Calendar · 2026
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
+                    Download free <span className="transition-transform group-hover:translate-x-1">›</span>
+                  </div>
+
+                  <p className="mt-1.5 text-xs text-gray-400">No spam. Just curiosity.</p>
+                </div>
+              </a>
+            </div>
+
+            {/* Iris floating above center */}
+            {overlayChildren.length > 0 ? (
+              <>
+                <div
+                  className={[
+                    "pointer-events-none absolute inset-x-0 top-0 z-10 hidden lg:flex justify-center",
+                    IRIS_TRANSLATE_Y,
+                  ].join(" ")}
+                >
+                  <div className="relative h-[280px] sm:h-[340px] md:h-[400px] w-full">
+                    <div className="absolute inset-x-0 bottom-0 flex justify-center">{overlayChildren}</div>
+                  </div>
+                </div>
+
+                {/* Mobile stacked Iris */}
+                <div className="mt-6 flex justify-center lg:hidden">{overlayChildren}</div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Below children */}
+      {belowChildren.length > 0 ? (
+        <div className="relative z-20 mx-auto mt-6 w-full max-w-5xl px-6 sm:mt-8 sm:px-10">
+          {belowChildren}
+        </div>
+      ) : null}
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-bg" />
     </section>
   )
 }
+
+Hero.Overlay = HeroOverlay
+export default Hero

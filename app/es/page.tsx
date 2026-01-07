@@ -45,30 +45,6 @@ export default function Page() {
           secondaryCta: { label: "Únete al newsletter", href: "/es/newsletter" },
         },
 
-        tiles: [
-          {
-            tag: "Curiosity",
-            title: "Grandes ideas, claras y fascinantes",
-            description:
-              "Ciencia, IA, psicología y las preguntas más intrigantes sobre el universo.",
-            href: "/es/start-here",
-          },
-          {
-            tag: "Resources",
-            title: "Guías y descargas",
-            description:
-              "Ebooks y herramientas diseñadas para acelerar tu aprendizaje.",
-            href: "/es/about",
-          },
-          {
-            tag: "Community",
-            title: "Newsletter y novedades",
-            description:
-              "Una señal semanal con contenido nuevo, ideas y experimentos.",
-            href: "/es/newsletter",
-          },
-        ],
-
         meet: {
           title: "Tres anfitriones. Un universo.",
           subtitle:
@@ -86,7 +62,7 @@ export default function Page() {
           description:
             "Chispas semanales de ciencia, tecnología y futuro—sin ruido.",
           ctaLabel: "Suscribirme",
-          href: "/es/newsletter",
+          href: "/es/boletin",
         },
       }}
     />

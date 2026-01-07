@@ -12,8 +12,8 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
         className="
           relative overflow-hidden rounded-2xl
           border border-border/80 bg-surface-1/80
-          px-8 py-8 backdrop-blur-xl shadow-soft
-          sm:px-10 sm:py-10
+          px-8 py-5 backdrop-blur-xl shadow-soft
+          sm:px-10 sm:py-6
 
           dark:border-2 dark:border-[#22D3EE]/30
           dark:bg-gradient-to-br dark:from-[#0A0E12]/95 dark:via-[#0F1419] dark:to-[#0A0E12]/95
@@ -38,7 +38,7 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
           </div>
         </div>
 
-        {/* Decorative particles (mostly dark; very subtle in light) */}
+        {/* Decorative particles */}
         <div className="pointer-events-none absolute inset-0 opacity-20 dark:opacity-100">
           <div className="absolute left-[12%] top-[25%] h-1.5 w-1.5 rounded-full bg-accent/60 blur-[1px] shadow-[0_0_10px_rgb(var(--accent)/0.22)] dark:bg-[#22D3EE] dark:shadow-[0_0_10px_rgba(34,211,238,0.8)] dark:animate-glow" />
           <div
@@ -58,14 +58,14 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
         {/* Background grid */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.018] [background-image:linear-gradient(rgb(var(--accent)/0.7)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--accent)/0.7)_1px,transparent_1px)] [background-size:44px_44px] dark:opacity-[0.03] dark:[background-image:linear-gradient(rgba(34,211,238,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.8)_1px,transparent_1px)] dark:[background-size:40px_40px]" />
 
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">
             {/* Badge */}
             <div
               className="
-                mb-3 inline-flex items-center gap-1.5 rounded-full
+                mb-2 inline-flex items-center gap-1.5 rounded-full
                 border border-border/80 bg-surface-2/70
-                px-3 py-1 text-[10px] font-bold uppercase tracking-wider
+                px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider
                 text-muted backdrop-blur-xl shadow-soft
                 dark:border-[#22D3EE]/30 dark:bg-[#22D3EE]/10 dark:text-[#22D3EE]
                 dark:shadow-[0_0_15px_rgba(34,211,238,0.2)]
@@ -75,10 +75,10 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
               Newsletter
             </div>
 
-            <h3 className="text-xl font-semibold text-text sm:text-2xl dark:font-bold dark:text-white dark:[text-shadow:0_0_30px_rgba(34,211,238,0.2)]">
+            <h3 className="text-lg font-semibold text-text sm:text-xl dark:font-bold dark:text-white dark:[text-shadow:0_0_30px_rgba(34,211,238,0.2)]">
               {copy.title}
             </h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted dark:text-gray-300">
+            <p className="mt-1.5 text-sm leading-relaxed text-muted dark:text-gray-300">
               {copy.description}
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
             className="
               group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl
               bg-gradient-to-r from-accent via-accent to-accent-alt
-              px-7 py-3.5 text-sm font-bold text-[rgb(var(--bg))]
+              px-7 py-3 text-sm font-bold text-[rgb(var(--bg))]
               shadow-[0_14px_50px_rgb(var(--accent)/0.16)]
               transition-all hover:shadow-[0_18px_70px_rgb(var(--accent)/0.20)] hover:scale-[1.03]
               focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
@@ -120,7 +120,7 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
               </svg>
             </span>
 
-            {/* Shine sweep (keep, but softer in light) */}
+            {/* Shine sweep */}
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-1000 group-hover:translate-x-full dark:via-white/20" />
           </a>
         </div>
@@ -132,4 +132,3 @@ export default function NewsletterBar({ copy }: { copy: NewsletterCopy }) {
     </section>
   )
 }
-

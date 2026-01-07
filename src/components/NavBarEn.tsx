@@ -9,6 +9,15 @@ function isActive(pathname: string, href: string) {
 }
 
 function toEs(pathname: string) {
+  // ✅ Slugs traducidos (EN -> ES)
+  const map: Record<string, string> = {
+    "/en/resources": "/es/recursos",
+    "/en/community": "/es/comunidad",
+    "/en/contact": "/es/contacto",
+  }
+
+  if (map[pathname]) return map[pathname]
+
   if (pathname === "/en") return "/es"
   if (pathname.startsWith("/en/")) return pathname.replace(/^\/en\//, "/es/")
   return "/es"
@@ -20,16 +29,13 @@ function StarshipMark() {
       aria-hidden="true"
       className={[
         "relative inline-flex items-center justify-center",
-        // ✅ más grande (similar a “tu código”)
         "h-6 w-12 sm:h-7 sm:w-14 md:h-8 md:w-16",
         "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
         "will-change-transform",
       ].join(" ")}
       style={{
         transformOrigin: "70% 60%",
-        // ✅ mirando hacia arriba “despegando”
         transform: "rotate(-18deg)",
-        // ✅ idle anim
         animation: "shipIdle 3.6s ease-in-out .15s infinite alternate",
         filter:
           "drop-shadow(0 0 12px rgba(160,200,255,0.25)) drop-shadow(0 0 26px rgba(110,140,200,0.16))",
@@ -77,7 +83,6 @@ function StarshipMark() {
           </linearGradient>
         </defs>
 
-        {/* ✅ Estela (como tu original) */}
         <g className="trail" opacity=".92">
           <path
             d="M40 62 C 10 70, -40 72, -120 66"
@@ -102,13 +107,25 @@ function StarshipMark() {
           />
         </g>
 
-        {/* ✅ Fuego atrás (jets) */}
         <g className="jetGlow" style={{ mixBlendMode: "screen" as any }}>
-          <ellipse className="jetCore" cx="52" cy="56" rx="16" ry="10" fill="url(#jetCoreMini)" />
-          <ellipse className="jetCore" cx="52" cy="48" rx="12" ry="8" fill="url(#jetCoreMini)" />
+          <ellipse
+            className="jetCore"
+            cx="52"
+            cy="56"
+            rx="16"
+            ry="10"
+            fill="url(#jetCoreMini)"
+          />
+          <ellipse
+            className="jetCore"
+            cx="52"
+            cy="48"
+            rx="12"
+            ry="8"
+            fill="url(#jetCoreMini)"
+          />
         </g>
 
-        {/* Body */}
         <g>
           <path
             d="M46 38 L140 30 Q170 34 190 50 Q170 66 140 70 L46 62 Q34 59 34 50 Q34 41 46 38 Z"
@@ -116,15 +133,12 @@ function StarshipMark() {
             stroke="var(--ship-edge, #d6ecff)"
             strokeWidth="1.2"
           />
-
           <path
             d="M108 42 Q126 38 140 40 Q136 50 120 52 Q108 50 108 42 Z"
             fill="rgba(120,200,255,.18)"
             stroke="rgba(170,150,255,.32)"
             strokeWidth="1"
           />
-
-          {/* Edge glow */}
           <path
             d="M140 30 Q170 34 190 50"
             fill="none"
@@ -143,7 +157,6 @@ function StarshipMark() {
           />
         </g>
 
-        {/* Fins */}
         <g opacity=".98">
           <path
             d="M70 34 L52 26 Q46 30 46 36 L64 42 Z"
@@ -160,7 +173,6 @@ function StarshipMark() {
         </g>
       </svg>
 
-      {/* ✅ Animaciones encapsuladas */}
       <style jsx>{`
         @keyframes shipIdle {
           0% {
@@ -226,12 +238,14 @@ export default function NavBarEn() {
     { label: "Posts", href: "/en/posts" },
     { label: "About", href: "/en/about" },
     { label: "Newsletter", href: "/en/newsletter" },
+    { label: "Resources", href: "/en/resources" },
+    { label: "Community", href: "/en/community" },
+    { label: "Contact", href: "/en/contact" },
   ]
 
   return (
     <header className="border-b border-border/70 bg-bg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Brand */}
         <Link
           href="/en"
           className="group inline-flex items-center gap-3 text-lg font-semibold tracking-tight text-text"
@@ -244,7 +258,6 @@ export default function NavBarEn() {
           </span>
         </Link>
 
-        {/* Nav */}
         <nav className="flex items-center gap-2 text-sm sm:gap-3">
           {links.map((l) => {
             const active = isActive(pathname, l.href)
@@ -268,7 +281,6 @@ export default function NavBarEn() {
 
           <span className="mx-2 hidden h-5 w-px bg-border/70 sm:block" />
 
-          {/* Language switch */}
           <Link
             href={esHref}
             className="
