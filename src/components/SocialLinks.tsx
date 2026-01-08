@@ -1,4 +1,8 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 
 type Social = {
   label: "YouTube" | "TikTok" | "Instagram"
@@ -43,23 +47,61 @@ export default function SocialLinks({
   items: Social[]
   variant?: "default" | "footer"
 }) {
-  const hoverColorByLabel: Record<Social["label"], string> = {
-    YouTube: "group-hover:text-red-500 group-hover:border-red-500/30",
-    TikTok: "group-hover:text-cyan-400 group-hover:border-cyan-400/30",
-    Instagram: "group-hover:text-pink-400 group-hover:border-pink-400/30",
-  }
+  const pathname = usePathname()
+  const isEs = pathname === "/es" || pathname.startsWith("/es/")
+  const t = useMemo(() => {
+    return isEs
+      ? {
+          socials: "Redes",
+          open: "Abrir redes sociales",
+          panelTitle: "Redes sociales",
+          close: "Cerrar",
+          hint: "Abre tu red favorita en una nueva pestaña.",
+          defaultTitle: "Sigue el universo",
+        }
+      : {
+          socials: "Socials",
+          open: "Open social links",
+          panelTitle: "Social links",
+          close: "Close",
+          hint: "Opens your favorite network in a new tab.",
+          defaultTitle: "Follow the universe",
+        }
+  }, [isEs])
 
-  // ✅ FOOTER MODE (1 sola fila, súper compacto)
+  const hoverColorByLabel: Record<Social["label"], string> = useMemo(
+    () => ({
+      YouTube: "group-hover:text-red-500 group-hover:border-red-500/30",
+      TikTok: "group-hover:text-cyan-400 group-hover:border-cyan-400/30",
+      Instagram: "group-hover:text-pink-400 group-hover:border-pink-400/30",
+    }),
+    []
+  )
+
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [open])
+
+  // ✅ FOOTER MODE: mobile = menú, desktop = chips
   if (variant === "footer") {
-    return (
-      <div className="flex items-center gap-3 whitespace-nowrap">
-        {title ? (
-          <span className="text-[11px] font-semibold tracking-wide text-muted whitespace-nowrap">
-            {title}
-          </span>
-        ) : null}
+    const displayTitle = title?.trim() ? title.trim() : t.defaultTitle
 
-        <div className="flex items-center gap-2 flex-nowrap">
+    return (
+      <div className="flex min-w-0 items-center gap-3">
+        {/* Title (siempre 1 sola vez) */}
+        <span className="shrink-0 text-[11px] font-semibold tracking-wide text-muted">
+          {displayTitle}
+        </span>
+
+        {/* Desktop chips */}
+        <div className="hidden items-center gap-2 md:flex">
           {items.map((s) => (
             <Link
               key={s.label}
@@ -82,11 +124,112 @@ export default function SocialLinks({
             </Link>
           ))}
         </div>
+
+        {/* Mobile trigger: NO repite title */}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={[
+            "md:hidden",
+            "shrink-0 inline-flex items-center gap-2 rounded-full",
+            "border border-border/80 bg-surface-1/40",
+            "px-3 py-1.5 text-[11px] font-semibold text-text/90",
+            "shadow-soft transition hover:bg-surface-2/60",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55",
+            "focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+          ].join(" ")}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-label={t.open}
+        >
+          <span className="text-text">{t.socials}</span>
+          <span className="ml-1 text-muted">▾</span>
+        </button>
+
+        {/* Drawer */}
+        {open ? (
+          <div className="fixed inset-0 z-[90] md:hidden">
+            <button
+              type="button"
+              aria-label={t.close}
+              onClick={() => setOpen(false)}
+              className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+            />
+
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="
+                absolute right-0 top-0 h-full w-[88%] max-w-[360px]
+                border-l border-border/70 bg-bg
+                shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_90px_rgba(0,0,0,0.75)]
+              "
+            >
+              <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
+                <div className="text-sm font-semibold tracking-tight text-text">
+                  {t.panelTitle}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="
+                    inline-flex items-center justify-center rounded-full
+                    border border-border/80 bg-surface-1
+                    px-3 py-1.5 text-xs font-semibold text-text
+                    shadow-soft transition hover:bg-surface-2
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                  "
+                  aria-label={t.close}
+                >
+                  {t.close} <span className="ml-2 text-muted">✕</span>
+                </button>
+              </div>
+
+              <div className="relative px-5 py-5">
+                <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
+                <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
+
+                <div className="space-y-2">
+                  {items.map((s) => (
+                    <Link
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => setOpen(false)}
+                      className={[
+                        "group flex items-center justify-between rounded-2xl border px-4 py-3",
+                        "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
+                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                        "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
+                      ].join(" ")}
+                    >
+                      <span className="inline-flex items-center gap-3">
+                        <span className="grid h-9 w-9 place-items-center rounded-xl border border-border/70 bg-bg/35">
+                          <SocialIcon name={s.label} className="h-4 w-4" />
+                        </span>
+                        <span className="text-sm font-semibold">{s.label}</span>
+                      </span>
+                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
+                        ›
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-6 h-px w-full bg-border/70" />
+                <div className="mt-5 text-[11px] text-muted">{t.hint}</div>
+              </div>
+
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-bg" />
+            </div>
+          </div>
+        ) : null}
       </div>
     )
   }
 
-  // ✅ DEFAULT MODE
+  // ✅ DEFAULT MODE (sin cambios visuales fuertes)
   return (
     <div className="flex flex-col gap-3">
       {title ? (
