@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react"
 import { Children, isValidElement } from "react"
+import ShootingStars from "@/components/visual/ShootingStars"
 
 type HeroCopy = {
   eyebrow: string
@@ -9,6 +10,35 @@ type HeroCopy = {
   secondaryCta: { label: string; href: string }
 }
 
+type TileBullet = { text: string; dot: "teal" | "pink" }
+
+type LatestTile = {
+  href: string
+  badge: string
+  badgeDot: "teal" | "pink"
+  title: string
+  description: string
+  tags: string[]
+  bullets: TileBullet[]
+  ctaLabel: string
+}
+
+type DownloadTile = {
+  href: string
+  badge: string
+  badgeDot: "pink"
+  title: string
+  description: string
+  ctaLabel: string
+  footnote: string
+  mockTitle: string
+}
+
+type HeroTiles = {
+  latest: LatestTile
+  download: DownloadTile
+}
+
 function HeroOverlay({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
@@ -16,10 +46,15 @@ HeroOverlay.displayName = "HeroOverlay"
 
 type HeroProps = {
   copy: HeroCopy
+  tiles: HeroTiles
   children?: ReactNode
 }
 
-function Hero({ copy, children }: HeroProps) {
+function dotColor(dot: "teal" | "pink") {
+  return dot === "teal" ? "#22D3EE" : "#FF4D9D"
+}
+
+function Hero({ copy, tiles, children }: HeroProps) {
   const hasEyebrow = Boolean(copy.eyebrow && copy.eyebrow.trim().length > 0)
 
   // Split children: <Hero.Overlay>...</Hero.Overlay> vs normal children
@@ -37,33 +72,27 @@ function Hero({ copy, children }: HeroProps) {
   })
 
   /* =========================================================
-     TUNING CONTROLS (mueve/ancho/alto a voluntad)
+     TUNING CONTROLS
      ========================================================= */
 
   // ✅ Más “peso” visual en desktop grande (sin romper mobile)
-  // Laptop → igual | 2xl → un poquito más ancho
   const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
 
-  // Mantengo padding lateral razonable para que NO haya scroll horizontal
+  // ✅ Padding lateral consistente (móvil/tablet/desktop)
   const STRIP_PX = "px-4 sm:px-6 lg:px-8"
 
   // 20% menos: 520->416, 380->304
   const GRID_COLS = "lg:grid-cols-[minmax(416px,1fr)_304px_minmax(416px,1fr)]"
 
-  // Gap compacto
   const GRID_GAP = "gap-6 lg:gap-10"
 
-  // ✅ Micro-ajuste de altura (más editorial/compacto en desktop)
   const CARD_MIN_H = "min-h-[208px] sm:min-h-[224px]"
-
-  // Aproximación 20% menos: p-6 -> p-5
   const CARD_P = "p-5"
 
-  // Iris igual
   const IRIS_TRANSLATE_Y = "translate-y-2"
 
   /* =========================================================
-     CARD STYLE (editorial premium like your reference)
+     CARD STYLE (editorial premium)
      ========================================================= */
 
   const CARD_BASE = [
@@ -85,7 +114,8 @@ function Hero({ copy, children }: HeroProps) {
     "hover:shadow-[0_0_0_1px_rgba(255,77,157,0.10),0_22px_80px_rgba(0,0,0,0.65)]",
   ].join(" ")
 
-  const CARD_INNER_GLOW = "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+  const CARD_INNER_GLOW =
+    "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 
   const CARD_GRID_OVERLAY = `
     pointer-events-none absolute inset-0 opacity-[0.05]
@@ -94,9 +124,20 @@ function Hero({ copy, children }: HeroProps) {
   `
 
   return (
-    <section className="relative w-full min-h-[calc(100dvh-72px-50px)] overflow-hidden overflow-x-clip bg-bg">
+    <section
+      className={[
+        // ✅ FULL BLEED FIX:
+        // Si tu Home está dentro de un wrapper con max-w, esto “rompe” el contenedor y ocupa todo el viewport.
+        "relative w-screen",
+        "left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]",
+        "min-h-[calc(100dvh-72px-50px)]",
+        "overflow-hidden overflow-x-clip bg-bg",
+      ].join(" ")}
+    >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
+        <ShootingStars count={14} variant="mixed" />
+
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
 
         {/* LIGHT glows */}
@@ -151,9 +192,9 @@ function Hero({ copy, children }: HeroProps) {
       </div>
 
       {/* ======================
-          TOP CONTENT (centrado)
+          TOP CONTENT (centrado + responsive real)
           ====================== */}
-      <div className="relative mx-auto w-full max-w-6xl px-6 pt-12 pb-6 sm:px-10 sm:pt-14">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-6 sm:px-6 sm:pt-12 lg:px-8 lg:pt-14">
         <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center text-center animate-slide-up">
           {hasEyebrow ? (
             <div className="inline-flex items-center rounded-full border border-border/70 bg-surface-1/70 px-4 py-1.5 text-xs text-muted backdrop-blur-xl shadow-soft dark:border-[#22D3EE]/40 dark:bg-gradient-to-r dark:from-[#22D3EE]/15 dark:via-[#FF4D9D]/10 dark:to-[#22D3EE]/15 dark:shadow-[0_0_40px_rgba(34,211,238,0.3),inset_0_0_20px_rgba(34,211,238,0.1)]">
@@ -161,24 +202,27 @@ function Hero({ copy, children }: HeroProps) {
             </div>
           ) : null}
 
-          <h1 className="mt-6 text-balance text-5xl font-semibold tracking-tight text-text sm:text-7xl sm:leading-[1.06] dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)]">
+          {/* ✅ clamp = se ve bien en móvil/tablet/desktop sin saltos */}
+          <h1 className="mt-6 text-balance font-semibold tracking-tight text-text dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)] text-[clamp(2.15rem,6vw,4.5rem)] leading-[1.06]">
             {copy.headline}
           </h1>
 
-          <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-muted sm:text-xl dark:text-gray-300">
+          <p className="mt-5 max-w-2xl text-pretty leading-relaxed text-muted dark:text-gray-300 text-[clamp(1rem,2.4vw,1.25rem)]">
             {copy.subheadline}
           </p>
 
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+          {/* ✅ CTAs full width en móvil */}
+          <div className="mt-7 flex w-full max-w-[360px] flex-col items-center justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-4">
             <a
               href={copy.primaryCta.href}
               className="
-                group relative inline-flex items-center justify-center overflow-hidden rounded-xl
+                group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl
                 bg-gradient-to-r from-accent via-accent to-accent-alt
                 px-8 py-4 text-base font-bold text-[rgb(var(--bg))]
                 shadow-[0_12px_40px_rgb(var(--accent)/0.18)]
                 transition-all hover:shadow-[0_18px_60px_rgb(var(--accent)/0.22)] hover:scale-[1.03]
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                sm:w-auto
                 dark:from-[#22D3EE] dark:via-[#3BDBF0] dark:to-[#FF4D9D]
                 dark:text-[#050709]
                 dark:shadow-[0_0_50px_rgba(34,211,238,0.5),0_0_80px_rgba(255,77,157,0.3)]
@@ -187,18 +231,21 @@ function Hero({ copy, children }: HeroProps) {
             >
               <span className="relative z-10 flex items-center">
                 {copy.primaryCta.label}
-                <span className="ml-2 transition-transform group-hover:translate-x-1">›</span>
+                <span className="ml-2 transition-transform group-hover:translate-x-1">
+                  ›
+                </span>
               </span>
             </a>
 
             <a
               href={copy.secondaryCta.href}
               className="
-                group inline-flex items-center justify-center rounded-xl
+                group inline-flex w-full items-center justify-center rounded-xl
                 border border-border/80 bg-surface-1/70 px-8 py-4
                 text-base font-semibold text-text backdrop-blur-xl shadow-soft transition-all
                 hover:border-accent/35 hover:bg-surface-2
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                sm:w-auto
                 dark:border-2 dark:border-[#22D3EE]/40 dark:bg-[#0A0E12]/60 dark:text-white
                 dark:hover:border-[#22D3EE]/60 dark:hover:bg-[#0A0E12]/80 dark:hover:shadow-[0_0_40px_rgba(34,211,238,0.3)]
               "
@@ -221,7 +268,7 @@ function Hero({ copy, children }: HeroProps) {
             <div className={["grid lg:items-stretch", GRID_GAP, GRID_COLS].join(" ")}>
               {/* Left: Latest Post */}
               <a
-                href="/en/posts/why-we-dream"
+                href={tiles.latest.href}
                 className={[
                   CARD_BASE,
                   "border border-[#22D3EE]/25",
@@ -230,54 +277,58 @@ function Hero({ copy, children }: HeroProps) {
                   CARD_MIN_H,
                 ].join(" ")}
               >
-                {/* Hover glow */}
                 <div className={CARD_INNER_GLOW}>
                   <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(34,211,238,0.22)] blur-[70px]" />
                   <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[80px]" />
                 </div>
 
-                {/* Subtle grid */}
                 <div className={CARD_GRID_OVERLAY} />
 
                 <div className="relative">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#22D3EE]/25 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#22D3EE]" />
-                    LATEST EXPLORATION
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: dotColor(tiles.latest.badgeDot) }}
+                    />
+                    {tiles.latest.badge}
                   </div>
 
                   <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
-                    Why we dream: the hidden purpose of sleep
+                    {tiles.latest.title}
                   </h3>
 
                   <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
-                    A cinematic overview of what science says about dreams—and why your brain keeps generating them.
+                    {tiles.latest.description}
                   </p>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
-                      Curiosity · Atom
-                    </span>
-                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
-                      Sleep / Mind
-                    </span>
-                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300">
-                      2025-12-29
-                    </span>
+                    {tiles.latest.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300"
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
 
                   <ul className="mt-3 space-y-2 text-sm text-gray-300">
-                    <li className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-[#22D3EE]" />
-                      <span>Dreams are not random</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-[#FF4D9D]" />
-                      <span>Memory, emotion &amp; pattern-building</span>
-                    </li>
+                    {tiles.latest.bullets.map((b) => (
+                      <li key={b.text} className="flex gap-2">
+                        <span
+                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: dotColor(b.dot) }}
+                        />
+                        <span>{b.text}</span>
+                      </li>
+                    ))}
                   </ul>
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    Read exploration <span className="transition-transform group-hover:translate-x-1">›</span>
+                    {tiles.latest.ctaLabel}{" "}
+                    <span className="transition-transform group-hover:translate-x-1">
+                      ›
+                    </span>
                   </div>
                 </div>
               </a>
@@ -287,7 +338,7 @@ function Hero({ copy, children }: HeroProps) {
 
               {/* Right: Calendar */}
               <a
-                href="/en/resources/calendar-2026"
+                href={tiles.download.href}
                 className={[
                   "group relative h-full overflow-hidden rounded-[28px]",
                   "bg-[#050709]/55 backdrop-blur-xl",
@@ -299,27 +350,28 @@ function Hero({ copy, children }: HeroProps) {
                   CARD_MIN_H,
                 ].join(" ")}
               >
-                {/* Hover glow */}
                 <div className={CARD_INNER_GLOW}>
                   <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(34,211,238,0.12)] blur-[80px]" />
                   <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.18)] blur-[70px]" />
                 </div>
 
-                {/* Subtle grid */}
                 <div className={CARD_GRID_OVERLAY} />
 
                 <div className="relative">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D9D]" />
-                    FREE DOWNLOAD
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: dotColor(tiles.download.badgeDot) }}
+                    />
+                    {tiles.download.badge}
                   </div>
 
                   <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D]">
-                    AtomicCurious Science Calendar 2026
+                    {tiles.download.title}
                   </h3>
 
                   <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
-                    Official. Visual. Thought-provoking. A premium calendar to fuel your curiosity all year.
+                    {tiles.download.description}
                   </p>
 
                   <div className="mt-3">
@@ -333,17 +385,22 @@ function Hero({ copy, children }: HeroProps) {
                         <div className="absolute left-1/2 top-1/2 h-[80%] w-[88%] -translate-x-1/2 -translate-y-1/2 rotate-[3deg] rounded-xl border border-white/10 bg-white/5" />
 
                         <div className="absolute left-1/2 top-[18%] w-[78%] -translate-x-1/2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-center text-xs font-semibold tracking-wide text-white">
-                          Science Calendar · 2026
+                          {tiles.download.mockTitle}
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    Download free <span className="transition-transform group-hover:translate-x-1">›</span>
+                    {tiles.download.ctaLabel}{" "}
+                    <span className="transition-transform group-hover:translate-x-1">
+                      ›
+                    </span>
                   </div>
 
-                  <p className="mt-1.5 text-xs text-gray-400">No spam. Just curiosity.</p>
+                  <p className="mt-1.5 text-xs text-gray-400">
+                    {tiles.download.footnote}
+                  </p>
                 </div>
               </a>
             </div>
@@ -358,12 +415,16 @@ function Hero({ copy, children }: HeroProps) {
                   ].join(" ")}
                 >
                   <div className="relative h-[280px] sm:h-[340px] md:h-[400px] w-full">
-                    <div className="absolute inset-x-0 bottom-0 flex justify-center">{overlayChildren}</div>
+                    <div className="absolute inset-x-0 bottom-0 flex justify-center">
+                      {overlayChildren}
+                    </div>
                   </div>
                 </div>
 
                 {/* Mobile stacked Iris */}
-                <div className="mt-6 flex justify-center lg:hidden">{overlayChildren}</div>
+                <div className="mt-6 flex justify-center lg:hidden">
+                  {overlayChildren}
+                </div>
               </>
             ) : null}
           </div>
@@ -372,7 +433,7 @@ function Hero({ copy, children }: HeroProps) {
 
       {/* Below children */}
       {belowChildren.length > 0 ? (
-        <div className="relative z-20 mx-auto mt-6 w-full max-w-5xl px-6 sm:mt-8 sm:px-10">
+        <div className="relative z-20 mx-auto mt-6 w-full max-w-5xl px-4 sm:mt-8 sm:px-6 lg:px-8">
           {belowChildren}
         </div>
       ) : null}
