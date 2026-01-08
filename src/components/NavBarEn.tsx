@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
 
 function isActive(pathname: string, href: string) {
@@ -27,22 +27,16 @@ function toEs(pathname: string) {
     "why-we-dream": "por-que-sonamos",
   }
 
-  // Home
   if (pathname === "/en") return "/es"
-
-  // Exact matches first
   if (map[pathname]) return map[pathname]
 
-  // Posts detail: /en/posts/[slug] -> /es/posts/[slugTraducido]
   if (pathname.startsWith("/en/posts/")) {
     const slug = pathname.replace("/en/posts/", "")
     const esSlug = postSlugMap[slug] ?? slug
     return `/es/posts/${esSlug}`
   }
 
-  // Generic prefix replace
   if (pathname.startsWith("/en/")) return pathname.replace(/^\/en\//, "/es/")
-
   return "/es"
 }
 
@@ -257,11 +251,36 @@ export default function NavBarEn() {
   const esHref = toEs(pathname)
   const isHome = pathname === "/en"
 
-  // Core bubble (only on Home)
   const rocketRef = useRef<HTMLButtonElement | null>(null)
   const [coreOpen, setCoreOpen] = useState(false)
 
-  // ✅ 20 facts
+  // ✅ Mobile drawer
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  // Close drawer on navigation
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
+  // Lock body scroll when drawer open
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [menuOpen])
+
+  // ESC closes drawer
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false)
+    }
+    if (menuOpen) window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [menuOpen])
+
   const coreFacts = useMemo(
     () => [
       "Octopuses have neurons in their arms, so they can “think” with their tentacles.",
@@ -299,10 +318,10 @@ export default function NavBarEn() {
   ]
 
   return (
-    <header className="border-b border-border/70 bg-bg">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Rocket: Home opens dialog, other routes navigate to Home */}
-        <div className="inline-flex items-center gap-3">
+    <header className="relative border-b border-border/70 bg-bg">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        {/* Left brand */}
+        <div className="inline-flex min-w-0 items-center gap-3">
           {isHome ? (
             <button
               ref={rocketRef}
@@ -314,28 +333,25 @@ export default function NavBarEn() {
               <StarshipMark />
             </button>
           ) : (
-            <Link
-              href="/en"
-              className="group inline-flex items-center"
-              aria-label="Go to Home"
-            >
+            <Link href="/en" className="group inline-flex items-center" aria-label="Go to Home">
               <StarshipMark />
             </Link>
           )}
 
           <Link
             href="/en"
-            className="group inline-flex items-center text-lg font-semibold tracking-tight text-text"
+            className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text"
             aria-label="AtomicCurious Home"
           >
-            <span className="relative">
+            <span className="relative truncate">
               AtomicCurious
               <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
             </span>
           </Link>
         </div>
 
-        <nav className="flex items-center gap-2 text-sm sm:gap-3">
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-2 text-sm sm:flex" aria-label="Primary">
           {links.map((l) => {
             const active = isActive(pathname, l.href)
             return (
@@ -372,9 +388,150 @@ export default function NavBarEn() {
             ES
           </Link>
         </nav>
+
+        {/* Mobile: ES + Menu */}
+        <div className="flex items-center gap-2 sm:hidden">
+          <Link
+            href={esHref}
+            className="
+              inline-flex items-center rounded-full
+              border border-border/80 bg-surface-1
+              px-3 py-1.5 text-xs font-semibold text-text
+              shadow-soft transition
+              hover:border-accent/35 hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+          >
+            ES
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="
+              inline-flex items-center justify-center rounded-full
+              border border-border/80 bg-surface-1
+              px-3 py-1.5 text-xs font-semibold text-text
+              shadow-soft transition
+              hover:border-accent/35 hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+            aria-label="Open menu"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+          >
+            Menu
+            <span className="ml-2 text-muted">≡</span>
+          </button>
+        </div>
       </div>
 
-      {/* Dialog only on Home */}
+      {/* Mobile Drawer */}
+      {menuOpen ? (
+        <div className="fixed inset-0 z-[80] sm:hidden">
+          {/* Backdrop */}
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+          />
+
+          {/* Panel */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="
+              absolute right-0 top-0 h-full w-[88%] max-w-[360px]
+              border-l border-border/70 bg-bg
+              shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_90px_rgba(0,0,0,0.75)]
+            "
+          >
+            {/* Panel header */}
+            <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
+              <div className="text-sm font-semibold tracking-tight text-text">Navigation</div>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  inline-flex items-center justify-center rounded-full
+                  border border-border/80 bg-surface-1
+                  px-3 py-1.5 text-xs font-semibold text-text
+                  shadow-soft transition hover:bg-surface-2
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                "
+                aria-label="Close"
+              >
+                Close <span className="ml-2 text-muted">✕</span>
+              </button>
+            </div>
+
+            {/* Links */}
+            <div className="relative px-5 py-5">
+              {/* subtle glow */}
+              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
+              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
+
+              <div className="space-y-2">
+                {links.map((l) => {
+                  const active = isActive(pathname, l.href)
+                  return (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className={[
+                        "group flex items-center justify-between rounded-2xl border px-4 py-3",
+                        "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
+                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                        active
+                          ? "border-accent/35 text-text"
+                          : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
+                      ].join(" ")}
+                    >
+                      <span className="text-sm font-semibold">{l.label}</span>
+                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
+                        ›
+                      </span>
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="mt-5 h-px w-full bg-border/70" />
+
+              {/* Language */}
+              <div className="mt-5">
+                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
+                  LANGUAGE
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
+                    EN
+                  </span>
+                  <Link
+                    href={esHref}
+                    className="
+                      inline-flex items-center rounded-full
+                      border border-border/80 bg-surface-1
+                      px-3 py-1.5 text-xs font-semibold text-text
+                      shadow-soft transition
+                      hover:border-accent/35 hover:bg-surface-2
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                    "
+                  >
+                    ES
+                    <span className="ml-2 text-muted">›</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-bg" />
+          </div>
+        </div>
+      ) : null}
+
+      {/* Core bubble (only on Home) */}
       <CoreFactBubble
         open={isHome && coreOpen}
         onClose={() => setCoreOpen(false)}

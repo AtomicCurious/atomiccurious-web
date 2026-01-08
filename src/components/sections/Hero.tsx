@@ -79,18 +79,16 @@ function Hero({ copy, tiles, children }: HeroProps) {
 
   // ✅ Más “peso” visual en desktop grande (sin romper mobile)
   const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
-
-  // ✅ Padding lateral consistente (móvil/tablet/desktop)
   const STRIP_PX = "px-4 sm:px-6 lg:px-8"
 
-  // 20% menos: 520->416, 380->304
-  const GRID_COLS = "lg:grid-cols-[minmax(416px,1fr)_304px_minmax(416px,1fr)]"
-
+  // Desktop grid: left / center / right
+  const GRID_COLS_LG = "lg:grid-cols-[minmax(416px,1fr)_304px_minmax(416px,1fr)]"
   const GRID_GAP = "gap-6 lg:gap-10"
 
   const CARD_MIN_H = "min-h-[208px] sm:min-h-[224px]"
   const CARD_P = "p-5"
 
+  // Iris floating offset (desktop)
   const IRIS_TRANSLATE_Y = "translate-y-2"
 
   /* =========================================================
@@ -128,18 +126,17 @@ function Hero({ copy, tiles, children }: HeroProps) {
   return (
     <section
       className={[
-        // ✅ FULL BLEED FIX:
-        // Si tu Home está dentro de un wrapper con max-w, esto “rompe” el contenedor y ocupa todo el viewport.
-        "relative w-screen",
-        "left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]",
-        "min-h-[calc(100dvh-72px-50px)]",
-        "overflow-hidden overflow-x-clip bg-bg",
+        // ✅ FIX MOBILE “ZOOM / BLACK SPACE”:
+        // No w-screen + no -50vw hack. Mantén w-full.
+        "relative w-full",
+        "min-h-[calc(100svh-72px-50px)]",
+        "overflow-hidden bg-bg",
+        "isolate",
       ].join(" ")}
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <ShootingStars count={14} variant="mixed" />
-
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
 
         {/* LIGHT glows */}
@@ -193,9 +190,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
         />
       </div>
 
-      {/* ======================
-          TOP CONTENT (centrado + responsive real)
-          ====================== */}
+      {/* TOP CONTENT */}
       <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-6 sm:px-6 sm:pt-12 lg:px-8 lg:pt-14">
         <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center text-center animate-slide-up">
           {hasEyebrow ? (
@@ -204,7 +199,6 @@ function Hero({ copy, tiles, children }: HeroProps) {
             </div>
           ) : null}
 
-          {/* ✅ clamp = se ve bien en móvil/tablet/desktop sin saltos */}
           <h1 className="mt-6 text-balance font-semibold tracking-tight text-text dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)] text-[clamp(2.15rem,6vw,4.5rem)] leading-[1.06]">
             {copy.headline}
           </h1>
@@ -213,7 +207,6 @@ function Hero({ copy, tiles, children }: HeroProps) {
             {copy.subheadline}
           </p>
 
-          {/* ✅ CTAs full width en móvil */}
           <div className="mt-7 flex w-full max-w-[360px] flex-col items-center justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-4">
             <a
               href={copy.primaryCta.href}
@@ -233,9 +226,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
             >
               <span className="relative z-10 flex items-center">
                 {copy.primaryCta.label}
-                <span className="ml-2 transition-transform group-hover:translate-x-1">
-                  ›
-                </span>
+                <span className="ml-2 transition-transform group-hover:translate-x-1">›</span>
               </span>
             </a>
 
@@ -261,17 +252,24 @@ function Hero({ copy, tiles, children }: HeroProps) {
         </div>
       </div>
 
-      {/* ======================
-          STRIP FULL WIDTH
-          ====================== */}
+      {/* STRIP */}
       <div className="relative z-20 mt-8">
         <div className={["mx-auto w-full", STRIP_MAX_W, STRIP_PX].join(" ")}>
           <div className="relative">
-            <div className={["grid lg:items-stretch", GRID_GAP, GRID_COLS].join(" ")}>
+            <div
+              className={[
+                // mobile: 1 col
+                "grid grid-cols-1",
+                GRID_GAP,
+                // desktop: 3 cols
+                GRID_COLS_LG,
+              ].join(" ")}
+            >
               {/* Left: Latest Post */}
               <a
                 href={tiles.latest.href}
                 className={[
+                  "order-1",
                   CARD_BASE,
                   "border border-[#22D3EE]/25",
                   CARD_HOVER_TEAL,
@@ -328,20 +326,30 @@ function Hero({ copy, tiles, children }: HeroProps) {
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
                     {tiles.latest.ctaLabel}{" "}
-                    <span className="transition-transform group-hover:translate-x-1">
-                      ›
-                    </span>
+                    <span className="transition-transform group-hover:translate-x-1">›</span>
                   </div>
                 </div>
               </a>
 
-              {/* Center spacer (for Iris) */}
-              <div className="hidden lg:block" />
+              {/* ✅ MOBILE: Iris goes IN THE MIDDLE (between cards) */}
+              {overlayChildren.length > 0 ? (
+                <div className="order-2 flex justify-center lg:hidden pointer-events-none">
+                  <div className="relative w-full">
+                    <div className="mx-auto w-full max-w-[360px] py-2">
+                      {overlayChildren}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Center spacer (desktop grid middle column) */}
+              <div className="order-2 hidden lg:block" />
 
               {/* Right: Calendar */}
               <a
                 href={tiles.download.href}
                 className={[
+                  "order-3",
                   "group relative h-full overflow-hidden rounded-[28px]",
                   "bg-[#050709]/55 backdrop-blur-xl",
                   "border border-[#FF4D9D]/18",
@@ -395,9 +403,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
                     {tiles.download.ctaLabel}{" "}
-                    <span className="transition-transform group-hover:translate-x-1">
-                      ›
-                    </span>
+                    <span className="transition-transform group-hover:translate-x-1">›</span>
                   </div>
 
                   <p className="mt-1.5 text-xs text-gray-400">{tiles.download.footnote}</p>
@@ -405,25 +411,20 @@ function Hero({ copy, tiles, children }: HeroProps) {
               </a>
             </div>
 
-            {/* Iris floating above center */}
+            {/* ✅ DESKTOP: Iris floating above center */}
             {overlayChildren.length > 0 ? (
-              <>
-                <div
-                  className={[
-                    "pointer-events-none absolute inset-x-0 top-0 z-10 hidden lg:flex justify-center",
-                    IRIS_TRANSLATE_Y,
-                  ].join(" ")}
-                >
-                  <div className="relative h-[280px] sm:h-[340px] md:h-[400px] w-full">
-                    <div className="absolute inset-x-0 bottom-0 flex justify-center">
-                      {overlayChildren}
-                    </div>
+              <div
+                className={[
+                  "pointer-events-none absolute inset-x-0 top-0 z-10 hidden lg:flex justify-center",
+                  IRIS_TRANSLATE_Y,
+                ].join(" ")}
+              >
+                <div className="relative h-[280px] sm:h-[340px] md:h-[400px] w-full">
+                  <div className="absolute inset-x-0 bottom-0 flex justify-center">
+                    {overlayChildren}
                   </div>
                 </div>
-
-                {/* Mobile stacked Iris */}
-                <div className="mt-6 flex justify-center lg:hidden">{overlayChildren}</div>
-              </>
+              </div>
             ) : null}
           </div>
         </div>
