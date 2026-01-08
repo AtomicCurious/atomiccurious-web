@@ -12,7 +12,8 @@ type HomeCopy = {
   meet: {
     title: string
     subtitle: string
-    items: {
+    // ✅ Accept readonly arrays from `as const` content files
+    items: readonly {
       name: string
       role: string
       description?: string
@@ -28,10 +29,41 @@ type HomeCopy = {
   }
 }
 
-export default function HomeLanding({ copy }: { copy: HomeCopy }) {
+type HomeTiles = {
+  latest: {
+    href: string
+    badge: string
+    badgeDot: "teal" | "pink"
+    title: string
+    description: string
+    // ✅ Accept readonly arrays from `as const` content files
+    tags: readonly string[]
+    // ✅ Accept readonly arrays from `as const` content files
+    bullets: readonly { text: string; dot: "teal" | "pink" }[]
+    ctaLabel: string
+  }
+  download: {
+    href: string
+    badge: string
+    badgeDot: "pink"
+    title: string
+    description: string
+    ctaLabel: string
+    footnote: string
+    mockTitle: string
+  }
+}
+
+export default function HomeLanding({
+  copy,
+  tiles,
+}: {
+  copy: HomeCopy
+  tiles: HomeTiles
+}) {
   return (
     <div className="w-full bg-bg text-text">
-      <Hero copy={copy.hero}>
+      <Hero copy={copy.hero} tiles={tiles}>
         {/* ✅ Iris como overlay (NO empuja altura) */}
         <Hero.Overlay>
           <MeetTheMinds copy={copy.meet} variant="hero-iris" />

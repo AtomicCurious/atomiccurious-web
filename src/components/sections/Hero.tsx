@@ -18,8 +18,10 @@ type LatestTile = {
   badgeDot: "teal" | "pink"
   title: string
   description: string
-  tags: string[]
-  bullets: TileBullet[]
+  // ✅ Accept readonly arrays coming from `as const` content
+  tags: readonly string[]
+  // ✅ Accept readonly arrays coming from `as const` content
+  bullets: readonly TileBullet[]
   ctaLabel: string
 }
 
@@ -398,9 +400,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
                     </span>
                   </div>
 
-                  <p className="mt-1.5 text-xs text-gray-400">
-                    {tiles.download.footnote}
-                  </p>
+                  <p className="mt-1.5 text-xs text-gray-400">{tiles.download.footnote}</p>
                 </div>
               </a>
             </div>
@@ -422,9 +422,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
                 </div>
 
                 {/* Mobile stacked Iris */}
-                <div className="mt-6 flex justify-center lg:hidden">
-                  {overlayChildren}
-                </div>
+                <div className="mt-6 flex justify-center lg:hidden">{overlayChildren}</div>
               </>
             ) : null}
           </div>

@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useMemo, useRef, useState } from "react"
+import CoreFactBubble from "@/components/visual/CoreFactBubble"
 
 function isActive(pathname: string, href: string) {
   if (href === "/en") return pathname === "/en"
@@ -9,17 +11,38 @@ function isActive(pathname: string, href: string) {
 }
 
 function toEs(pathname: string) {
-  // ✅ Slugs traducidos (EN -> ES)
+  // ✅ Rutas traducidas (EN -> ES)
   const map: Record<string, string> = {
     "/en/resources": "/es/recursos",
     "/en/community": "/es/comunidad",
     "/en/contact": "/es/contacto",
+    "/en/newsletter": "/es/newsletter",
+    "/en/start-here": "/es/start-here",
+    "/en/about": "/es/about",
+    "/en/posts": "/es/posts",
   }
 
+  // ✅ Slugs traducidos para posts (EN -> ES)
+  const postSlugMap: Record<string, string> = {
+    "why-we-dream": "por-que-sonamos",
+  }
+
+  // Home
+  if (pathname === "/en") return "/es"
+
+  // Exact matches first
   if (map[pathname]) return map[pathname]
 
-  if (pathname === "/en") return "/es"
+  // Posts detail: /en/posts/[slug] -> /es/posts/[slugTraducido]
+  if (pathname.startsWith("/en/posts/")) {
+    const slug = pathname.replace("/en/posts/", "")
+    const esSlug = postSlugMap[slug] ?? slug
+    return `/es/posts/${esSlug}`
+  }
+
+  // Generic prefix replace
   if (pathname.startsWith("/en/")) return pathname.replace(/^\/en\//, "/es/")
+
   return "/es"
 }
 
@@ -232,6 +255,38 @@ function StarshipMark() {
 export default function NavBarEn() {
   const pathname = usePathname()
   const esHref = toEs(pathname)
+  const isHome = pathname === "/en"
+
+  // Core bubble (only on Home)
+  const rocketRef = useRef<HTMLButtonElement | null>(null)
+  const [coreOpen, setCoreOpen] = useState(false)
+
+  // ✅ 20 facts
+  const coreFacts = useMemo(
+    () => [
+      "Octopuses have neurons in their arms, so they can “think” with their tentacles.",
+      "Sunlight takes about 8 minutes to reach Earth—everything you see from the Sun is the past.",
+      "Your brain is constantly predicting reality; perception is partly a controlled guess.",
+      "If you removed empty space inside atoms, all of humanity could fit into something the size of a sugar cube.",
+      "Some of the dust you breathe can be older than Earth—literal stardust.",
+      "A day on Venus is longer than its year: Venus rotates very slowly but orbits the Sun faster.",
+      "Bananas are slightly radioactive because they contain potassium-40 (totally harmless at normal amounts).",
+      "There are more possible chess games than atoms in the observable universe (an astronomically huge number).",
+      "A single lightning bolt can heat the air to around 30,000°C—hotter than the surface of the Sun.",
+      "Honey never spoils; sealed honey has been found edible after thousands of years.",
+      "Sharks existed before trees—sharks are older than many land plants.",
+      "The ‘hum’ you hear in a seashell is mostly your brain amplifying ambient noise, not the ocean.",
+      "Space isn’t empty: there are still a few atoms per cubic centimeter floating between stars.",
+      "A teaspoon of neutron star matter would weigh billions of tons on Earth (in theory—don’t try to scoop it).",
+      "Some metals ‘remember’ shape (shape-memory alloys) and can return to form when heated.",
+      "Your body contains enough carbon to make thousands of pencil marks.",
+      "There’s a giant storm on Jupiter (the Great Red Spot) that has lasted for centuries.",
+      "A blue whale’s heart is so large a human could (roughly) crawl through some of its arteries.",
+      "Water can boil and freeze at the same time under the right pressure (triple point).",
+      "The universe is expanding, and distant galaxies can appear to move away faster than light due to space stretching.",
+    ],
+    []
+  )
 
   const links = [
     { label: "Start Here", href: "/en/start-here" },
@@ -246,17 +301,39 @@ export default function NavBarEn() {
   return (
     <header className="border-b border-border/70 bg-bg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link
-          href="/en"
-          className="group inline-flex items-center gap-3 text-lg font-semibold tracking-tight text-text"
-          aria-label="AtomicCurious Home"
-        >
-          <StarshipMark />
-          <span className="relative">
-            AtomicCurious
-            <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
-          </span>
-        </Link>
+        {/* Rocket: Home opens dialog, other routes navigate to Home */}
+        <div className="inline-flex items-center gap-3">
+          {isHome ? (
+            <button
+              ref={rocketRef}
+              type="button"
+              onClick={() => setCoreOpen((v) => !v)}
+              className="group inline-flex items-center"
+              aria-label="Open a Core curiosity"
+            >
+              <StarshipMark />
+            </button>
+          ) : (
+            <Link
+              href="/en"
+              className="group inline-flex items-center"
+              aria-label="Go to Home"
+            >
+              <StarshipMark />
+            </Link>
+          )}
+
+          <Link
+            href="/en"
+            className="group inline-flex items-center text-lg font-semibold tracking-tight text-text"
+            aria-label="AtomicCurious Home"
+          >
+            <span className="relative">
+              AtomicCurious
+              <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
+            </span>
+          </Link>
+        </div>
 
         <nav className="flex items-center gap-2 text-sm sm:gap-3">
           {links.map((l) => {
@@ -296,6 +373,15 @@ export default function NavBarEn() {
           </Link>
         </nav>
       </div>
+
+      {/* Dialog only on Home */}
+      <CoreFactBubble
+        open={isHome && coreOpen}
+        onClose={() => setCoreOpen(false)}
+        anchorEl={rocketRef.current}
+        facts={coreFacts}
+        title="Core"
+      />
     </header>
   )
 }

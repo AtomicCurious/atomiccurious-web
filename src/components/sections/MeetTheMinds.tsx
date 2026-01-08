@@ -4,7 +4,8 @@ import { characters } from "@/content/characters"
 type MeetCopy = {
   title: string
   subtitle: string
-  items: {
+  // ✅ Accept readonly arrays from `as const` content files
+  items: readonly {
     name: string
     role: string
     description?: string

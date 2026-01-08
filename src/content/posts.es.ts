@@ -7,6 +7,10 @@ export type PostListItem = {
   date: string
   format: PostFormat
   tag?: string
+
+  // ✅ NEW (used by Home tiles + future reuse)
+  bullets?: string[]
+  featured?: boolean
 }
 
 export const postsEs: PostListItem[] = [
@@ -18,8 +22,17 @@ export const postsEs: PostListItem[] = [
     date: "2025-12-29",
     format: "curiosity",
     tag: "Sueño / Mente",
+
+    // ✅ bullets now live on the post (single source of truth)
+    bullets: [
+      "Los sueños no son aleatorios",
+      "Memoria, emoción y construcción de patrones",
+    ],
+
+    // ✅ editorial control for Home (preferred over purely “latest”)
+    featured: true,
   },
 ]
 
-// newest first
+// newest first (fallback)
 export const latestPostEs = postsEs[0]

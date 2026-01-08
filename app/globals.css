@@ -28,7 +28,10 @@
   --accent-alt-soft: 255 77 157;
 }
 
-/* Base layout */
+/* =========================================================
+   Base layout
+   ========================================================= */
+
 html,
 body {
   height: 100%;
@@ -49,4 +52,103 @@ body {
 /* Links */
 a {
   text-underline-offset: 3px;
+}
+
+/* =========================================================
+   AtomicCurious — Shooting Stars (diagonal + pop)
+   ========================================================= */
+
+.ac-shooting-star {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(var(--sx), var(--sy));
+  border-radius: 999px;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+  animation-name: acShootingStar;
+  animation-duration: inherit;
+  animation-delay: inherit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  filter: blur(0px);
+}
+
+/* Teal stars */
+.ac-shooting-star--teal {
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.95),
+    rgba(34, 211, 238, 0.35),
+    transparent 70%
+  );
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+
+/* Pink stars */
+.ac-shooting-star--pink {
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 157, 0.95),
+    rgba(255, 77, 157, 0.32),
+    transparent 70%
+  );
+  box-shadow: 0 0 18px rgba(255, 77, 157, 0.32);
+}
+
+/* =========================================================
+   Animation: diagonal travel + final pop
+   ========================================================= */
+
+@keyframes acShootingStar {
+  0% {
+    transform: translate(var(--sx), var(--sy)) scale(0.9);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.75;
+  }
+
+  /* Diagonal travel */
+  72% {
+    transform: translate(
+        calc(var(--sx) + var(--dx)),
+        calc(var(--sy) - var(--dy))
+      )
+      scale(1);
+    opacity: 0.9;
+  }
+
+  /* POP (impact moment) */
+  82% {
+    transform: translate(
+        calc(var(--sx) + var(--dx)),
+        calc(var(--sy) - var(--dy))
+      )
+      scale(2.4);
+    opacity: 0.95;
+    filter: blur(0.25px);
+  }
+
+  100% {
+    transform: translate(
+        calc(var(--sx) + var(--dx)),
+        calc(var(--sy) - var(--dy))
+      )
+      scale(0);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+/* =========================================================
+   Accessibility — respect reduced motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-shooting-star {
+    animation: none !important;
+    display: none !important;
+  }
 }

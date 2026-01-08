@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useMemo, useRef, useState } from "react"
+import CoreFactBubble from "@/components/visual/CoreFactBubble"
 
 function isActive(pathname: string, href: string) {
   if (href === "/es") return pathname === "/es"
@@ -9,17 +11,38 @@ function isActive(pathname: string, href: string) {
 }
 
 function toEn(pathname: string) {
-  // ✅ Slugs traducidos (ES -> EN)
+  // ✅ Rutas traducidas (ES -> EN)
   const map: Record<string, string> = {
     "/es/recursos": "/en/resources",
     "/es/comunidad": "/en/community",
     "/es/contacto": "/en/contact",
+    "/es/newsletter": "/en/newsletter",
+    "/es/start-here": "/en/start-here",
+    "/es/about": "/en/about",
+    "/es/posts": "/en/posts",
   }
 
+  // ✅ Slugs traducidos para posts (ES -> EN)
+  const postSlugMap: Record<string, string> = {
+    "por-que-sonamos": "why-we-dream",
+  }
+
+  // Home
+  if (pathname === "/es") return "/en"
+
+  // Exact matches first
   if (map[pathname]) return map[pathname]
 
-  if (pathname === "/es") return "/en"
+  // Posts detail: /es/posts/[slug] -> /en/posts/[slugTraducido]
+  if (pathname.startsWith("/es/posts/")) {
+    const slug = pathname.replace("/es/posts/", "")
+    const enSlug = postSlugMap[slug] ?? slug
+    return `/en/posts/${enSlug}`
+  }
+
+  // Generic prefix replace
   if (pathname.startsWith("/es/")) return pathname.replace(/^\/es\//, "/en/")
+
   return "/en"
 }
 
@@ -232,6 +255,38 @@ function StarshipMark() {
 export default function NavBarEs() {
   const pathname = usePathname()
   const enHref = toEn(pathname)
+  const isHome = pathname === "/es"
+
+  // Core bubble (only on Home)
+  const rocketRef = useRef<HTMLButtonElement | null>(null)
+  const [coreOpen, setCoreOpen] = useState(false)
+
+  // ✅ 20 datos (ES)
+  const coreFacts = useMemo(
+    () => [
+      "Los pulpos tienen neuronas en sus brazos, así que pueden “pensar” con sus tentáculos.",
+      "La luz del Sol tarda ~8 minutos en llegar a la Tierra: todo lo que ves del Sol es pasado.",
+      "Tu cerebro predice la realidad constantemente; percibir es, en parte, una conjetura controlada.",
+      "Si eliminaras el espacio vacío dentro de los átomos, toda la humanidad cabría en algo del tamaño de un terrón de azúcar.",
+      "Parte del polvo que respiras puede ser más viejo que la Tierra: literalmente polvo de estrellas.",
+      "Un día en Venus dura más que su año: rota muy lento pero orbita el Sol relativamente rápido.",
+      "Los plátanos son ligeramente radiactivos por el potasio-40 (en cantidades normales es totalmente inofensivo).",
+      "Hay más partidas posibles de ajedrez que átomos en el universo observable (una cantidad absurda).",
+      "Un rayo puede calentar el aire hasta ~30,000°C, más que la superficie del Sol.",
+      "La miel no se echa a perder; se ha encontrado miel sellada comestible tras miles de años.",
+      "Los tiburones existían antes que los árboles: son más antiguos que muchas plantas terrestres.",
+      "El “rumor” de una concha marina suele ser tu cerebro amplificando ruido ambiente, no el océano.",
+      "El espacio no está vacío: aún hay algunos átomos por centímetro cúbico entre las estrellas.",
+      "Una cucharadita de materia de estrella de neutrones pesaría miles de millones de toneladas en la Tierra (en teoría).",
+      "Algunos metales “recuerdan” su forma (aleaciones con memoria) y vuelven a ella al calentarse.",
+      "Tu cuerpo contiene suficiente carbono como para hacer miles de trazos de lápiz.",
+      "En Júpiter hay una tormenta gigante (la Gran Mancha Roja) que lleva siglos activa.",
+      "El corazón de una ballena azul es tan grande que una persona podría (aprox.) pasar por algunas de sus arterias.",
+      "El agua puede hervir y congelarse a la vez bajo la presión correcta (punto triple).",
+      "El universo se expande: galaxias lejanas pueden parecer alejarse más rápido que la luz porque el espacio se estira.",
+    ],
+    []
+  )
 
   const links = [
     { label: "Empieza aquí", href: "/es/start-here" },
@@ -246,17 +301,39 @@ export default function NavBarEs() {
   return (
     <header className="border-b border-border/70 bg-bg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link
-          href="/es"
-          className="group inline-flex items-center gap-3 text-lg font-semibold tracking-tight text-text"
-          aria-label="Inicio AtomicCurious"
-        >
-          <StarshipMark />
-          <span className="relative">
-            AtomicCurious
-            <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
-          </span>
-        </Link>
+        {/* Rocket: Home opens dialog, other routes navigate to Home */}
+        <div className="inline-flex items-center gap-3">
+          {isHome ? (
+            <button
+              ref={rocketRef}
+              type="button"
+              onClick={() => setCoreOpen((v) => !v)}
+              className="group inline-flex items-center"
+              aria-label="Abrir una curiosidad de Core"
+            >
+              <StarshipMark />
+            </button>
+          ) : (
+            <Link
+              href="/es"
+              className="group inline-flex items-center"
+              aria-label="Ir al inicio"
+            >
+              <StarshipMark />
+            </Link>
+          )}
+
+          <Link
+            href="/es"
+            className="group inline-flex items-center text-lg font-semibold tracking-tight text-text"
+            aria-label="Inicio AtomicCurious"
+          >
+            <span className="relative">
+              AtomicCurious
+              <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
+            </span>
+          </Link>
+        </div>
 
         <nav className="flex items-center gap-2 text-sm sm:gap-3">
           {links.map((l) => {
@@ -296,6 +373,15 @@ export default function NavBarEs() {
           </Link>
         </nav>
       </div>
+
+      {/* Dialog only on Home */}
+      <CoreFactBubble
+        open={isHome && coreOpen}
+        onClose={() => setCoreOpen(false)}
+        anchorEl={rocketRef.current}
+        facts={coreFacts}
+        title="Core"
+      />
     </header>
   )
 }
