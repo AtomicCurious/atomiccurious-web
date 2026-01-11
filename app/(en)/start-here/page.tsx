@@ -1,21 +1,18 @@
-// app/es/start-here/page.tsx
+// app/en/start-here/page.tsx
 import Link from "next/link"
 import Image from "next/image"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
-import { latestPostEs as LATEST_POST } from "@/content/posts.es"
+import { latestPostEn as LATEST_POST } from "@/content/posts.en"
 import SignatureBackdrop from "@/components/SignatureBackdrop"
 
 export const metadata: Metadata = {
-  title: "Empieza aquí | AtomicCurious",
+  title: "Start Here | AtomicCurious",
   description:
-    "¿Nuevo en AtomicCurious? Empieza aquí para explorar curiosidades fascinantes, rankings únicos y quizzes interactivos sobre ciencia, cultura y lo humano.",
+    "New to AtomicCurious? Start here to explore mind-bending curiosities, sharp rankings, and interactive quizzes about science, culture, and what it means to be human.",
   alternates: {
-    canonical: "/es/start-here",
-    languages: {
-      en: "/start-here",
-      es: "/es/start-here",
-    },
+    canonical: "/start-here",
+    languages: { en: "/start-here", es: "/es/start-here" },
   },
 }
 
@@ -53,7 +50,8 @@ function StepCard({ n, title, body }: { n: string; title: string; body: string }
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-60"
         style={{
-          background: "linear-gradient(to bottom, rgba(255,255,255,0.10), transparent)",
+          background:
+            "linear-gradient(to bottom, rgba(255,255,255,0.10), transparent)",
         }}
       />
 
@@ -96,11 +94,13 @@ function FormatCard({
   label,
   name,
   description,
+  examples,
   href,
 }: {
   label: string
   name: string
   description: string
+  examples: string
   href: string
 }) {
   return (
@@ -113,6 +113,7 @@ function FormatCard({
         "hover:bg-[rgb(var(--surface-1)/0.70)] hover:border-[rgb(var(--border)/0.92)]",
       ].join(" ")}
     >
+      {/* Accent glow (energy from accent) */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -132,7 +133,10 @@ function FormatCard({
                 background: "rgb(var(--bg) / 0.35)",
               }}
             >
-              <span className="h-2 w-2 rounded-full" style={{ background: "rgb(var(--accent) / 0.95)" }} />
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: "rgb(var(--accent) / 0.95)" }}
+              />
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 rounded-xl opacity-0 blur-[12px] transition-opacity duration-500 group-hover:opacity-100"
@@ -153,8 +157,17 @@ function FormatCard({
           {description}
         </p>
 
+        <div className="mt-4 rounded-xl border border-[rgb(var(--border)/0.65)] bg-[rgb(var(--bg)/0.25)] px-4 py-3">
+          <p className="text-[11px] font-semibold tracking-wide text-[rgb(var(--text)/0.50)]">
+            EXAMPLES
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-[rgb(var(--text)/0.68)]">
+            {examples}
+          </p>
+        </div>
+
         <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[rgb(var(--accent)/0.95)]">
-          Explorar <span aria-hidden>→</span>
+          Explore this format <span aria-hidden>→</span>
         </div>
       </div>
     </Link>
@@ -163,7 +176,7 @@ function FormatCard({
 
 export default function Page() {
   const latestSlug = LATEST_POST?.slug
-  const latestHref = latestSlug ? `/es/posts/${latestSlug}` : "/es/posts"
+  const latestHref = latestSlug ? `/posts/${latestSlug}` : "/posts"
 
   return (
     <main className="relative w-full overflow-hidden bg-bg text-text">
@@ -174,7 +187,7 @@ export default function Page() {
         {/* HERO */}
         <header className="relative">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-            {/* LADO IZQUIERDO: ATOM visual */}
+            {/* LEFT: Atom visual */}
             <div className="relative order-2 lg:order-1">
               <div
                 aria-hidden="true"
@@ -197,7 +210,7 @@ export default function Page() {
                 >
                   <Image
                     src="/characters/atom.png"
-                    alt="Atom, tu guía en AtomicCurious"
+                    alt="Atom, your guide in AtomicCurious"
                     fill
                     sizes="(max-width: 1024px) 100vw, 45vw"
                     className="object-contain p-8 transition-transform duration-700 group-hover:scale-105"
@@ -214,7 +227,7 @@ export default function Page() {
                   />
                 </div>
 
-                {/* Badge flotante */}
+                {/* Floating badge */}
                 <div
                   className={[
                     "absolute -bottom-4 -right-4 rounded-2xl border px-6 py-3 backdrop-blur-md",
@@ -224,13 +237,13 @@ export default function Page() {
                   ].join(" ")}
                 >
                   <p className="text-[10px] font-semibold tracking-wide text-[rgb(var(--text)/0.55)]">
-                    TU GUÍA
+                    YOUR GUIDE
                   </p>
                   <p className="text-lg font-bold text-[rgb(var(--accent)/0.95)]">ATOM</p>
                 </div>
               </div>
 
-              {/* Mensaje de bienvenida */}
+              {/* Welcome note */}
               <div
                 className={[
                   "mt-8 rounded-2xl border p-5 backdrop-blur-sm",
@@ -239,52 +252,58 @@ export default function Page() {
                 ].join(" ")}
               >
                 <p className="text-sm font-semibold text-[rgb(var(--accent)/0.95)]">
-                  Hey — soy Atom
+                  Hey — I’m Atom
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-[rgb(var(--text)/0.72)]">
-                  Te guío por preguntas que rompen intuiciones, rankings que revelan patrones,
-                  y quizzes que conectan lo imposible — sin ruido.
+                  I’ll guide you through questions that challenge common sense,
+                  rankings that reveal patterns, and quizzes that connect
+                  impossible dots — without the noise.
                 </p>
               </div>
             </div>
 
-            {/* LADO DERECHO: Contenido */}
+            {/* RIGHT: Content */}
             <div className="order-1 max-w-2xl lg:order-2">
               <p className="text-xs font-medium tracking-wide text-[rgb(var(--text)/0.55)]">
-                ATOMICCURIOUS · EMPIEZA AQUÍ
+                ATOMICCURIOUS · START HERE
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Pill>Lectura: 3–5 min</Pill>
-                <Pill>Mejor punto de entrada</Pill>
+                <Pill>3-minute read</Pill>
+                <Pill>Best entry point</Pill>
               </div>
 
               <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl lg:text-6xl">
-                Del asombro a la claridad. Empieza aquí.
+                Where curiosity becomes clarity.
               </h1>
 
               <p className="mt-6 text-pretty text-base leading-relaxed text-[rgb(var(--text)/0.74)] sm:text-lg">
-                Si llegas por primera vez, Atom te guía por tres caminos:{" "}
-                <span className="font-semibold text-text">curiosidades cinematográficas</span>,{" "}
-                <span className="font-semibold text-text">rankings fascinantes</span> y{" "}
-                <span className="font-semibold text-text">quizzes interactivos</span>{" "}
-                que conectan puntos imposibles — en videos cortos y posts claros, sin ruido.
+                AtomicCurious is built for people who want{" "}
+                <span className="font-semibold text-text">cinematic learning with real depth</span>
+                . Think big questions that break your assumptions, clean rankings
+                that make complexity feel simple, and interactive challenges that
+                train how you think.
               </p>
 
+              {/* CTA stack */}
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href={latestHref}
-                  className="inline-flex items-center justify-center rounded-xl px-6 py-3.5 text-sm font-bold text-black transition-all"
+                  className={[
+                    "inline-flex items-center justify-center rounded-xl px-6 py-3.5 text-sm font-bold",
+                    "text-black",
+                    "transition-all",
+                  ].join(" ")}
                   style={{
                     background: "rgb(var(--accent) / 0.92)",
                     boxShadow: "0 10px 34px rgba(var(--accent) / 0.18)",
                   }}
                 >
-                  Empieza con lo más reciente <span aria-hidden className="ml-2">→</span>
+                  Start with the latest drop <span aria-hidden className="ml-2">→</span>
                 </Link>
 
                 <Link
-                  href="/es/posts"
+                  href="/posts"
                   className={[
                     "inline-flex items-center justify-center rounded-xl border px-6 py-3.5",
                     "text-sm font-semibold transition-all",
@@ -292,11 +311,11 @@ export default function Page() {
                     "hover:bg-[rgb(var(--surface-1)/0.75)] hover:border-[rgb(var(--border)/0.92)]",
                   ].join(" ")}
                 >
-                  Ver todos los posts <span aria-hidden className="ml-2">→</span>
+                  Browse all content <span aria-hidden className="ml-2">→</span>
                 </Link>
 
                 <Link
-                  href="/es/newsletter"
+                  href="/newsletter"
                   className={[
                     "inline-flex items-center justify-center rounded-xl border px-6 py-3.5",
                     "text-sm font-semibold transition-all",
@@ -304,31 +323,32 @@ export default function Page() {
                     "hover:bg-[rgb(var(--surface-1)/0.65)] hover:text-[rgb(var(--text)/0.86)] hover:border-[rgb(var(--border)/0.92)]",
                   ].join(" ")}
                 >
-                  Únete al boletín <span aria-hidden className="ml-2">→</span>
+                  Join the newsletter <span aria-hidden className="ml-2">→</span>
                 </Link>
               </div>
 
+              {/* Atom tip */}
               <div className="mt-6 rounded-xl border border-[rgb(var(--border)/0.70)] bg-[rgb(var(--surface-1)/0.55)] px-4 py-3">
                 <p className="text-xs text-[rgb(var(--text)/0.72)]">
                   <span className="font-semibold text-[rgb(var(--accent)/0.95)]">
-                    Consejo de Atom:
+                    Atom’s tip:
                   </span>{" "}
-                  empieza por lo más reciente; suele ser lo más pulido.
+                  start with the newest drop — it’s usually the most refined.
                 </p>
               </div>
             </div>
           </div>
         </header>
 
-        {/* TRES FORMATOS */}
+        {/* THREE FORMATS */}
         <section className="mt-24 border-t border-[rgb(var(--border)/0.55)] pt-14">
           <div className="flex flex-col gap-3">
             <p className="text-xs font-medium tracking-wide text-[rgb(var(--text)/0.55)]">
-              TRES FORMAS DE EXPLORAR
+              THREE WAYS TO EXPLORE
             </p>
-            <h2 className="text-3xl font-semibold tracking-tight text-text">Elige tu camino</h2>
+            <h2 className="text-3xl font-semibold tracking-tight text-text">Choose your format</h2>
             <p className="max-w-2xl text-base leading-relaxed text-[rgb(var(--text)/0.72)]">
-              Cada formato tiene un ritmo distinto. Pruébalos todos — uno hará click al instante.
+              Each format has a different rhythm. Try all three — one will click instantly.
             </p>
           </div>
 
@@ -336,30 +356,33 @@ export default function Page() {
             <FormatCard
               label="CURIOSITY · ATOM"
               name="Atom · Curiosity"
-              description="Preguntas que rompen intuiciones y cambian cómo ves el mundo."
-              href="/es/posts?format=curiosity"
+              description="Questions that challenge your assumptions about how the world works."
+              examples="Why can’t we just print more money? Why does time feel fast or slow? Why do dreams come in stories?"
+              href="/posts?format=curiosity"
             />
             <FormatCard
               label="RANKED · IRIS"
               name="Iris · Ranked"
-              description="Rankings y comparaciones que revelan patrones que no sabías que te faltaban."
-              href="/es/posts?format=ranked"
+              description="Rankings and comparisons that reveal patterns you didn’t know you were missing."
+              examples="Games that changed everything. Films with hidden Oscars. Inventions that shaped modern life."
+              href="/posts?format=ranked"
             />
             <FormatCard
               label="QUIZ · CORE"
               name="Core · Quiz"
-              description="Retos interactivos que conectan puntos imposibles y afilan tu modelo mental."
-              href="/es/posts?format=quiz"
+              description="Interactive challenges that connect impossible dots and sharpen your mental model."
+              examples="A ‘WTF chain’ from dinosaurs to smartphones in 6 steps. Guess the invention from its side effects."
+              href="/posts?format=quiz"
             />
           </div>
         </section>
 
-        {/* ÚLTIMO POST */}
+        {/* LATEST POST */}
         <section className="mt-20 border-t border-[rgb(var(--border)/0.55)] pt-14">
           <div className="flex flex-col gap-3">
-            <h2 className="text-3xl font-semibold tracking-tight text-text">Última exploración</h2>
+            <h2 className="text-3xl font-semibold tracking-tight text-text">Latest exploration</h2>
             <p className="text-base text-[rgb(var(--text)/0.72)]">
-              La vía más rápida: empieza por lo más reciente, luego sigue tu siguiente pregunta.
+              The fastest way in: start with what’s newest, then follow your next question.
             </p>
           </div>
 
@@ -379,78 +402,120 @@ export default function Page() {
               ) : (
                 <span />
               )}
-              <span className="text-xs text-[rgb(var(--text)/0.50)]">{LATEST_POST?.date ?? ""}</span>
+              <span className="text-xs text-[rgb(var(--text)/0.50)]">
+                {LATEST_POST?.date ?? ""}
+              </span>
             </div>
 
             <h3 className="mt-4 text-balance text-2xl font-semibold text-text sm:text-3xl">
-              {LATEST_POST?.title ?? "Explora lo más reciente"}
+              {LATEST_POST?.title ?? "Explore the newest drop"}
             </h3>
 
             <p className="mt-4 max-w-3xl text-base leading-relaxed text-[rgb(var(--text)/0.72)]">
               {LATEST_POST?.description ??
-                "Entra por lo nuevo: suele ser lo más pulido, más claro y más cinematográfico."}
+                "Start with what’s fresh — then follow whatever sparks the next question."}
             </p>
 
             <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[rgb(var(--accent)/0.95)] transition-transform hover:translate-x-0.5">
-              Leer ahora <span aria-hidden>→</span>
+              Read now <span aria-hidden>→</span>
             </div>
           </Link>
 
           <div className="mt-6">
             <Link
-              href="/es/posts"
+              href="/posts"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[rgb(var(--text)/0.55)] transition-colors hover:text-[rgb(var(--accent)/0.95)]"
             >
-              Ver todas las exploraciones <span aria-hidden>→</span>
+              See all explorations <span aria-hidden>→</span>
             </Link>
           </div>
         </section>
 
-        {/* CÓMO FUNCIONA */}
+        {/* HOW IT WORKS */}
         <section className="mt-20 border-t border-[rgb(var(--border)/0.55)] pt-14">
           <div className="flex flex-col gap-3">
-            <h2 className="text-3xl font-semibold tracking-tight text-text">
-              Cómo funciona AtomicCurious
-            </h2>
+            <h2 className="text-3xl font-semibold tracking-tight text-text">How it works</h2>
             <p className="max-w-2xl text-base leading-relaxed text-[rgb(var(--text)/0.72)]">
-              Del asombro a la claridad — un flujo simple para aprender sin ruido.
+              From spark to understanding — a simple flow built for curious minds who want depth
+              without the noise.
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             <StepCard
               n="1"
-              title="Mira"
-              body="Cada tema empieza con un video corto que enciende la curiosidad con tono cinematográfico."
+              title="Watch"
+              body="Each topic starts with a cinematic video designed to hook your curiosity fast."
             />
             <StepCard
               n="2"
-              title="Lee"
-              body="Profundiza con posts claros y estructurados: buscables y fáciles de revisar."
+              title="Read & connect"
+              body="Go deeper with structured posts you can search, save, and revisit anytime."
             />
             <StepCard
               n="3"
-              title="Recibe lo mejor"
-              body="El boletín es la señal: una vez por semana, sin spam — solo lo que vale la pena."
+              title="Get the signal"
+              body="The newsletter is the filter: one email a week, no spam — only what’s worth your time."
             />
           </div>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/es/newsletter"
+              href="/newsletter"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[rgb(var(--text)/0.55)] transition-colors hover:text-[rgb(var(--accent)/0.95)]"
             >
-              Ver el boletín <span aria-hidden>→</span>
+              Check out the newsletter <span aria-hidden>→</span>
             </Link>
             <Link
-              href="/es/about"
+              href="/about"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[rgb(var(--text)/0.55)] transition-colors hover:text-[rgb(var(--accent)/0.95)]"
             >
-              Conocer el universo <span aria-hidden>→</span>
+              Learn about the universe <span aria-hidden>→</span>
             </Link>
+          </div>
+        </section>
+
+        {/* FINAL CTA */}
+        <section className="mt-20 border-t border-[rgb(var(--border)/0.55)] pt-14">
+          <div
+            className={[
+              "relative overflow-hidden rounded-3xl border p-10 backdrop-blur-sm ac-shadow-card",
+              "border-[rgb(var(--border)/0.70)]",
+              "bg-[linear-gradient(135deg,rgb(var(--surface-1)/0.70),rgb(var(--bg)/0.20))]",
+            ].join(" ")}
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full blur-[80px]"
+              style={{
+                background:
+                  "radial-gradient(circle at center, rgba(var(--accent)/0.20), transparent 70%)",
+              }}
+            />
+
+            <div className="relative text-center">
+              <h2 className="text-3xl font-semibold text-text sm:text-4xl">Ready to explore?</h2>
+              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[rgb(var(--text)/0.72)]">
+                Start with the newest drop — then follow whatever question pulls you in next.
+              </p>
+
+              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                <Link
+                  href={latestHref}
+                  className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-base font-bold text-black transition-all"
+                  style={{
+                    background: "rgb(var(--accent) / 0.92)",
+                    boxShadow: "0 10px 34px rgba(var(--accent) / 0.18)",
+                  }}
+                >
+                  Start exploring <span aria-hidden className="ml-2">→</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       </div>
     </main>
   )
 }
+

@@ -10,12 +10,32 @@ export const metadata = {
 export default function Page() {
   return (
     <main className="w-full">
-      <section className="relative w-full overflow-hidden bg-bg">
-        {/* Background */}
-        <div className="pointer-events-none absolute inset-0">
+      {/* NOTE:
+          - Esta sección ya NO fuerza un fondo opaco encima.
+          - En temas normales (dark/light/auto) verás el editorial limpio.
+          - En COSMIC se muestra el “lienzo” cósmico y sí se verá en toda la página.
+      */}
+      <section className="relative w-full overflow-hidden bg-transparent">
+        {/* Background layer: NON-COSMIC (default editorial) */}
+        <div className="ac-noncosmic-only pointer-events-none absolute inset-0">
+          {/* base */}
           <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.14),transparent_65%)] dark:hidden" />
-          <div className="absolute inset-0 hidden dark:block bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.10),transparent_62%)]" />
+          {/* glow suave con accent (sirve para dark/light porque usa tokens) */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.12),transparent_65%)]" />
+          {/* segundo glow sutil */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_30%_20%,rgb(var(--accent-alt)/0.08),transparent_62%)]" />
+        </div>
+
+        {/* Background layer: COSMIC (solo cuando data-theme="cosmic") */}
+        <div className="ac-cosmic-only pointer-events-none absolute inset-0">
+          {/* deep space base */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(120,200,255,0.18),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_70%_at_70%_10%,rgba(182,146,255,0.14),transparent_62%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_20%_30%,rgba(34,211,238,0.10),transparent_64%)]" />
+          {/* vignette */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
+          {/* very subtle “film” */}
+          <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_30%,rgba(255,255,255,0.01))]" />
         </div>
 
         <div className="relative mx-auto w-full max-w-6xl px-6 py-14 sm:px-10 sm:py-20">
@@ -43,7 +63,7 @@ export default function Page() {
 
               <Link
                 href="/es"
-                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-bg px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2"
+                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-bg/40 px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2"
               >
                 Volver al inicio
               </Link>
@@ -68,3 +88,4 @@ export default function Page() {
     </main>
   )
 }
+

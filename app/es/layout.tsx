@@ -4,10 +4,10 @@ import SocialLinks from "@/components/SocialLinks"
 
 export default function EsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div className="min-h-[100svh] flex flex-col bg-bg text-text">
       <NavBarEs />
 
-      <main className="w-full flex-1">{children}</main>
+      <main className="w-full flex-1 bg-bg text-text">{children}</main>
 
       <footer className="border-t border-border/70 bg-bg">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
@@ -29,4 +29,3 @@ export default function EsLayout({ children }: { children: React.ReactNode }) {
     </div>
   )
 }
-

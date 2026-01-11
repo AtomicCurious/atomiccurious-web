@@ -81,15 +81,18 @@ function Hero({ copy, tiles, children }: HeroProps) {
   const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
   const STRIP_PX = "px-4 sm:px-6 lg:px-8"
 
-  // Desktop grid: left / center / right
-  const GRID_COLS_LG = "lg:grid-cols-[minmax(416px,1fr)_304px_minmax(416px,1fr)]"
+  // ✅ 20% SMALLER STRIP CARDS (real sizing, not scale):
+  // Desktop grid: left / center / right (reduced widths)
+  const GRID_COLS_LG =
+    "lg:grid-cols-[minmax(332px,1fr)_244px_minmax(332px,1fr)]"
   const GRID_GAP = "gap-6 lg:gap-10"
 
-  const CARD_MIN_H = "min-h-[208px] sm:min-h-[224px]"
-  const CARD_P = "p-5"
+  // Reduced heights + padding (~20%)
+  const CARD_MIN_H = "min-h-[166px] sm:min-h-[180px]"
+  const CARD_P = "p-4"
 
-  // Iris floating offset (desktop)
-  const IRIS_TRANSLATE_Y = "translate-y-2"
+  // ✅ Iris floating offset (desktop) — lifted a bit (A)
+  const IRIS_TRANSLATE_Y = "-translate-y-2"
 
   /* =========================================================
      CARD STYLE (editorial premium)
@@ -117,17 +120,16 @@ function Hero({ copy, tiles, children }: HeroProps) {
   const CARD_INNER_GLOW =
     "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 
+  // Slightly tighter grid overlay so it doesn't feel "big" after shrinking
   const CARD_GRID_OVERLAY = `
     pointer-events-none absolute inset-0 opacity-[0.05]
     [background-image:linear-gradient(rgba(34,211,238,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.9)_1px,transparent_1px)]
-    [background-size:64px_64px]
+    [background-size:56px_56px]
   `
 
   return (
     <section
       className={[
-        // ✅ FIX MOBILE “ZOOM / BLACK SPACE”:
-        // No w-screen + no -50vw hack. Mantén w-full.
         "relative w-full",
         "min-h-[calc(100svh-72px-50px)]",
         "overflow-hidden bg-bg",
@@ -256,18 +258,10 @@ function Hero({ copy, tiles, children }: HeroProps) {
       <div className="relative z-20 mt-8">
         <div className={["mx-auto w-full", STRIP_MAX_W, STRIP_PX].join(" ")}>
           <div className="relative">
-            <div
-              className={[
-                // mobile: 1 col
-                "grid grid-cols-1",
-                GRID_GAP,
-                // desktop: 3 cols
-                GRID_COLS_LG,
-              ].join(" ")}
-            >
-              {/* Left: Latest Post */}
+            <div className={["grid grid-cols-1", GRID_GAP, GRID_COLS_LG].join(" ")}>
+              {/* ✅ Left: Calendar (TEAL) */}
               <a
-                href={tiles.latest.href}
+                href={tiles.download.href}
                 className={[
                   "order-1",
                   CARD_BASE,
@@ -285,49 +279,42 @@ function Hero({ copy, tiles, children }: HeroProps) {
                 <div className={CARD_GRID_OVERLAY} />
 
                 <div className="relative">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-[#22D3EE]/25 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ backgroundColor: dotColor(tiles.latest.badgeDot) }}
-                    />
-                    {tiles.latest.badge}
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#22D3EE]/25 bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-gray-300">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#22D3EE" }} />
+                    {tiles.download.badge}
                   </div>
 
-                  <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
-                    {tiles.latest.title}
+                  <h3 className="mt-3 text-balance text-lg font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
+                    {tiles.download.title}
                   </h3>
 
-                  <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
-                    {tiles.latest.description}
+                  <p className="mt-2 max-w-[56ch] text-[13px] leading-relaxed text-gray-300/90">
+                    {tiles.download.description}
                   </p>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {tiles.latest.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-gray-300"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                  <div className="mt-3">
+                    <div className="relative mx-auto w-full max-w-[230px]">
+                      <div className="relative aspect-[20/9] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft">
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_20%,rgba(34,211,238,0.18),transparent_60%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_20%,rgba(255,77,157,0.18),transparent_60%)]" />
 
-                  <ul className="mt-3 space-y-2 text-sm text-gray-300">
-                    {tiles.latest.bullets.map((b) => (
-                      <li key={b.text} className="flex gap-2">
-                        <span
-                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: dotColor(b.dot) }}
-                        />
-                        <span>{b.text}</span>
-                      </li>
-                    ))}
-                  </ul>
+                        <div className="absolute left-1/2 top-1/2 h-[72%] w-[80%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] rounded-xl border border-white/10 bg-white/5" />
+                        <div className="absolute left-1/2 top-1/2 h-[76%] w-[84%] -translate-x-1/2 -translate-y-1/2 rotate-[-2deg] rounded-xl border border-white/10 bg-white/5" />
+                        <div className="absolute left-1/2 top-1/2 h-[80%] w-[88%] -translate-x-1/2 -translate-y-1/2 rotate-[3deg] rounded-xl border border-white/10 bg-white/5" />
+
+                        <div className="absolute left-1/2 top-[18%] w-[78%] -translate-x-1/2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-center text-[11px] font-semibold tracking-wide text-white">
+                          {tiles.download.mockTitle}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    {tiles.latest.ctaLabel}{" "}
+                    {tiles.download.ctaLabel}{" "}
                     <span className="transition-transform group-hover:translate-x-1">›</span>
                   </div>
+
+                  <p className="mt-1.5 text-xs text-gray-400">{tiles.download.footnote}</p>
                 </div>
               </a>
 
@@ -335,9 +322,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
               {overlayChildren.length > 0 ? (
                 <div className="order-2 flex justify-center lg:hidden pointer-events-none">
                   <div className="relative w-full">
-                    <div className="mx-auto w-full max-w-[360px] py-2">
-                      {overlayChildren}
-                    </div>
+                    <div className="mx-auto w-full max-w-[360px] py-2">{overlayChildren}</div>
                   </div>
                 </div>
               ) : null}
@@ -345,9 +330,9 @@ function Hero({ copy, tiles, children }: HeroProps) {
               {/* Center spacer (desktop grid middle column) */}
               <div className="order-2 hidden lg:block" />
 
-              {/* Right: Calendar */}
+              {/* ✅ Right: Latest Post (PINK) */}
               <a
-                href={tiles.download.href}
+                href={tiles.latest.href}
                 className={[
                   "order-3",
                   "group relative h-full overflow-hidden rounded-[28px]",
@@ -368,45 +353,46 @@ function Hero({ copy, tiles, children }: HeroProps) {
                 <div className={CARD_GRID_OVERLAY} />
 
                 <div className="relative">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-gray-300">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ backgroundColor: dotColor(tiles.download.badgeDot) }}
-                    />
-                    {tiles.download.badge}
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-gray-300">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#FF4D9D" }} />
+                    {tiles.latest.badge}
                   </div>
 
-                  <h3 className="mt-4 text-balance text-xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D]">
-                    {tiles.download.title}
+                  <h3 className="mt-3 text-balance text-lg font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D]">
+                    {tiles.latest.title}
                   </h3>
 
-                  <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-gray-300/90">
-                    {tiles.download.description}
+                  <p className="mt-2 max-w-[56ch] text-[13px] leading-relaxed text-gray-300/90">
+                    {tiles.latest.description}
                   </p>
 
-                  <div className="mt-3">
-                    <div className="relative mx-auto w-full max-w-[288px]">
-                      <div className="relative aspect-[20/9] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_20%,rgba(34,211,238,0.18),transparent_60%)]" />
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_20%,rgba(255,77,157,0.18),transparent_60%)]" />
-
-                        <div className="absolute left-1/2 top-1/2 h-[72%] w-[80%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] rounded-xl border border-white/10 bg-white/5" />
-                        <div className="absolute left-1/2 top-1/2 h-[76%] w-[84%] -translate-x-1/2 -translate-y-1/2 rotate-[-2deg] rounded-xl border border-white/10 bg-white/5" />
-                        <div className="absolute left-1/2 top-1/2 h-[80%] w-[88%] -translate-x-1/2 -translate-y-1/2 rotate-[3deg] rounded-xl border border-white/10 bg-white/5" />
-
-                        <div className="absolute left-1/2 top-[18%] w-[78%] -translate-x-1/2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-center text-xs font-semibold tracking-wide text-white">
-                          {tiles.download.mockTitle}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {tiles.latest.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-300"
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
+
+                  <ul className="mt-3 space-y-2 text-[13px] text-gray-300">
+                    {tiles.latest.bullets.map((b) => (
+                      <li key={b.text} className="flex gap-2">
+                        <span
+                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: dotColor(b.dot) }}
+                        />
+                        <span>{b.text}</span>
+                      </li>
+                    ))}
+                  </ul>
 
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    {tiles.download.ctaLabel}{" "}
+                    {tiles.latest.ctaLabel}{" "}
                     <span className="transition-transform group-hover:translate-x-1">›</span>
                   </div>
-
-                  <p className="mt-1.5 text-xs text-gray-400">{tiles.download.footnote}</p>
                 </div>
               </a>
             </div>

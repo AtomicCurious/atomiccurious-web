@@ -1,43 +1,78 @@
+//src\components\NavBarEn.tsx
 "use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
+import ThemeToggle from "@/components/ThemeToggle"
+import AccentToggle from "@/components/AccentToggle"
+import AccentSigilMark from "@/components/AccentSigilMark"
 
 function isActive(pathname: string, href: string) {
-  if (href === "/en") return pathname === "/en"
+  if (href === "/") return pathname === "/"
   return pathname === href || pathname.startsWith(href + "/")
 }
 
 function toEs(pathname: string) {
-  // ✅ Rutas traducidas (EN -> ES)
   const map: Record<string, string> = {
-    "/en/resources": "/es/recursos",
-    "/en/community": "/es/comunidad",
-    "/en/contact": "/es/contacto",
-    "/en/newsletter": "/es/newsletter",
-    "/en/start-here": "/es/start-here",
-    "/en/about": "/es/about",
-    "/en/posts": "/es/posts",
+    "/resources": "/es/recursos",
+    "/community": "/es/comunidad",
+    "/contact": "/es/contacto",
+    "/newsletter": "/es/newsletter",
+    "/start-here": "/es/start-here",
+    "/about": "/es/about",
+    "/posts": "/es/posts",
+    "/": "/es",
   }
 
-  // ✅ Slugs traducidos para posts (EN -> ES)
   const postSlugMap: Record<string, string> = {
     "why-we-dream": "por-que-sonamos",
   }
 
-  if (pathname === "/en") return "/es"
   if (map[pathname]) return map[pathname]
 
-  if (pathname.startsWith("/en/posts/")) {
-    const slug = pathname.replace("/en/posts/", "")
+  if (pathname.startsWith("/posts/")) {
+    const slug = pathname.replace("/posts/", "")
     const esSlug = postSlugMap[slug] ?? slug
     return `/es/posts/${esSlug}`
   }
 
-  if (pathname.startsWith("/en/")) return pathname.replace(/^\/en\//, "/es/")
-  return "/es"
+  return pathname === "/" ? "/es" : `/es${pathname}`
+}
+
+/* -----------------------------
+   Core beacon persistence
+----------------------------- */
+const CORE_SEEN_KEY = "ac_core_seen_v1"
+const CORE_SEEN_TTL_MS = 1000 * 60 * 60 * 12 // 12h
+
+function safeNow() {
+  return Date.now()
+}
+
+function readSeen(): number | null {
+  try {
+    const raw = localStorage.getItem(CORE_SEEN_KEY)
+    if (!raw) return null
+    const n = Number(raw)
+    return Number.isFinite(n) ? n : null
+  } catch {
+    return null
+  }
+}
+
+function writeSeen(ts: number) {
+  try {
+    localStorage.setItem(CORE_SEEN_KEY, String(ts))
+  } catch {
+    // ignore
+  }
+}
+
+function isSeenFresh(seenTs: number | null) {
+  if (!seenTs) return false
+  return safeNow() - seenTs < CORE_SEEN_TTL_MS
 }
 
 function StarshipMark() {
@@ -125,22 +160,8 @@ function StarshipMark() {
         </g>
 
         <g className="jetGlow" style={{ mixBlendMode: "screen" as any }}>
-          <ellipse
-            className="jetCore"
-            cx="52"
-            cy="56"
-            rx="16"
-            ry="10"
-            fill="url(#jetCoreMini)"
-          />
-          <ellipse
-            className="jetCore"
-            cx="52"
-            cy="48"
-            rx="12"
-            ry="8"
-            fill="url(#jetCoreMini)"
-          />
+          <ellipse className="jetCore" cx="52" cy="56" rx="16" ry="10" fill="url(#jetCoreMini)" />
+          <ellipse className="jetCore" cx="52" cy="48" rx="12" ry="8" fill="url(#jetCoreMini)" />
         </g>
 
         <g>
@@ -248,21 +269,23 @@ function StarshipMark() {
 
 export default function NavBarEn() {
   const pathname = usePathname()
-  const esHref = toEs(pathname)
-  const isHome = pathname === "/en"
+  const esHref = useMemo(() => toEs(pathname), [pathname])
+
+  const isHome = pathname === "/" || pathname === "/en"
+  const showToggles = !isHome
 
   const rocketRef = useRef<HTMLButtonElement | null>(null)
   const [coreOpen, setCoreOpen] = useState(false)
-
-  // ✅ Mobile drawer
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Close drawer on navigation
+  // Core beacon state
+  const [coreHasNew, setCoreHasNew] = useState(false)
+  const [rocketPing, setRocketPing] = useState(false)
+
   useEffect(() => {
     setMenuOpen(false)
   }, [pathname])
 
-  // Lock body scroll when drawer open
   useEffect(() => {
     if (!menuOpen) return
     const prev = document.body.style.overflow
@@ -272,7 +295,6 @@ export default function NavBarEn() {
     }
   }, [menuOpen])
 
-  // ESC closes drawer
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setMenuOpen(false)
@@ -280,6 +302,35 @@ export default function NavBarEn() {
     if (menuOpen) window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
   }, [menuOpen])
+
+  // Initialize beacon based on last seen time
+  useEffect(() => {
+    if (!isHome) return
+    const seen = readSeen()
+    setCoreHasNew(!isSeenFresh(seen))
+  }, [isHome])
+
+  // Occasional micro ping (only when not opened recently)
+  useEffect(() => {
+    if (!isHome) return
+    if (!coreHasNew) return
+    if (coreOpen) return
+
+    const interval = window.setInterval(() => {
+      setRocketPing(true)
+      window.setTimeout(() => setRocketPing(false), 700)
+    }, 14000)
+
+    return () => window.clearInterval(interval)
+  }, [isHome, coreHasNew, coreOpen])
+
+  // When Core opens, mark as seen and turn off beacon
+  useEffect(() => {
+    if (!isHome) return
+    if (!coreOpen) return
+    writeSeen(safeNow())
+    setCoreHasNew(false)
+  }, [isHome, coreOpen])
 
   const coreFacts = useMemo(
     () => [
@@ -308,38 +359,85 @@ export default function NavBarEn() {
   )
 
   const links = [
-    { label: "Start Here", href: "/en/start-here" },
-    { label: "Posts", href: "/en/posts" },
-    { label: "About", href: "/en/about" },
-    { label: "Newsletter", href: "/en/newsletter" },
-    { label: "Resources", href: "/en/resources" },
-    { label: "Community", href: "/en/community" },
-    { label: "Contact", href: "/en/contact" },
+    { label: "Start Here", href: "/start-here" },
+    { label: "Posts", href: "/posts" },
+    { label: "About", href: "/about" },
+    { label: "Newsletter", href: "/newsletter" },
+    { label: "Resources", href: "/resources" },
+    { label: "Community", href: "/community" },
+    { label: "Contact", href: "/contact" },
   ]
 
   return (
     <header className="relative border-b border-border/70 bg-bg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        {/* Left brand */}
+        {/* LEFT */}
         <div className="inline-flex min-w-0 items-center gap-3">
+          {/* HOME: cohete (único) */}
           {isHome ? (
             <button
               ref={rocketRef}
               type="button"
               onClick={() => setCoreOpen((v) => !v)}
-              className="group inline-flex items-center"
+              className={["group inline-flex items-center relative", rocketPing ? "ac-rocket-ping" : ""].join(
+                " "
+              )}
               aria-label="Open a Core curiosity"
             >
               <StarshipMark />
+
+              {coreHasNew ? (
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "pointer-events-none absolute",
+                    "-top-1 -left-1",
+                    "h-2.5 w-2.5 rounded-full",
+                    "bg-accent",
+                    "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent),0.45)]",
+                  ].join(" ")}
+                />
+              ) : null}
+
+              <style jsx>{`
+                .ac-rocket-ping {
+                  animation: rocketPing 700ms ease-out both;
+                }
+                @keyframes rocketPing {
+                  0% {
+                    transform: translateY(0) scale(1);
+                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                  }
+                  45% {
+                    transform: translateY(-1px) scale(1.02);
+                    filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.22));
+                  }
+                  100% {
+                    transform: translateY(0) scale(1);
+                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                  }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                  .ac-rocket-ping {
+                    animation: none !important;
+                  }
+                }
+              `}</style>
             </button>
           ) : (
-            <Link href="/en" className="group inline-flex items-center" aria-label="Go to Home">
-              <StarshipMark />
+            /* SECCIONES: aquí va el sigil (y SOLO el sigil) */
+            <Link
+              href="/"
+              className="group inline-flex items-center justify-center"
+              aria-label="Go to Home"
+            >
+              <AccentSigilMark className="h-9 w-9 sm:h-10 sm:w-10" />
             </Link>
           )}
 
           <Link
-            href="/en"
+            href="/"
             className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text"
             aria-label="AtomicCurious Home"
           >
@@ -350,7 +448,7 @@ export default function NavBarEn() {
           </Link>
         </div>
 
-        {/* Desktop nav */}
+        {/* DESKTOP NAV */}
         <nav className="hidden items-center gap-2 text-sm sm:flex" aria-label="Primary">
           {links.map((l) => {
             const active = isActive(pathname, l.href)
@@ -374,6 +472,13 @@ export default function NavBarEn() {
 
           <span className="mx-2 hidden h-5 w-px bg-border/70 sm:block" />
 
+          {showToggles ? (
+            <>
+              <ThemeToggle />
+              <AccentToggle />
+            </>
+          ) : null}
+
           <Link
             href={esHref}
             className="
@@ -389,8 +494,15 @@ export default function NavBarEn() {
           </Link>
         </nav>
 
-        {/* Mobile: ES + Menu */}
+        {/* MOBILE */}
         <div className="flex items-center gap-2 sm:hidden">
+          {showToggles ? (
+            <>
+              <ThemeToggle />
+              <AccentToggle />
+            </>
+          ) : null}
+
           <Link
             href={esHref}
             className="
@@ -420,16 +532,14 @@ export default function NavBarEn() {
             aria-haspopup="dialog"
             aria-expanded={menuOpen}
           >
-            Menu
-            <span className="ml-2 text-muted">≡</span>
+            Menu <span className="ml-2 text-muted">≡</span>
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* MOBILE DRAWER */}
       {menuOpen ? (
         <div className="fixed inset-0 z-[80] sm:hidden">
-          {/* Backdrop */}
           <button
             type="button"
             aria-label="Close menu"
@@ -437,17 +547,16 @@ export default function NavBarEn() {
             className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
           />
 
-          {/* Panel */}
           <div
             role="dialog"
             aria-modal="true"
+            aria-label="Menu"
             className="
               absolute right-0 top-0 h-full w-[88%] max-w-[360px]
               border-l border-border/70 bg-bg
               shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_90px_rgba(0,0,0,0.75)]
             "
           >
-            {/* Panel header */}
             <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
               <div className="text-sm font-semibold tracking-tight text-text">Navigation</div>
               <button
@@ -466,9 +575,7 @@ export default function NavBarEn() {
               </button>
             </div>
 
-            {/* Links */}
             <div className="relative px-5 py-5">
-              {/* subtle glow */}
               <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
               <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
 
@@ -499,15 +606,21 @@ export default function NavBarEn() {
 
               <div className="mt-5 h-px w-full bg-border/70" />
 
-              {/* Language */}
               <div className="mt-5">
-                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
-                  LANGUAGE
-                </div>
-                <div className="mt-3 flex items-center gap-2">
+                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">SETTINGS</div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {showToggles ? (
+                    <>
+                      <ThemeToggle />
+                      <AccentToggle />
+                    </>
+                  ) : null}
+
                   <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
                     EN
                   </span>
+
                   <Link
                     href={esHref}
                     className="
@@ -519,8 +632,7 @@ export default function NavBarEn() {
                       focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                     "
                   >
-                    ES
-                    <span className="ml-2 text-muted">›</span>
+                    ES <span className="ml-2 text-muted">›</span>
                   </Link>
                 </div>
               </div>
@@ -531,13 +643,16 @@ export default function NavBarEn() {
         </div>
       ) : null}
 
-      {/* Core bubble (only on Home) */}
+      {/* CORE BUBBLE */}
       <CoreFactBubble
         open={isHome && coreOpen}
         onClose={() => setCoreOpen(false)}
         anchorEl={rocketRef.current}
         facts={coreFacts}
         title="Core"
+        nextLabel="Another fact"
+        closeLabel="Close"
+        ariaLabel="Core curiosity"
       />
     </header>
   )

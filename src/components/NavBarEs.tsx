@@ -1,45 +1,85 @@
+// src/components/NavBarEs.tsx
 "use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
+import ThemeToggle from "@/components/ThemeToggle"
+import AccentToggle from "@/components/AccentToggle"
+import AccentSigilMark from "@/components/AccentSigilMark"
 
 function isActive(pathname: string, href: string) {
-  if (href === "/es") return pathname === "/es"
+  if (href === "/es") return pathname === "/es" || pathname === "/es/"
   return pathname === href || pathname.startsWith(href + "/")
 }
 
 function toEn(pathname: string) {
-  // ✅ Rutas traducidas (ES -> EN)
   const map: Record<string, string> = {
-    "/es/recursos": "/en/resources",
-    "/es/comunidad": "/en/community",
-    "/es/contacto": "/en/contact",
-    "/es/newsletter": "/en/newsletter",
-    "/es/start-here": "/en/start-here",
-    "/es/about": "/en/about",
-    "/es/posts": "/en/posts",
+    "/es/recursos": "/resources",
+    "/es/comunidad": "/community",
+    "/es/contacto": "/contact",
+    "/es/newsletter": "/newsletter",
+    "/es/start-here": "/start-here",
+    "/es/about": "/about",
+    "/es/posts": "/posts",
+    "/es": "/",
+    "/es/": "/",
   }
 
-  // ✅ Slugs traducidos para posts (ES -> EN)
   const postSlugMap: Record<string, string> = {
     "por-que-sonamos": "why-we-dream",
   }
 
-  if (pathname === "/es") return "/en"
   if (map[pathname]) return map[pathname]
 
   if (pathname.startsWith("/es/posts/")) {
     const slug = pathname.replace("/es/posts/", "")
     const enSlug = postSlugMap[slug] ?? slug
-    return `/en/posts/${enSlug}`
+    return `/posts/${enSlug}`
   }
 
-  if (pathname.startsWith("/es/")) return pathname.replace(/^\/es\//, "/en/")
-  return "/en"
+  if (pathname.startsWith("/es/")) return pathname.replace(/^\/es\//, "/")
+  return "/"
 }
 
+/* -----------------------------
+   Core beacon persistence
+----------------------------- */
+const CORE_SEEN_KEY = "ac_core_seen_v1"
+const CORE_SEEN_TTL_MS = 1000 * 60 * 60 * 12 // 12h
+
+function safeNow() {
+  return Date.now()
+}
+
+function readSeen(): number | null {
+  try {
+    const raw = localStorage.getItem(CORE_SEEN_KEY)
+    if (!raw) return null
+    const n = Number(raw)
+    return Number.isFinite(n) ? n : null
+  } catch {
+    return null
+  }
+}
+
+function writeSeen(ts: number) {
+  try {
+    localStorage.setItem(CORE_SEEN_KEY, String(ts))
+  } catch {
+    // ignore
+  }
+}
+
+function isSeenFresh(seenTs: number | null) {
+  if (!seenTs) return false
+  return safeNow() - seenTs < CORE_SEEN_TTL_MS
+}
+
+/* -----------------------------
+   Starship (HOME ONLY)
+----------------------------- */
 function StarshipMark() {
   return (
     <span
@@ -125,8 +165,22 @@ function StarshipMark() {
         </g>
 
         <g className="jetGlow" style={{ mixBlendMode: "screen" as any }}>
-          <ellipse className="jetCore" cx="52" cy="56" rx="16" ry="10" fill="url(#jetCoreMini)" />
-          <ellipse className="jetCore" cx="52" cy="48" rx="12" ry="8" fill="url(#jetCoreMini)" />
+          <ellipse
+            className="jetCore"
+            cx="52"
+            cy="56"
+            rx="16"
+            ry="10"
+            fill="url(#jetCoreMini)"
+          />
+          <ellipse
+            className="jetCore"
+            cx="52"
+            cy="48"
+            rx="12"
+            ry="8"
+            fill="url(#jetCoreMini)"
+          />
         </g>
 
         <g>
@@ -234,21 +288,24 @@ function StarshipMark() {
 
 export default function NavBarEs() {
   const pathname = usePathname()
-  const enHref = toEn(pathname)
-  const isHome = pathname === "/es"
+  const enHref = useMemo(() => toEn(pathname), [pathname])
+
+  // ✅ Home ES: cohete fijo (NO se toca)
+  const isHome = pathname === "/es" || pathname === "/es/"
+  const showToggles = !isHome
 
   const rocketRef = useRef<HTMLButtonElement | null>(null)
   const [coreOpen, setCoreOpen] = useState(false)
-
-  // ✅ Mobile drawer
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Close drawer on navigation
+  // Core “beacon” state
+  const [coreHasNew, setCoreHasNew] = useState(false)
+  const [rocketPing, setRocketPing] = useState(false)
+
   useEffect(() => {
     setMenuOpen(false)
   }, [pathname])
 
-  // Lock body scroll when drawer open
   useEffect(() => {
     if (!menuOpen) return
     const prev = document.body.style.overflow
@@ -258,7 +315,6 @@ export default function NavBarEs() {
     }
   }, [menuOpen])
 
-  // ESC closes drawer
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setMenuOpen(false)
@@ -266,6 +322,35 @@ export default function NavBarEs() {
     if (menuOpen) window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
   }, [menuOpen])
+
+  // Initialize beacon based on last seen time
+  useEffect(() => {
+    if (!isHome) return
+    const seen = readSeen()
+    setCoreHasNew(!isSeenFresh(seen))
+  }, [isHome])
+
+  // Occasional micro ping (only when not opened recently)
+  useEffect(() => {
+    if (!isHome) return
+    if (!coreHasNew) return
+    if (coreOpen) return
+
+    const interval = window.setInterval(() => {
+      setRocketPing(true)
+      window.setTimeout(() => setRocketPing(false), 700)
+    }, 14000)
+
+    return () => window.clearInterval(interval)
+  }, [isHome, coreHasNew, coreOpen])
+
+  // When Core opens, mark as seen and turn off beacon
+  useEffect(() => {
+    if (!isHome) return
+    if (!coreOpen) return
+    writeSeen(safeNow())
+    setCoreHasNew(false)
+  }, [isHome, coreOpen])
 
   const coreFacts = useMemo(
     () => [
@@ -306,21 +391,64 @@ export default function NavBarEs() {
   return (
     <header className="relative border-b border-border/70 bg-bg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        {/* Left brand */}
+        {/* LEFT */}
         <div className="inline-flex min-w-0 items-center gap-3">
           {isHome ? (
             <button
               ref={rocketRef}
               type="button"
               onClick={() => setCoreOpen((v) => !v)}
-              className="group inline-flex items-center"
+              className={[
+                "group inline-flex items-center relative",
+                rocketPing ? "ac-rocket-ping" : "",
+              ].join(" ")}
               aria-label="Abrir una curiosidad de Core"
             >
               <StarshipMark />
+
+              {coreHasNew ? (
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "pointer-events-none absolute",
+                    "-top-1 -left-1",
+                    "h-2.5 w-2.5 rounded-full",
+                    "bg-accent",
+                    "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent),0.45)]",
+                  ].join(" ")}
+                />
+              ) : null}
+
+              <style jsx>{`
+                .ac-rocket-ping {
+                  animation: rocketPing 700ms ease-out both;
+                }
+                @keyframes rocketPing {
+                  0% {
+                    transform: translateY(0) scale(1);
+                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                  }
+                  45% {
+                    transform: translateY(-1px) scale(1.02);
+                    filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.22));
+                  }
+                  100% {
+                    transform: translateY(0) scale(1);
+                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                  }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                  .ac-rocket-ping {
+                    animation: none !important;
+                  }
+                }
+              `}</style>
             </button>
           ) : (
+            // ✅ En secciones: sigil por acento (NO cohete)
             <Link href="/es" className="group inline-flex items-center" aria-label="Ir al inicio">
-              <StarshipMark />
+              <AccentSigilMark />
             </Link>
           )}
 
@@ -336,7 +464,7 @@ export default function NavBarEs() {
           </Link>
         </div>
 
-        {/* Desktop nav */}
+        {/* DESKTOP NAV */}
         <nav className="hidden items-center gap-2 text-sm sm:flex" aria-label="Primary">
           {links.map((l) => {
             const active = isActive(pathname, l.href)
@@ -360,6 +488,13 @@ export default function NavBarEs() {
 
           <span className="mx-2 hidden h-5 w-px bg-border/70 sm:block" />
 
+          {showToggles ? (
+            <>
+              <ThemeToggle />
+              <AccentToggle />
+            </>
+          ) : null}
+
           <Link
             href={enHref}
             className="
@@ -375,8 +510,15 @@ export default function NavBarEs() {
           </Link>
         </nav>
 
-        {/* Mobile: EN + Menu */}
+        {/* MOBILE */}
         <div className="flex items-center gap-2 sm:hidden">
+          {showToggles ? (
+            <>
+              <ThemeToggle />
+              <AccentToggle />
+            </>
+          ) : null}
+
           <Link
             href={enHref}
             className="
@@ -385,7 +527,7 @@ export default function NavBarEs() {
               px-3 py-1.5 text-xs font-semibold text-text
               shadow-soft transition
               hover:border-accent/35 hover:bg-surface-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
             "
           >
             EN
@@ -406,16 +548,14 @@ export default function NavBarEs() {
             aria-haspopup="dialog"
             aria-expanded={menuOpen}
           >
-            Menú
-            <span className="ml-2 text-muted">≡</span>
+            Menú <span className="ml-2 text-muted">≡</span>
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* MOBILE DRAWER */}
       {menuOpen ? (
         <div className="fixed inset-0 z-[80] sm:hidden">
-          {/* Backdrop */}
           <button
             type="button"
             aria-label="Cerrar menú"
@@ -423,17 +563,16 @@ export default function NavBarEs() {
             className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
           />
 
-          {/* Panel */}
           <div
             role="dialog"
             aria-modal="true"
+            aria-label="Menú"
             className="
               absolute right-0 top-0 h-full w-[88%] max-w-[360px]
               border-l border-border/70 bg-bg
               shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_90px_rgba(0,0,0,0.75)]
             "
           >
-            {/* Panel header */}
             <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
               <div className="text-sm font-semibold tracking-tight text-text">Navegación</div>
               <button
@@ -452,9 +591,7 @@ export default function NavBarEs() {
               </button>
             </div>
 
-            {/* Links */}
             <div className="relative px-5 py-5">
-              {/* subtle glow */}
               <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
               <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
 
@@ -485,15 +622,23 @@ export default function NavBarEs() {
 
               <div className="mt-5 h-px w-full bg-border/70" />
 
-              {/* Language */}
               <div className="mt-5">
                 <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
-                  IDIOMA
+                  AJUSTES
                 </div>
-                <div className="mt-3 flex items-center gap-2">
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {showToggles ? (
+                    <>
+                      <ThemeToggle />
+                      <AccentToggle />
+                    </>
+                  ) : null}
+
                   <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
                     ES
                   </span>
+
                   <Link
                     href={enHref}
                     className="
@@ -505,8 +650,7 @@ export default function NavBarEs() {
                       focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                     "
                   >
-                    EN
-                    <span className="ml-2 text-muted">›</span>
+                    EN <span className="ml-2 text-muted">›</span>
                   </Link>
                 </div>
               </div>
@@ -517,13 +661,16 @@ export default function NavBarEs() {
         </div>
       ) : null}
 
-      {/* Core bubble (only on Home) */}
+      {/* CORE BUBBLE */}
       <CoreFactBubble
         open={isHome && coreOpen}
         onClose={() => setCoreOpen(false)}
         anchorEl={rocketRef.current}
         facts={coreFacts}
         title="Core"
+        nextLabel="Otro dato"
+        closeLabel="Cerrar"
+        ariaLabel="Curiosidad de Core"
       />
     </header>
   )

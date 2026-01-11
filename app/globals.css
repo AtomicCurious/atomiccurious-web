@@ -1,154 +1,640 @@
+/* app/globals.css */
 @import "tailwindcss";
 
 /* =========================================================
-   AtomicCurious — Dark Editorial (ONLY MODE)
-   Single source of truth. No light mode.
+   AtomicCurious — Luxury Editorial System
+   THEMES (section-scoped via <body data-theme="...">):
+     dark (default) | light | cosmic | ocean | mocha
+   ACCENTS (energy):
+     atom | iris | core
+   Toggle via:
+     <body data-theme="..."> and <body data-accent="...">
    ========================================================= */
 
+/* -----------------------------
+   DEFAULT (dark) — LUX TECH BLACK (Apple x LV)
+----------------------------- */
 :root {
   color-scheme: dark;
 
-  /* Backgrounds */
-  --bg: 11 13 16;
-  --surface-1: 18 21 27;
-  --surface-2: 26 31 39;
+  /* Backgrounds (slightly warm “ink” black) */
+  --bg: 10 11 13;         /* ink */
+  --surface-1: 18 19 22;  /* graphite */
+  --surface-2: 28 29 33;  /* smoked */
 
   /* Text */
-  --text: 230 232 236;
-  --muted: 154 160 170;
+  --text: 236 238 242;
+  --muted: 162 168 178;
 
-  /* Borders */
-  --border: 28 34 44;
+  /* Borders (quiet, premium) */
+  --border: 44 46 54;
 
-  /* Signature accents */
-  --accent: 34 211 238;      /* teal */
-  --accent-soft: 34 211 238;
+  /* Accents (default = Atom green) */
+  --accent: 80 255 170;
+  --accent-soft: 80 255 170;
 
-  --accent-alt: 255 77 157;  /* magenta */
+  /* Secondary accent (optional “brand spice”) */
+  --accent-alt: 255 77 157;
   --accent-alt-soft: 255 77 157;
+
+  /* Shadows (lux) */
+  --shadow-ambient: 0 0 0;
+  --shadow-card: 0 18px 64px rgba(var(--shadow-ambient) / 0.62);
+  --shadow-soft:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 60px rgba(0, 0, 0, 0.42);
+
+  /* Ship vars (SVG) */
+  --ship-panel: #202634;
+  --ship-core: #edf1fa;
+  --ship-edge: #d6ecff;
+  --ship-neon1: #b692ff;
+  --ship-neon2: #68f0ff;
+  --ship-jet: #bff8ff;
+  --ship-jet-hot: #fff3b8;
+
+  /* Premium “sheen” (NO circles; just a subtle vignette + sheen) */
+  --bg-grad:
+    linear-gradient(
+      140deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0.012) 35%,
+      rgba(0, 0, 0, 0.10) 100%
+    ),
+    radial-gradient(
+      2200px 1400px at 50% 10%,
+      rgba(255, 255, 255, 0.035),
+      transparent 55%
+    ),
+    radial-gradient(
+      2600px 1800px at 50% 70%,
+      rgba(0, 0, 0, 0.55),
+      transparent 70%
+    );
+}
+
+/* -----------------------------
+   LIGHT — LUX PAPER (editorial perfume)
+   Applied only when: <body data-theme="light">
+----------------------------- */
+body[data-theme="light"] {
+  color-scheme: light;
+
+  /* Warm “paper” (cream, not white) */
+  --bg: 247 242 234;
+  --surface-1: 253 250 244;
+  --surface-2: 238 232 223;
+
+  /* Ink text */
+  --text: 18 20 24;
+  --muted: 86 92 102;
+
+  /* Soft edges */
+  --border: 214 205 192;
+
+  --shadow-ambient: 18 20 24;
+  --shadow-card: 0 18px 56px rgba(var(--shadow-ambient) / 0.10);
+  --shadow-soft:
+    0 1px 0 rgba(0, 0, 0, 0.03),
+    0 18px 44px rgba(var(--shadow-ambient) / 0.08);
+
+  /* Clean editorial wash (NO circles) */
+  --bg-grad:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.20) 42%,
+      rgba(0, 0, 0, 0.03) 100%
+    ),
+    radial-gradient(
+      2400px 1600px at 50% 12%,
+      rgba(255, 255, 255, 0.42),
+      transparent 58%
+    );
+}
+
+/* -----------------------------
+   COSMIC — HOME AURORA FEEL (teal → magenta + premium grid)
+   Goal:
+   - closer to the home vibe (more color)
+   - still readable for long sessions (controlled contrast)
+----------------------------- */
+body[data-theme="cosmic"] {
+  color-scheme: dark;
+
+  /* Deep base under the aurora (slightly richer than before) */
+  --bg: 7 10 14;
+  --surface-1: 12 16 24;
+  --surface-2: 18 24 36;
+
+  --text: 236 240 246;
+  --muted: 165 176 190;
+
+  --border: 40 52 72;
+
+  --shadow-ambient: 0 0 0;
+  --shadow-card: 0 22px 78px rgba(var(--shadow-ambient) / 0.68);
+  --shadow-soft:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 70px rgba(0, 0, 0, 0.48);
+
+  --ship-panel: #1d2431;
+  --ship-core: #f3f6ff;
+  --ship-edge: #d9eeff;
+
+  /* More “premium color” without turning into a nightclub:
+     - stronger aurora sweep
+     - subtle diagonal drift (adds depth)
+     - grid a touch clearer but still soft
+     - controlled vignette + top sheen
+     - a few micro points for life
+  */
+  --bg-grad:
+    /* aurora sweep (stronger) */
+    linear-gradient(
+      90deg,
+      rgba(34, 211, 238, 0.22) 0%,
+      rgba(34, 211, 238, 0.14) 34%,
+      rgba(255, 77, 157, 0.14) 66%,
+      rgba(255, 77, 157, 0.20) 100%
+    ),
+    /* diagonal drift (expensive “depth”) */
+    linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.10) 0%,
+      rgba(0, 0, 0, 0.00) 40%,
+      rgba(255, 77, 157, 0.09) 100%
+    ),
+    /* top-to-bottom depth */
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.12) 0%,
+      rgba(0, 0, 0, 0.40) 58%,
+      rgba(0, 0, 0, 0.66) 100%
+    ),
+    /* grid: horizontal (slightly clearer) */
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0.000) 1px,
+      rgba(255, 255, 255, 0.000) 64px
+    ),
+    /* grid: vertical (slightly clearer) */
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0.000) 1px,
+      rgba(255, 255, 255, 0.000) 64px
+    ),
+    /* top sheen */
+    radial-gradient(
+      1800px 1200px at 50% 16%,
+      rgba(255, 255, 255, 0.070),
+      transparent 62%
+    ),
+    /* left teal bloom */
+    radial-gradient(
+      1500px 1200px at 18% 42%,
+      rgba(34, 211, 238, 0.14),
+      transparent 62%
+    ),
+    /* right magenta bloom */
+    radial-gradient(
+      1500px 1200px at 82% 46%,
+      rgba(255, 77, 157, 0.14),
+      transparent 64%
+    ),
+    /* vignette (keeps long-reading comfort) */
+    radial-gradient(
+      2600px 1900px at 50% 72%,
+      rgba(0, 0, 0, 0.66),
+      transparent 74%
+    ),
+    /* micro points (subtle, not noisy) */
+    radial-gradient(circle at 22% 28%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 36%, rgba(255,255,255,0.07) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 62%, rgba(255,255,255,0.06) 0 2px, transparent 3px);
+}
+
+/* -----------------------------
+   OCEAN — LUX MARINE (quiet prestige)
+----------------------------- */
+body[data-theme="ocean"] {
+  color-scheme: dark;
+
+  /* Deep marine base (less “neon”, more couture) */
+  --bg: 4 14 24;
+  --surface-1: 8 22 36;
+  --surface-2: 12 32 52;
+
+  --text: 232 242 248;
+  --muted: 154 176 192;
+
+  --border: 26 70 96;
+
+  --shadow-ambient: 0 0 0;
+  --shadow-card: 0 20px 70px rgba(var(--shadow-ambient) / 0.64);
+  --shadow-soft:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 22px 66px rgba(0, 0, 0, 0.46);
+
+  /* Ocean wash: teal/blue harmony without hotspots */
+  --bg-grad:
+    linear-gradient(
+      120deg,
+      rgba(34, 211, 238, 0.085) 0%,
+      rgba(70, 140, 255, 0.10) 55%,
+      rgba(0, 180, 210, 0.075) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.38) 66%,
+      rgba(0, 0, 0, 0.58) 100%
+    ),
+    conic-gradient(
+      from 200deg at 50% 44%,
+      rgba(0, 180, 210, 0.028),
+      rgba(70, 140, 255, 0.026),
+      rgba(34, 211, 238, 0.024),
+      rgba(0, 180, 210, 0.028)
+    ),
+    radial-gradient(
+      2000px 1400px at 50% 18%,
+      rgba(255, 255, 255, 0.024),
+      transparent 62%
+    ),
+    radial-gradient(
+      2800px 1900px at 50% 70%,
+      rgba(0, 0, 0, 0.60),
+      transparent 74%
+    );
+}
+
+/* -----------------------------
+   MOCHA — MOCHA LATTE (SOFT & LIGHT like your image)
+----------------------------- */
+body[data-theme="mocha"] {
+  color-scheme: light;
+
+  /* Latte base (warm, elegant) */
+  --bg: 210 178 148;        /* latte backdrop */
+  --surface-1: 250 238 224; /* cream panel */
+  --surface-2: 236 218 198; /* latte card */
+
+  /* Cocoa ink */
+  --text: 46 30 22;
+  --muted: 108 82 66;
+
+  /* Soft mocha edges */
+  --border: 216 195 172;
+
+  /* Warm editorial shadows */
+  --shadow-ambient: 46 30 22;
+  --shadow-card: 0 18px 58px rgba(var(--shadow-ambient) / 0.14);
+  --shadow-soft:
+    0 1px 0 rgba(255, 255, 255, 0.44),
+    0 16px 46px rgba(var(--shadow-ambient) / 0.10);
+
+  /* Latte wash + subtle “sparkle dust” feel (NO circles) */
+  --bg-grad:
+    linear-gradient(
+      135deg,
+      rgba(255, 250, 244, 0.46) 0%,
+      rgba(250, 233, 214, 0.22) 45%,
+      rgba(198, 156, 120, 0.12) 100%
+    ),
+    conic-gradient(
+      from 225deg at 50% 40%,
+      rgba(255, 250, 244, 0.040),
+      rgba(250, 233, 214, 0.032),
+      rgba(198, 156, 120, 0.026),
+      rgba(255, 250, 244, 0.040)
+    ),
+    radial-gradient(
+      2200px 1500px at 50% 18%,
+      rgba(255, 255, 255, 0.14),
+      transparent 64%
+    ),
+    radial-gradient(
+      2800px 2000px at 50% 72%,
+      rgba(46, 30, 22, 0.16),
+      transparent 76%
+    );
+}
+
+/* =========================================================
+   ACCENTS (energy)
+   Applied when: <body data-accent="...">
+   ========================================================= */
+body[data-accent="atom"] {
+  --accent: 80 255 170;
+  --accent-soft: 80 255 170;
+}
+body[data-accent="iris"] {
+  --accent: 34 211 238;
+  --accent-soft: 34 211 238;
+}
+body[data-accent="core"] {
+  --accent: 239 68 68;
+  --accent-soft: 239 68 68;
 }
 
 /* =========================================================
    Base layout
    ========================================================= */
-
 html,
 body {
   height: 100%;
 }
 
 body {
-  background: rgb(var(--bg));
+  position: relative;
+
+  background-color: rgb(var(--bg));
+  background-image: var(--bg-grad);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+
   color: rgb(var(--text));
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Text selection */
+/* =========================================================
+   Anti-banding / Luxury grain (Cosmic + Ocean + Dark + Mocha)
+   - Light also stays clean (paper)
+   ========================================================= */
+:root::after,
+body[data-theme="cosmic"]::after,
+body[data-theme="ocean"]::after,
+body[data-theme="mocha"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.012), transparent 28%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.010), transparent 30%);
+
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 220px 220px, 1200px 900px, 1400px 1000px;
+  background-position: 0 0, 0 0, 0 0;
+
+  opacity: 0.032;
+  mix-blend-mode: soft-light;
+  filter: contrast(110%) brightness(110%);
+}
+
+/* Theme tuning */
+body[data-theme="cosmic"]::after {
+  opacity: 0.036;
+  filter: contrast(112%) brightness(112%);
+}
+body[data-theme="ocean"]::after {
+  opacity: 0.034;
+  filter: contrast(112%) brightness(110%);
+}
+/* Mocha latte: lighter grain */
+body[data-theme="mocha"]::after {
+  opacity: 0.020;
+  filter: contrast(106%) brightness(112%);
+}
+/* Light: keep super-clean (disable grain overlay) */
+body[data-theme="light"]::after {
+  content: none !important;
+}
+
+/* Ensure app content is above grain without touching components */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
 ::selection {
   background: rgb(var(--accent-soft) / 0.22);
 }
 
-/* Links */
 a {
   text-underline-offset: 3px;
 }
 
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.ac-shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
 /* =========================================================
-   AtomicCurious — Shooting Stars (diagonal + pop)
+   Signature helpers
+   ========================================================= */
+.ac-cosmic-only {
+  display: none;
+}
+body[data-theme="cosmic"] .ac-cosmic-only {
+  display: block;
+}
+body[data-theme="cosmic"] .ac-noncosmic-only {
+  display: none;
+}
+
+/* =========================================================
+   Sigil shell (optional)
+   ========================================================= */
+.ac-sigilShell {
+  background: rgb(var(--surface-1) / 0.72);
+  border: 1px solid rgb(var(--border) / 0.85);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+}
+body[data-theme="light"] .ac-sigilShell,
+body[data-theme="mocha"] .ac-sigilShell {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================
+   Iris Rubik Sigil (DOM 3D) — SINGLE VERSION (no duplicates)
    ========================================================= */
 
-.ac-shooting-star {
+.ac-rubikAnchor {
   position: absolute;
-  left: 0;
-  top: 0;
-  transform: translate(var(--sx), var(--sy));
-  border-radius: 999px;
-  opacity: 0;
-  will-change: transform, opacity, filter;
-  animation-name: acShootingStar;
-  animation-duration: inherit;
-  animation-delay: inherit;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  filter: blur(0px);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  perspective: 800px;
+  perspective-origin: 50% 45%;
 }
 
-/* Teal stars */
-.ac-shooting-star--teal {
+.ac-rubik {
+  --rubik-size: 24px;
+  --gap: 0px;
+  --thickness: 6px;
+  --sticker-radius: 1.5px;
+  --epsilon: 0.05px;
+
+  /* Rubik standard palette */
+  --U: #ffffff; /* White */
+  --D: #ffd700; /* Yellow */
+  --F: #00cc66; /* Green */
+  --B: #0066ff; /* Blue */
+  --R: #ff3333; /* Red */
+  --L: #ff6600; /* Orange */
+
+  position: relative;
+  width: var(--rubik-size);
+  height: var(--rubik-size);
+  transform-style: preserve-3d;
+  transform: rotateX(-26deg) rotateY(32deg);
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.ac-cubie {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--rubik-size) / 3);
+  height: calc(var(--rubik-size) / 3);
+  transform-style: preserve-3d;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.25),
+    inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.05);
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.ac-core {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0d14, #070a10 60%, #05080c);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.05),
+    inset 0 0 8px rgba(80, 150, 255, 0.08);
+}
+
+.ac-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--sticker-radius);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Sticker always has a color (single definition; no duplicates) */
+.ac-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 40%),
+    var(--c, #333);
+  filter: saturate(1.1) brightness(var(--lit, 1));
+  box-shadow: inset 0 0 0 var(--epsilon, 0.05px) rgba(0, 0, 0, 0.95);
+  border: 0.1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ac-face > i.spec,
+.ac-face > i.rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.ac-face > i.spec {
   background: radial-gradient(
-    circle,
-    rgba(34, 211, 238, 0.95),
-    rgba(34, 211, 238, 0.35),
-    transparent 70%
+    circle at 25% 25%,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent 60%
   );
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+  mix-blend-mode: screen;
+  opacity: calc(var(--spec, 0) * 1.2);
 }
 
-/* Pink stars */
-.ac-shooting-star--pink {
+.ac-face > i.rim {
   background: radial-gradient(
-    circle,
-    rgba(255, 77, 157, 0.95),
-    rgba(255, 77, 157, 0.32),
-    transparent 70%
+    circle at center,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 100%
   );
-  box-shadow: 0 0 18px rgba(255, 77, 157, 0.32);
+  mix-blend-mode: overlay;
+  opacity: calc(var(--rim, 0) * 0.8);
 }
 
-/* =========================================================
-   Animation: diagonal travel + final pop
-   ========================================================= */
+/* Face transforms + per-face color */
+.fU {
+  transform: rotateX(90deg) translateZ(calc(var(--thickness) / 2));
+  --c: var(--U);
+}
+.fD {
+  transform: rotateX(-90deg) translateZ(calc(var(--thickness) / 2));
+  --c: var(--D);
+}
+.fF {
+  transform: translateZ(calc(var(--thickness) / 2));
+  --c: var(--F);
+}
+.fB {
+  transform: rotateY(180deg) translateZ(calc(var(--thickness) / 2));
+  --c: var(--B);
+}
+.fR {
+  transform: rotateY(90deg) translateZ(calc(var(--thickness) / 2));
+  --c: var(--R);
+}
+.fL {
+  transform: rotateY(-90deg) translateZ(calc(var(--thickness) / 2));
+  --c: var(--L);
+}
 
-@keyframes acShootingStar {
-  0% {
-    transform: translate(var(--sx), var(--sy)) scale(0.9);
-    opacity: 0;
-  }
+/* Only show faces that exist on that cubie */
+.ac-cubie:not(.sU) .fU,
+.ac-cubie:not(.sD) .fD,
+.ac-cubie:not(.sF) .fF,
+.ac-cubie:not(.sB) .fB,
+.ac-cubie:not(.sR) .fR,
+.ac-cubie:not(.sL) .fL {
+  display: none !important;
+}
 
-  12% {
-    opacity: 0.75;
-  }
-
-  /* Diagonal travel */
-  72% {
-    transform: translate(
-        calc(var(--sx) + var(--dx)),
-        calc(var(--sy) - var(--dy))
-      )
-      scale(1);
-    opacity: 0.9;
-  }
-
-  /* POP (impact moment) */
-  82% {
-    transform: translate(
-        calc(var(--sx) + var(--dx)),
-        calc(var(--sy) - var(--dy))
-      )
-      scale(2.4);
-    opacity: 0.95;
-    filter: blur(0.25px);
-  }
-
-  100% {
-    transform: translate(
-        calc(var(--sx) + var(--dx)),
-        calc(var(--sy) - var(--dy))
-      )
-      scale(0);
-    opacity: 0;
-    filter: blur(1px);
+/* Responsive sizes */
+@media (min-width: 640px) {
+  .ac-rubik {
+    --rubik-size: 28px;
+    --thickness: 7px;
   }
 }
 
-/* =========================================================
-   Accessibility — respect reduced motion
-   ========================================================= */
+@media (min-width: 768px) {
+  .ac-rubik {
+    --rubik-size: 32px;
+    --thickness: 8px;
+    --sticker-radius: 2px;
+  }
+}
 
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  .ac-shooting-star {
+  .ac-rubik,
+  .ac-cubie,
+  .ac-face {
+    transition: none !important;
     animation: none !important;
-    display: none !important;
+  }
+
+  .ac-rubik {
+    transform: rotateX(-26deg) rotateY(32deg) !important;
   }
 }

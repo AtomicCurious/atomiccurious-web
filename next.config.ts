@@ -1,7 +1,21 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  async redirects() {
+    return [
+      // 🔁 Inglés viejo con /en → raíz
+      {
+        source: "/en",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/en/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
+    ]
+  },
+}
 
-export default nextConfig;
+export default nextConfig
