@@ -1,3 +1,4 @@
+// app/(en)/about/page.tsx
 import Link from "next/link"
 import Image from "next/image"
 import type { Metadata } from "next"
@@ -8,9 +9,9 @@ export const metadata: Metadata = {
   description:
     "AtomicCurious is an editorial universe for science, technology, and the future—questions, rankings, and interactive experiences guided by Atom, Iris, and Core.",
   alternates: {
-    canonical: "/en/about",
+    canonical: "/about",
     languages: {
-      en: "/en/about",
+      en: "/about",
       es: "/es/about",
     },
   },
@@ -42,34 +43,34 @@ function CharacterCard({
       ? "/characters/atom.png"
       : "/characters/core.png"
 
-  // Character sub-accent (controlled, not gamer)
+  // Controlled, premium sub-accent (NO extra palette)
   const accentGlow =
     id === "atom"
-      ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent)/0.20),transparent_60%)]"
+      ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent)/0.18),transparent_60%)]"
       : id === "iris"
-      ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent-alt)/0.18),transparent_60%)]"
-      : "bg-[radial-gradient(circle_at_25%_10%,rgb(34_197_94/0.16),transparent_60%)]"
+      ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent-alt)/0.16),transparent_60%)]"
+      : "bg-[radial-gradient(circle_at_25%_10%,rgba(255,255,255,0.10),transparent_62%)]"
 
   const badgeBorder =
     id === "atom"
       ? "border-accent/35"
       : id === "iris"
       ? "border-[rgb(var(--accent-alt)/0.35)]"
-      : "border-[rgb(34_197_94/0.30)]"
+      : "border-white/15"
 
   const badgeText =
     id === "atom"
       ? "text-accent"
       : id === "iris"
       ? "text-[rgb(var(--accent-alt))]"
-      : "text-[rgb(34_197_94)]"
+      : "text-white/80"
 
   const hoverText =
     id === "atom"
       ? "group-hover:text-accent"
       : id === "iris"
       ? "group-hover:text-[rgb(var(--accent-alt))]"
-      : "group-hover:text-[rgb(34_197_94)]"
+      : "group-hover:text-white"
 
   return (
     <div
@@ -161,7 +162,7 @@ function StepCard({
 
 export default function Page() {
   return (
-    <main className="relative w-full overflow-hidden bg-bg">
+    <div className="relative w-full overflow-hidden bg-bg">
       {/* Background: editorial/cinematic, slightly more present */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
@@ -178,7 +179,6 @@ export default function Page() {
             ATOMICCURIOUS · ABOUT
           </p>
 
-          {/* Credibility */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center rounded-full border border-border bg-bg/35 px-3 py-1 text-xs font-semibold text-text">
               Publishing since 2023
@@ -201,24 +201,25 @@ export default function Page() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/en/start-here"
+              href="/start-here"
               className={[
                 "inline-flex items-center justify-center rounded-xl",
                 "bg-accent px-6 py-3 text-sm font-semibold text-bg",
                 "shadow-accent transition hover:brightness-110",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               ].join(" ")}
             >
               Start here <span aria-hidden className="ml-2">→</span>
             </Link>
 
             <Link
-              href="/en/newsletter"
+              href="/newsletter"
               className={[
                 "inline-flex items-center justify-center rounded-xl",
                 "border border-border bg-surface-1 px-6 py-3",
                 "text-sm font-semibold text-text transition",
                 "hover:bg-surface-2 hover:border-accent/30 hover:text-accent",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               ].join(" ")}
             >
               Join the newsletter <span aria-hidden className="ml-2">→</span>
@@ -238,8 +239,8 @@ export default function Page() {
                 Make complex ideas feel simple
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                We translate intimidating topics into clear mental models—
-                without watering them down.
+                We translate intimidating topics into clear mental models—without
+                watering them down.
               </p>
             </div>
 
@@ -296,7 +297,7 @@ export default function Page() {
 
           <div className="mt-6">
             <Link
-              href="/en/posts"
+              href="/posts"
               className="inline-flex items-center gap-2 text-sm font-semibold text-text hover:text-accent"
             >
               Browse posts <span aria-hidden>→</span>
@@ -310,9 +311,7 @@ export default function Page() {
             <h2 className="text-2xl font-semibold tracking-tight text-text">
               Choose your path
             </h2>
-            <p className="text-muted">
-              Three formats. One shared curiosity.
-            </p>
+            <p className="text-muted">Three formats. One shared curiosity.</p>
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -321,38 +320,36 @@ export default function Page() {
               label="CURIOSITY · ATOM"
               title="Big questions and “how is that possible?” moments"
               body="Strange facts, surprising phenomena, and stories that make you pause."
-              href="/en/posts?format=curiosity"
+              href="/posts?format=curiosity"
               cta="Explore Curiosity"
             />
-
             <CharacterCard
               id="iris"
               label="RANKED · IRIS"
               title="Rankings, comparisons, and clarity"
               body="Lists, comparisons, and sharp frameworks to navigate complexity."
-              href="/en/posts?format=ranked"
+              href="/posts?format=ranked"
               cta="Explore Ranked"
             />
-
             <CharacterCard
               id="core"
               label="QUIZ · CORE"
               title="Fast challenges and interactive learning"
               body="Quizzes and playful tests that reveal what you know—and what you’ll love learning next."
-              href="/en/posts?format=quiz"
+              href="/posts?format=quiz"
               cta="Explore Quiz"
             />
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/en/community"
+              href="/community"
               className="inline-flex items-center gap-2 text-sm font-semibold text-text hover:text-accent"
             >
               Join the community <span aria-hidden>→</span>
             </Link>
             <Link
-              href="/en/newsletter"
+              href="/newsletter"
               className="inline-flex items-center gap-2 text-sm font-semibold text-text hover:text-accent"
             >
               Get the newsletter <span aria-hidden>→</span>
@@ -388,7 +385,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Final CTA */}
           <div className="mt-10 overflow-hidden rounded-3xl border border-border bg-surface-1 p-8 shadow-soft sm:p-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="max-w-2xl">
@@ -402,12 +398,12 @@ export default function Page() {
               </div>
 
               <Link
-                href="/en/newsletter"
+                href="/newsletter"
                 className={[
                   "inline-flex items-center justify-center rounded-xl",
                   "bg-accent px-6 py-3 text-sm font-semibold text-bg",
                   "shadow-accent transition hover:brightness-110",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 ].join(" ")}
               >
                 Join the newsletter <span aria-hidden className="ml-2">→</span>
@@ -416,6 +412,6 @@ export default function Page() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   )
 }

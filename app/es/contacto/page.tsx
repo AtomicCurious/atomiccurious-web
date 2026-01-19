@@ -1,4 +1,6 @@
+// app/es/contacto/page.tsx
 import Link from "next/link"
+import Image from "next/image"
 import ContactFormEs from "@/components/sections/ContactFormEs"
 
 export const metadata = {
@@ -7,34 +9,54 @@ export const metadata = {
     "Colaboraciones, ideas, feedback o conversaciones interesantes. Leemos cada mensaje.",
 }
 
+const CONTACT_CSS = `
+/* CONTACT image switching (SSR-safe, CSS-only)
+   Default = Atom (no data-character yet)
+*/
+.ac-contact-img{
+  opacity:0;
+  transition:opacity 280ms ease;
+  will-change:opacity;
+}
+.ac-contact-atom{ opacity:1; }
+
+body[data-character="iris"] .ac-contact-atom{ opacity:0; }
+body[data-character="iris"] .ac-contact-iris{ opacity:1; }
+
+body[data-character="core"] .ac-contact-atom{ opacity:0; }
+body[data-character="core"] .ac-contact-core{ opacity:1; }
+
+/* If data-character="atom" explicitly */
+body[data-character="atom"] .ac-contact-atom{ opacity:1; }
+body[data-character="atom"] .ac-contact-iris,
+body[data-character="atom"] .ac-contact-core{ opacity:0; }
+`
+
 export default function Page() {
   return (
-    <main className="w-full">
+    <main className="w-full" data-chmode="none">
+      {/* SSR-safe rules inside page.tsx WITHOUT styled-jsx */}
+      <style dangerouslySetInnerHTML={{ __html: CONTACT_CSS }} />
+
       {/* NOTE:
-          - Esta sección ya NO fuerza un fondo opaco encima.
-          - En temas normales (dark/light/auto) verás el editorial limpio.
-          - En COSMIC se muestra el “lienzo” cósmico y sí se verá en toda la página.
+          - Página neutral (sin personajes como guía).
+          - No narrativa: foco en conversión.
+          - La imagen es de soporte (cambia sutilmente por host, pero no “dirige”).
       */}
       <section className="relative w-full overflow-hidden bg-transparent">
-        {/* Background layer: NON-COSMIC (default editorial) */}
+        {/* Background layer: NON-COSMIC */}
         <div className="ac-noncosmic-only pointer-events-none absolute inset-0">
-          {/* base */}
           <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
-          {/* glow suave con accent (sirve para dark/light porque usa tokens) */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.12),transparent_65%)]" />
-          {/* segundo glow sutil */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_30%_20%,rgb(var(--accent-alt)/0.08),transparent_62%)]" />
         </div>
 
-        {/* Background layer: COSMIC (solo cuando data-theme="cosmic") */}
+        {/* Background layer: COSMIC */}
         <div className="ac-cosmic-only pointer-events-none absolute inset-0">
-          {/* deep space base */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(120,200,255,0.18),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_70%_at_70%_10%,rgba(182,146,255,0.14),transparent_62%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_20%_30%,rgba(34,211,238,0.10),transparent_64%)]" />
-          {/* vignette */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
-          {/* very subtle “film” */}
           <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_30%,rgba(255,255,255,0.01))]" />
         </div>
 
@@ -56,14 +78,14 @@ export default function Page() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/es/newsletter"
-                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-surface-1 px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2"
+                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-surface-1 px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               >
                 Únete al boletín
               </Link>
 
               <Link
                 href="/es"
-                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-bg/40 px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2"
+                className="inline-flex items-center justify-center rounded-full border border-border/80 bg-bg/40 px-5 py-2 text-sm font-semibold text-text shadow-soft transition hover:border-accent/35 hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               >
                 Volver al inicio
               </Link>
@@ -80,12 +102,68 @@ export default function Page() {
             </p>
           </header>
 
-          <div className="mx-auto mt-10 max-w-3xl">
-            <ContactFormEs />
+          {/* Contact content */}
+          <div className="mx-auto mt-10 w-full max-w-5xl">
+            <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:gap-10">
+              {/* Form */}
+              <div className="order-2 md:order-1">
+                <ContactFormEs />
+              </div>
+
+              {/* Visual support */}
+              <aside className="order-1 md:order-2">
+                <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-surface-1 shadow-soft">
+                  {/* subtle editorial overlays */}
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_10%,rgb(var(--accent)/0.10),transparent_60%)]" />
+                  <div className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_85%)] bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06),transparent)] dark:bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent)]" />
+
+                  <div className="relative aspect-[4/5] w-full">
+                    {/* Default / Atom */}
+                    <Image
+                      src="/images/sections/contact/atom.webp"
+                      alt=""
+                      aria-hidden="true"
+                      fill
+                      sizes="(min-width: 768px) 420px, 90vw"
+                      className="ac-contact-img ac-contact-atom object-cover"
+                    />
+
+                    {/* Iris */}
+                    <Image
+                      src="/images/sections/contact/iris.webp"
+                      alt=""
+                      aria-hidden="true"
+                      fill
+                      sizes="(min-width: 768px) 420px, 90vw"
+                      className="ac-contact-img ac-contact-iris object-cover"
+                    />
+
+                    {/* Core */}
+                    <Image
+                      src="/images/sections/contact/core.webp"
+                      alt=""
+                      aria-hidden="true"
+                      fill
+                      sizes="(min-width: 768px) 420px, 90vw"
+                      className="ac-contact-img ac-contact-core object-cover"
+                    />
+                  </div>
+
+                  <div className="relative px-5 py-4">
+                    <p className="text-sm font-semibold text-text">
+                      Me encantaría leerte.
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted">
+                      Mensajes cortos funcionan perfecto. Si es colaboración,
+                      comparte enlaces y un resumen rápido.
+                    </p>
+                  </div>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       </section>
     </main>
   )
 }
-

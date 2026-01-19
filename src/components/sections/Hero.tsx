@@ -1,6 +1,10 @@
+// src/components/sections/Hero.tsx
+"use client"
+
 import type { ReactElement, ReactNode } from "react"
 import { Children, isValidElement } from "react"
-import ShootingStars from "@/components/visual/ShootingStars"
+import { useEffect } from "react"
+import AmbientMotion from "@/components/visual/AmbientMotion"
 
 type HeroCopy = {
   eyebrow: string
@@ -18,9 +22,7 @@ type LatestTile = {
   badgeDot: "teal" | "pink"
   title: string
   description: string
-  // ✅ Accept readonly arrays coming from `as const` content
   tags: readonly string[]
-  // ✅ Accept readonly arrays coming from `as const` content
   bullets: readonly TileBullet[]
   ctaLabel: string
 }
@@ -41,25 +43,125 @@ type HeroTiles = {
   download: DownloadTile
 }
 
-function HeroOverlay({ children }: { children: ReactNode }) {
+/**
+ * ✅ FIX:
+ * Export overlay as a standalone component
+ * AND also keep Hero.Overlay working (so your HomeLanding.tsx does NOT change).
+ */
+export function HeroOverlay({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 HeroOverlay.displayName = "HeroOverlay"
+
+type HostRowMode = "none" | "host" | "trio"
 
 type HeroProps = {
   copy: HeroCopy
   tiles: HeroTiles
   children?: ReactNode
+
+  /**
+   * ✅ Optional host UI row (OFF by default)
+   * - "none": render nothing (Home stays clean)
+   * - "host": render the row but CSS shows only active character via body[data-chmode="host"]
+   * - "trio": render the row and CSS shows all via body[data-chmode="trio"]
+   */
+  hostRow?: HostRowMode
+  hostRowLabel?: string
 }
 
 function dotColor(dot: "teal" | "pink") {
   return dot === "teal" ? "#22D3EE" : "#FF4D9D"
 }
 
-function Hero({ copy, tiles, children }: HeroProps) {
+function HostBadge({
+  who,
+  title,
+  subtitle,
+  className,
+}: {
+  who: "atom" | "iris" | "core"
+  title: string
+  subtitle: string
+  className?: string
+}) {
+  const icon =
+    who === "atom" ? (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 3c3.5 0 7 3.6 7 9s-3.5 9-7 9-7-3.6-7-9 3.5-9 7-9Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          opacity="0.9"
+        />
+        <path
+          d="M5.5 8.2c2.4-1.6 6.8-1.6 9.2 0M5.5 15.8c2.4 1.6 6.8 1.6 9.2 0"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          opacity="0.7"
+          strokeLinecap="round"
+        />
+      </svg>
+    ) : who === "iris" ? (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 2l1.2 4.3 4.1-1.8-1.8 4.1L20 10.8l-4.3 1.2 1.8 4.1-4.1-1.8L12 22l-1.2-4.3-4.1 1.8 1.8-4.1L4 10.8l4.3-1.2-1.8-4.1 4.1 1.8L12 2Z"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinejoin="round"
+          opacity="0.9"
+        />
+      </svg>
+    ) : (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 19c4.4 0 8-3 8-6.7 0-3.7-3.6-6.6-8-6.6s-8 3-8 6.6C4 16 7.6 19 12 19Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          opacity="0.9"
+        />
+        <path
+          d="M9 20.5c.7 1.1 1.8 1.5 3 1.5 1.2 0 2.3-.4 3-1.5"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          opacity="0.6"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+
+  return (
+    <div
+      className={[
+        "relative overflow-hidden rounded-[22px] border border-border/70",
+        "bg-surface-1/55 backdrop-blur-xl shadow-soft",
+        "px-5 py-4",
+        "transition hover:border-accent/25",
+        className ?? "",
+      ].join(" ")}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className={[
+            "inline-flex h-9 w-9 items-center justify-center rounded-xl",
+            "border border-border/70 bg-bg/35 text-text/90",
+            "shadow-[0_0_0_1px_rgba(255,255,255,0.02)]",
+          ].join(" ")}
+        >
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <div className="text-sm font-semibold tracking-tight text-text">{title}</div>
+          <div className="mt-0.5 text-[13px] leading-relaxed text-muted">{subtitle}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroProps) {
   const hasEyebrow = Boolean(copy.eyebrow && copy.eyebrow.trim().length > 0)
 
-  // Split children: <Hero.Overlay>...</Hero.Overlay> vs normal children
   const overlayChildren: ReactNode[] = []
   const belowChildren: ReactNode[] = []
 
@@ -73,30 +175,41 @@ function Hero({ copy, tiles, children }: HeroProps) {
     }
   })
 
-  /* =========================================================
-     TUNING CONTROLS
-     ========================================================= */
+  /**
+   * ✅ SAFETY:
+   * If someone uses <Hero hostRow="trio" /> on a page, we mirror that request into:
+   *   <main data-chmode="..."> and body[data-chmode="..."]
+   * This ensures your global.css show rules work even without manual page attributes.
+   *
+   * Home stays clean because hostRow defaults to "none".
+   */
+  useEffect(() => {
+    if (hostRow === "none") return
 
-  // ✅ Más “peso” visual en desktop grande (sin romper mobile)
+    const mode = hostRow === "trio" ? "trio" : "host"
+    const main = document.querySelector("main")
+    if (main) main.setAttribute("data-chmode", mode)
+    document.body.setAttribute("data-chmode", mode)
+
+    return () => {
+      // restore to whatever the layout boot decides on next route render
+      // (we only remove if it still matches our injected value)
+      const m = document.querySelector("main")
+      if (m?.getAttribute("data-chmode") === mode) m.removeAttribute("data-chmode")
+      if (document.body.getAttribute("data-chmode") === mode) document.body.removeAttribute("data-chmode")
+    }
+  }, [hostRow])
+
   const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
   const STRIP_PX = "px-4 sm:px-6 lg:px-8"
 
-  // ✅ 20% SMALLER STRIP CARDS (real sizing, not scale):
-  // Desktop grid: left / center / right (reduced widths)
-  const GRID_COLS_LG =
-    "lg:grid-cols-[minmax(332px,1fr)_244px_minmax(332px,1fr)]"
+  const GRID_COLS_LG = "lg:grid-cols-[minmax(332px,1fr)_244px_minmax(332px,1fr)]"
   const GRID_GAP = "gap-6 lg:gap-10"
 
-  // Reduced heights + padding (~20%)
   const CARD_MIN_H = "min-h-[166px] sm:min-h-[180px]"
   const CARD_P = "p-4"
 
-  // ✅ Iris floating offset (desktop) — lifted a bit (A)
-  const IRIS_TRANSLATE_Y = "-translate-y-2"
-
-  /* =========================================================
-     CARD STYLE (editorial premium)
-     ========================================================= */
+  const IRIS_TRANSLATE_Y = "translate-y-[18px] sm:translate-y-[26px] md:translate-y-[34px]"
 
   const CARD_BASE = [
     "group relative h-full overflow-hidden rounded-[28px]",
@@ -120,12 +233,14 @@ function Hero({ copy, tiles, children }: HeroProps) {
   const CARD_INNER_GLOW =
     "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 
-  // Slightly tighter grid overlay so it doesn't feel "big" after shrinking
   const CARD_GRID_OVERLAY = `
     pointer-events-none absolute inset-0 opacity-[0.05]
     [background-image:linear-gradient(rgba(34,211,238,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.9)_1px,transparent_1px)]
     [background-size:56px_56px]
   `
+
+  const effectiveHostRowLabel =
+    hostRowLabel ?? (hostRow === "trio" ? "ATOMICCURIOUS TEAM" : "YOUR HOST")
 
   return (
     <section
@@ -138,15 +253,12 @@ function Hero({ copy, tiles, children }: HeroProps) {
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
-        <ShootingStars count={14} variant="mixed" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-bg via-bg to-bg" />
 
-        {/* LIGHT glows */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.14),transparent_65%)] dark:hidden" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_85%_0%,rgb(var(--accent-alt)/0.12),transparent_60%)] dark:hidden" />
+        <div className="absolute inset-0 z-[2] bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.14),transparent_65%)] dark:hidden" />
+        <div className="absolute inset-0 z-[2] bg-[radial-gradient(ellipse_70%_50%_at_85%_0%,rgb(var(--accent-alt)/0.12),transparent_60%)] dark:hidden" />
 
-        {/* DARK layers */}
-        <div className="absolute inset-0 hidden dark:block">
+        <div className="absolute inset-0 z-[2] hidden dark:block">
           <div className="absolute inset-0 bg-gradient-to-b from-[#050709] via-[#0A0E12] to-bg" />
 
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_50%_-10%,rgba(34,211,238,0.40),transparent_65%)]" />
@@ -156,40 +268,35 @@ function Hero({ copy, tiles, children }: HeroProps) {
           <div className="absolute -left-20 -top-20 h-[800px] w-[800px] rounded-full bg-[rgba(34,211,238,0.25)] blur-[100px]" />
           <div className="absolute -right-20 top-0 h-[900px] w-[900px] rounded-full bg-[rgba(255,77,157,0.20)] blur-[120px]" />
           <div className="absolute left-1/2 top-1/3 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[rgba(34,211,238,0.15)] blur-[160px]" />
-          <div className="absolute left-1/4 top-1/2 h-[500px] w-[500px] rounded-full bg-[rgba(139,92,246,0.12)] blur-[140px]" />
+
+          <div className="absolute left-1/4 top-1/2 h-[500px] w-[500px] rounded-full bg-[rgba(139,92,246,0.07)] blur-[140px]" />
         </div>
 
-        {/* Particles */}
-        <div className="absolute inset-0 opacity-25 dark:opacity-60">
-          <div className="absolute left-[8%] top-[12%] h-3 w-3 rounded-full bg-accent/80 blur-[2px] shadow-[0_0_18px_rgb(var(--accent)/0.35)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-glow" />
+        <div className="absolute inset-0 z-[3] opacity-25 dark:opacity-60">
+          <div className="absolute left-[8.5%] top-[12%] h-3 w-3 rounded-full bg-accent/80 blur-[2px] shadow-[0_0_18px_rgb(var(--accent)/0.35)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-glow" />
           <div
-            className="absolute left-[65%] top-[35%] h-4 w-4 rounded-full bg-accent/70 blur-[2px] shadow-[0_0_20px_rgb(var(--accent)/0.30)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_25px_rgba(34,211,238,0.8)] animate-glow"
+            className="absolute left-[20%] top-[30%] h-4 w-4 rounded-full bg-accent/70 blur-[2px] shadow-[0_0_20px_rgb(var(--accent)/0.30)] dark:bg-[#22D3EE] dark:blur-[3px] dark:shadow-[0_0_25px_rgba(34,211,238,0.8)] animate-glow"
             style={{ animationDelay: "2s" }}
           />
           <div
-            className="absolute left-[18%] top-[55%] h-2.5 w-2.5 rounded-full bg-accent/70 blur-[1.5px] shadow-[0_0_16px_rgb(var(--accent)/0.30)] dark:bg-[#22D3EE] dark:blur-[2px] dark:shadow-[0_0_18px_rgba(34,211,238,0.8)] animate-glow"
-            style={{ animationDelay: "0.5s" }}
-          />
-
-          <div
-            className="absolute right-[12%] top-[20%] h-2.5 w-2.5 rounded-full bg-accent-alt/70 blur-[1.5px] shadow-[0_0_16px_rgb(var(--accent-alt)/0.28)] dark:bg-[#FF4D9D] dark:blur-[2px] dark:shadow-[0_0_18px_rgba(255,77,157,0.8)] animate-glow"
+            className="absolute right-[8.5%] top-[12%] h-3 w-3 rounded-full bg-accent-alt/70 blur-[1.5px] shadow-[0_0_16px_rgb(var(--accent-alt)/0.28)] dark:bg-[#FF4D9D] dark:blur-[2px] dark:shadow-[0_0_18px_rgba(255,77,157,0.8)] animate-glow"
             style={{ animationDelay: "1s" }}
           />
           <div
-            className="absolute right-[22%] top-[65%] h-3 w-3 rounded-full bg-accent-alt/70 blur-[2px] shadow-[0_0_18px_rgb(var(--accent-alt)/0.30)] dark:bg-[#FF4D9D] dark:blur-[3px] dark:shadow-[0_0_22px_rgba(255,77,157,0.8)] animate-glow"
+            className="absolute right-[20%] top-[30%] h-4 w-4 rounded-full bg-accent-alt/70 blur-[2px] shadow-[0_0_18px_rgb(var(--accent-alt)/0.30)] dark:bg-[#FF4D9D] dark:blur-[3px] dark:shadow-[0_0_22px_rgba(255,77,157,0.8)] animate-glow"
             style={{ animationDelay: "1.5s" }}
           />
         </div>
 
-        {/* Grid */}
-        <div className="absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgb(var(--accent)/1)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--accent)/1)_1px,transparent_1px)] [background-size:56px_56px] dark:opacity-[0.08] dark:[background-size:50px_50px]" />
+        <div className="absolute inset-0 z-[3] opacity-[0.025] [background-image:linear-gradient(rgb(var(--accent)/1)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--accent)/1)_1px,transparent_1px)] [background-size:56px_56px] dark:opacity-[0.055] dark:[background-size:50px_50px]" />
 
-        {/* Data lines */}
-        <div className="absolute left-0 top-[18%] h-px w-56 bg-gradient-to-r from-transparent via-accent to-transparent opacity-25 dark:h-[2px] dark:opacity-40 dark:animate-pulse" />
+        <div className="absolute left-0 top-[18%] z-[3] h-px w-56 bg-gradient-to-r from-transparent via-accent to-transparent opacity-25 dark:h-[2px] dark:opacity-40 dark:animate-pulse" />
         <div
-          className="absolute right-0 top-[55%] h-px w-64 bg-gradient-to-l from-transparent via-accent-alt to-transparent opacity-22 dark:h-[2px] dark:opacity-40 dark:animate-pulse"
+          className="absolute right-0 top-[55%] z-[3] h-px w-64 bg-gradient-to-l from-transparent via-accent-alt to-transparent opacity-22 dark:h-[2px] dark:opacity-40 dark:animate-pulse"
           style={{ animationDelay: "1s" }}
         />
+
+        <AmbientMotion intensity="low" />
       </div>
 
       {/* TOP CONTENT */}
@@ -201,7 +308,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
             </div>
           ) : null}
 
-          <h1 className="mt-6 text-balance font-semibold tracking-tight text-text dark:font-bold dark:text-white dark:[text-shadow:0_0_80px_rgba(34,211,238,0.5),0_0_120px_rgba(255,77,157,0.3),0_2px_4px_rgba(0,0,0,0.8)] text-[clamp(2.15rem,6vw,4.5rem)] leading-[1.06]">
+          <h1 className="mt-6 text-balance font-semibold tracking-tight text-text dark:font-bold dark:text-white dark:[text-shadow:0_0_70px_rgba(34,211,238,0.45),0_0_110px_rgba(255,77,157,0.28),0_2px_4px_rgba(0,0,0,0.8)] text-[clamp(2.15rem,6vw,4.5rem)] leading-[1.06]">
             {copy.headline}
           </h1>
 
@@ -251,6 +358,39 @@ function Hero({ copy, tiles, children }: HeroProps) {
               </span>
             </a>
           </div>
+
+          {hostRow !== "none" ? (
+            <div className="mt-7 w-full">
+              <div className="mx-auto max-w-3xl">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="text-[11px] font-semibold tracking-[0.18em] text-muted/75">
+                    {effectiveHostRowLabel}
+                  </div>
+
+                  <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+                    <HostBadge
+                      who="atom"
+                      title="Atom"
+                      subtitle="Curiosity + first principles."
+                      className="ac-ch ac-ch-atom"
+                    />
+                    <HostBadge
+                      who="iris"
+                      title="Iris"
+                      subtitle="Clarity, patterns, and ranking logic."
+                      className="ac-ch ac-ch-iris"
+                    />
+                    <HostBadge
+                      who="core"
+                      title="Core"
+                      subtitle="Playful learning, quizzes, and sparks."
+                      className="ac-ch ac-ch-core"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -259,7 +399,6 @@ function Hero({ copy, tiles, children }: HeroProps) {
         <div className={["mx-auto w-full", STRIP_MAX_W, STRIP_PX].join(" ")}>
           <div className="relative">
             <div className={["grid grid-cols-1", GRID_GAP, GRID_COLS_LG].join(" ")}>
-              {/* ✅ Left: Calendar (TEAL) */}
               <a
                 href={tiles.download.href}
                 className={[
@@ -318,7 +457,6 @@ function Hero({ copy, tiles, children }: HeroProps) {
                 </div>
               </a>
 
-              {/* ✅ MOBILE: Iris goes IN THE MIDDLE (between cards) */}
               {overlayChildren.length > 0 ? (
                 <div className="order-2 flex justify-center lg:hidden pointer-events-none">
                   <div className="relative w-full">
@@ -327,10 +465,8 @@ function Hero({ copy, tiles, children }: HeroProps) {
                 </div>
               ) : null}
 
-              {/* Center spacer (desktop grid middle column) */}
               <div className="order-2 hidden lg:block" />
 
-              {/* ✅ Right: Latest Post (PINK) */}
               <a
                 href={tiles.latest.href}
                 className={[
@@ -380,10 +516,7 @@ function Hero({ copy, tiles, children }: HeroProps) {
                   <ul className="mt-3 space-y-2 text-[13px] text-gray-300">
                     {tiles.latest.bullets.map((b) => (
                       <li key={b.text} className="flex gap-2">
-                        <span
-                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: dotColor(b.dot) }}
-                        />
+                        <span className="mt-[6px] h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor(b.dot) }} />
                         <span>{b.text}</span>
                       </li>
                     ))}
@@ -397,18 +530,10 @@ function Hero({ copy, tiles, children }: HeroProps) {
               </a>
             </div>
 
-            {/* ✅ DESKTOP: Iris floating above center */}
             {overlayChildren.length > 0 ? (
-              <div
-                className={[
-                  "pointer-events-none absolute inset-x-0 top-0 z-10 hidden lg:flex justify-center",
-                  IRIS_TRANSLATE_Y,
-                ].join(" ")}
-              >
-                <div className="relative h-[280px] sm:h-[340px] md:h-[400px] w-full">
-                  <div className="absolute inset-x-0 bottom-0 flex justify-center">
-                    {overlayChildren}
-                  </div>
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden lg:flex justify-center">
+                <div id="ac-iris-anchor" className={["relative", IRIS_TRANSLATE_Y].join(" ")}>
+                  {overlayChildren}
                 </div>
               </div>
             ) : null}
@@ -416,7 +541,6 @@ function Hero({ copy, tiles, children }: HeroProps) {
         </div>
       </div>
 
-      {/* Below children */}
       {belowChildren.length > 0 ? (
         <div className="relative z-20 mx-auto mt-6 w-full max-w-5xl px-4 sm:mt-8 sm:px-6 lg:px-8">
           {belowChildren}
@@ -428,5 +552,5 @@ function Hero({ copy, tiles, children }: HeroProps) {
   )
 }
 
-Hero.Overlay = HeroOverlay
-export default Hero
+;(Hero as any).Overlay = HeroOverlay
+export default Hero as typeof Hero & { Overlay: typeof HeroOverlay }

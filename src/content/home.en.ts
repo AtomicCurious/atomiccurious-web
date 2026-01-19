@@ -1,3 +1,4 @@
+// src/content/home.en.ts
 import { getLatestPostTileEn } from "./home.helpers"
 
 export const homeEn = {
@@ -7,8 +8,9 @@ export const homeEn = {
       headline: "Curiosity, by design.",
       subheadline:
         "Short, cinematic explorations of science, technology, and what’s coming next—built to spark better questions, not overwhelm you.",
+      // ✅ Invertido como pediste
       primaryCta: { label: "Start here", href: "/en/start-here" },
-      secondaryCta: { label: "Join the newsletter", href: "/en/newsletter" },
+      secondaryCta: { label: "Explore posts", href: "/en/posts" },
     },
     meet: {
       title: "Three hosts. One universe.",
@@ -39,3 +41,4 @@ export const homeEn = {
     },
   },
 } as const
+

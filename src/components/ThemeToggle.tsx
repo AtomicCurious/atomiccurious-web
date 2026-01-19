@@ -1,3 +1,4 @@
+// src/components/ThemeToggle.tsx
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
@@ -10,20 +11,15 @@ const STORAGE_KEY = "ac_theme"
 function getStored(): ThemeMode | null {
   if (typeof window === "undefined") return null
   const raw = window.localStorage.getItem(STORAGE_KEY)
-  if (
-    raw === "dark" ||
-    raw === "light" ||
-    raw === "cosmic" ||
-    raw === "ocean" ||
-    raw === "mocha"
-  ) {
+  if (raw === "dark" || raw === "light" || raw === "cosmic" || raw === "ocean" || raw === "mocha") {
     return raw
   }
   return null
 }
 
 function isDarkLike(mode: ThemeMode) {
-  return mode === "dark" || mode === "cosmic" || mode === "ocean" || mode === "mocha"
+  // ✅ mocha is LIGHT in your globals.css (color-scheme: light)
+  return mode === "dark" || mode === "cosmic" || mode === "ocean"
 }
 
 /**
@@ -33,11 +29,14 @@ function isDarkLike(mode: ThemeMode) {
  * - "dark" means: remove data-theme (fallback to :root tokens)
  */
 function applyThemeScoped(mode: ThemeMode, isHome: boolean) {
+  if (typeof document === "undefined") return
+
   const root = document.documentElement
   const body = document.body
 
   if (isHome) {
     body.removeAttribute("data-theme")
+    // Home uses :root tokens (dark)
     root.classList.add("dark")
     return
   }
@@ -74,7 +73,11 @@ export default function ThemeToggle({
   forceTheme?: ThemeMode
 }) {
   const pathname = usePathname()
-  const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/"
+  const isHome =
+    pathname === "/" ||
+    pathname === "/en" ||
+    pathname === "/es" ||
+    pathname === "/es/"
 
   const locked = Boolean(forceTheme)
   const [mode, setMode] = useState<ThemeMode>("dark")
@@ -85,7 +88,7 @@ export default function ThemeToggle({
     if (typeof window === "undefined") return
     const current = forceTheme ?? getStored() ?? mode
     applyThemeScoped(current, isHome)
-  }, [pathname, isHome, forceTheme])
+  }, [pathname, isHome, forceTheme, mode])
 
   // Init local state once (or when force changes)
   useEffect(() => {

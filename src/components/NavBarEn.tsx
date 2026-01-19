@@ -1,4 +1,4 @@
-//src\components\NavBarEn.tsx
+// src/components/NavBarEn.tsx
 "use client"
 
 import Link from "next/link"
@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
 import ThemeToggle from "@/components/ThemeToggle"
-import AccentToggle from "@/components/AccentToggle"
-import AccentSigilMark from "@/components/AccentSigilMark"
+import CharacterToggle from "@/components/CharacterToggle"
+import CharacterSigilMark from "@/components/CharacterSigilMark"
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/"
@@ -361,10 +361,10 @@ export default function NavBarEn() {
   const links = [
     { label: "Start Here", href: "/start-here" },
     { label: "Posts", href: "/posts" },
-    { label: "About", href: "/about" },
     { label: "Newsletter", href: "/newsletter" },
     { label: "Resources", href: "/resources" },
     { label: "Community", href: "/community" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ]
 
@@ -379,9 +379,7 @@ export default function NavBarEn() {
               ref={rocketRef}
               type="button"
               onClick={() => setCoreOpen((v) => !v)}
-              className={["group inline-flex items-center relative", rocketPing ? "ac-rocket-ping" : ""].join(
-                " "
-              )}
+              className={["group inline-flex items-center relative", rocketPing ? "ac-rocket-ping" : ""].join(" ")}
               aria-label="Open a Core curiosity"
             >
               <StarshipMark />
@@ -406,15 +404,15 @@ export default function NavBarEn() {
                 @keyframes rocketPing {
                   0% {
                     transform: translateY(0) scale(1);
-                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
                   }
                   45% {
                     transform: translateY(-1px) scale(1.02);
-                    filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.22));
+                    filter: drop-shadow(0 0 14px rgba(var(--accent), 0.22));
                   }
                   100% {
                     transform: translateY(0) scale(1);
-                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
                   }
                 }
 
@@ -427,24 +425,77 @@ export default function NavBarEn() {
             </button>
           ) : (
             /* SECCIONES: aquí va el sigil (y SOLO el sigil) */
-            <Link
-              href="/"
-              className="group inline-flex items-center justify-center"
-              aria-label="Go to Home"
-            >
-              <AccentSigilMark className="h-9 w-9 sm:h-10 sm:w-10" />
+            <Link href="/" className="group inline-flex items-center justify-center" aria-label="Go to Home">
+              <CharacterSigilMark className="h-9 w-9 sm:h-10 sm:w-10" />
             </Link>
           )}
 
+          {/* LOGO TEXT */}
           <Link
             href="/"
             className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text"
             aria-label="AtomicCurious Home"
           >
             <span className="relative truncate">
-              AtomicCurious
+              <span className="ac-logo-wipe">AtomicCurious</span>
               <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
             </span>
+
+            <style jsx>{`
+              @keyframes acLogoWipeLR {
+                0% {
+                  background-position: 0% 50%;
+                }
+                100% {
+                  background-position: 100% 50%;
+                }
+              }
+
+              .ac-logo-wipe {
+                color: rgb(var(--text));
+                -webkit-text-fill-color: rgb(var(--text));
+                position: relative;
+                display: inline-block;
+              }
+
+              .ac-logo-wipe::after {
+                content: "AtomicCurious";
+                position: absolute;
+                inset: 0;
+
+                color: transparent;
+                -webkit-text-fill-color: transparent;
+
+                background-image: linear-gradient(
+                  90deg,
+                  rgba(255, 255, 255, 0) 0%,
+                  rgba(255, 255, 255, 0) 24%,
+                  rgba(255, 236, 196, 0.92) 36%,
+                  rgba(255, 214, 102, 0.98) 45%,
+                  rgba(255, 179, 71, 0.94) 52%,
+                  rgba(255, 255, 255, 0) 62%,
+                  rgba(255, 255, 255, 0) 100%
+                );
+
+                background-size: 320% 100%;
+                background-repeat: no-repeat;
+
+                background-clip: text;
+                -webkit-background-clip: text;
+
+                animation: acLogoWipeLR 6.5s ease-in-out infinite;
+
+                filter: drop-shadow(0 0 10px rgba(255, 210, 120, 0.08));
+                pointer-events: none;
+              }
+
+              @media (prefers-reduced-motion: reduce) {
+                .ac-logo-wipe::after {
+                  animation: none !important;
+                  background-position: 50% 50% !important;
+                }
+              }
+            `}</style>
           </Link>
         </div>
 
@@ -475,7 +526,8 @@ export default function NavBarEn() {
           {showToggles ? (
             <>
               <ThemeToggle />
-              <AccentToggle />
+              {/* ✅ Character-only (sigil/voice), colors are theme-driven */}
+              <CharacterToggle />
             </>
           ) : null}
 
@@ -499,7 +551,7 @@ export default function NavBarEn() {
           {showToggles ? (
             <>
               <ThemeToggle />
-              <AccentToggle />
+              <CharacterToggle />
             </>
           ) : null}
 
@@ -576,8 +628,9 @@ export default function NavBarEn() {
             </div>
 
             <div className="relative px-5 py-5">
-              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
-              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
+              {/* ✅ Theme-aware blobs */}
+              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(var(--accent),0.12)] blur-[90px]" />
+              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(var(--accent-alt),0.10)] blur-[110px]" />
 
               <div className="space-y-2">
                 {links.map((l) => {
@@ -596,9 +649,7 @@ export default function NavBarEn() {
                       ].join(" ")}
                     >
                       <span className="text-sm font-semibold">{l.label}</span>
-                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
-                        ›
-                      </span>
+                      <span className="text-muted transition-transform group-hover:translate-x-0.5">›</span>
                     </Link>
                   )
                 })}
@@ -613,7 +664,7 @@ export default function NavBarEn() {
                   {showToggles ? (
                     <>
                       <ThemeToggle />
-                      <AccentToggle />
+                      <CharacterToggle />
                     </>
                   ) : null}
 

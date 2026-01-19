@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
 import ThemeToggle from "@/components/ThemeToggle"
-import AccentToggle from "@/components/AccentToggle"
-import AccentSigilMark from "@/components/AccentSigilMark"
+import CharacterToggle from "@/components/CharacterToggle"
+import CharacterSigilMark from "@/components/CharacterSigilMark"
 
 function isActive(pathname: string, href: string) {
   if (href === "/es") return pathname === "/es" || pathname === "/es/"
@@ -165,22 +165,8 @@ function StarshipMark() {
         </g>
 
         <g className="jetGlow" style={{ mixBlendMode: "screen" as any }}>
-          <ellipse
-            className="jetCore"
-            cx="52"
-            cy="56"
-            rx="16"
-            ry="10"
-            fill="url(#jetCoreMini)"
-          />
-          <ellipse
-            className="jetCore"
-            cx="52"
-            cy="48"
-            rx="12"
-            ry="8"
-            fill="url(#jetCoreMini)"
-          />
+          <ellipse className="jetCore" cx="52" cy="56" rx="16" ry="10" fill="url(#jetCoreMini)" />
+          <ellipse className="jetCore" cx="52" cy="48" rx="12" ry="8" fill="url(#jetCoreMini)" />
         </g>
 
         <g>
@@ -290,7 +276,6 @@ export default function NavBarEs() {
   const pathname = usePathname()
   const enHref = useMemo(() => toEn(pathname), [pathname])
 
-  // ✅ Home ES: cohete fijo (NO se toca)
   const isHome = pathname === "/es" || pathname === "/es/"
   const showToggles = !isHome
 
@@ -298,7 +283,6 @@ export default function NavBarEs() {
   const [coreOpen, setCoreOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Core “beacon” state
   const [coreHasNew, setCoreHasNew] = useState(false)
   const [rocketPing, setRocketPing] = useState(false)
 
@@ -378,13 +362,13 @@ export default function NavBarEs() {
     []
   )
 
-  const links = [
+    const links = [
     { label: "Empieza aquí", href: "/es/start-here" },
     { label: "Posts", href: "/es/posts" },
-    { label: "Acerca", href: "/es/about" },
     { label: "Boletín", href: "/es/newsletter" },
     { label: "Recursos", href: "/es/recursos" },
     { label: "Comunidad", href: "/es/comunidad" },
+    { label: "Acerca", href: "/es/about" },
     { label: "Contacto", href: "/es/contacto" },
   ]
 
@@ -393,15 +377,13 @@ export default function NavBarEs() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         {/* LEFT */}
         <div className="inline-flex min-w-0 items-center gap-3">
+          {/* HOME: cohete (único) */}
           {isHome ? (
             <button
               ref={rocketRef}
               type="button"
               onClick={() => setCoreOpen((v) => !v)}
-              className={[
-                "group inline-flex items-center relative",
-                rocketPing ? "ac-rocket-ping" : "",
-              ].join(" ")}
+              className={["group inline-flex items-center relative", rocketPing ? "ac-rocket-ping" : ""].join(" ")}
               aria-label="Abrir una curiosidad de Core"
             >
               <StarshipMark />
@@ -419,6 +401,7 @@ export default function NavBarEs() {
                 />
               ) : null}
 
+              {/* ✅ Ping animation (paridad con EN) */}
               <style jsx>{`
                 .ac-rocket-ping {
                   animation: rocketPing 700ms ease-out both;
@@ -426,15 +409,15 @@ export default function NavBarEs() {
                 @keyframes rocketPing {
                   0% {
                     transform: translateY(0) scale(1);
-                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
                   }
                   45% {
                     transform: translateY(-1px) scale(1.02);
-                    filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.22));
+                    filter: drop-shadow(0 0 14px rgba(var(--accent), 0.22));
                   }
                   100% {
                     transform: translateY(0) scale(1);
-                    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+                    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
                   }
                 }
 
@@ -446,21 +429,78 @@ export default function NavBarEs() {
               `}</style>
             </button>
           ) : (
-            // ✅ En secciones: sigil por acento (NO cohete)
-            <Link href="/es" className="group inline-flex items-center" aria-label="Ir al inicio">
-              <AccentSigilMark />
+            /* SECCIONES: sigil (y SOLO sigil) */
+            <Link href="/es" className="group inline-flex items-center justify-center" aria-label="Ir al inicio">
+              <CharacterSigilMark className="h-9 w-9 sm:h-10 sm:w-10" />
             </Link>
           )}
 
+          {/* LOGO TEXT */}
           <Link
             href="/es"
             className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text"
             aria-label="Inicio AtomicCurious"
           >
             <span className="relative truncate">
-              AtomicCurious
+              <span className="ac-logo-wipe">AtomicCurious</span>
               <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
             </span>
+
+            <style jsx>{`
+              @keyframes acLogoWipeLR {
+                0% {
+                  background-position: 0% 50%;
+                }
+                100% {
+                  background-position: 100% 50%;
+                }
+              }
+
+              .ac-logo-wipe {
+                color: rgb(var(--text));
+                -webkit-text-fill-color: rgb(var(--text));
+                position: relative;
+                display: inline-block;
+              }
+
+              .ac-logo-wipe::after {
+                content: "AtomicCurious";
+                position: absolute;
+                inset: 0;
+
+                color: transparent;
+                -webkit-text-fill-color: transparent;
+
+                background-image: linear-gradient(
+                  90deg,
+                  rgba(255, 255, 255, 0) 0%,
+                  rgba(255, 255, 255, 0) 24%,
+                  rgba(255, 236, 196, 0.92) 36%,
+                  rgba(255, 214, 102, 0.98) 45%,
+                  rgba(255, 179, 71, 0.94) 52%,
+                  rgba(255, 255, 255, 0) 62%,
+                  rgba(255, 255, 255, 0) 100%
+                );
+
+                background-size: 320% 100%;
+                background-repeat: no-repeat;
+
+                background-clip: text;
+                -webkit-background-clip: text;
+
+                animation: acLogoWipeLR 6.5s ease-in-out infinite;
+
+                filter: drop-shadow(0 0 10px rgba(255, 210, 120, 0.08));
+                pointer-events: none;
+              }
+
+              @media (prefers-reduced-motion: reduce) {
+                .ac-logo-wipe::after {
+                  animation: none !important;
+                  background-position: 50% 50% !important;
+                }
+              }
+            `}</style>
           </Link>
         </div>
 
@@ -491,7 +531,7 @@ export default function NavBarEs() {
           {showToggles ? (
             <>
               <ThemeToggle />
-              <AccentToggle />
+              <CharacterToggle />
             </>
           ) : null}
 
@@ -515,7 +555,7 @@ export default function NavBarEs() {
           {showToggles ? (
             <>
               <ThemeToggle />
-              <AccentToggle />
+              <CharacterToggle />
             </>
           ) : null}
 
@@ -592,8 +632,9 @@ export default function NavBarEs() {
             </div>
 
             <div className="relative px-5 py-5">
-              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(34,211,238,0.12)] blur-[90px]" />
-              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[110px]" />
+              {/* Theme-aware blobs */}
+              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(var(--accent),0.12)] blur-[90px]" />
+              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(var(--accent-alt),0.10)] blur-[110px]" />
 
               <div className="space-y-2">
                 {links.map((l) => {
@@ -612,9 +653,7 @@ export default function NavBarEs() {
                       ].join(" ")}
                     >
                       <span className="text-sm font-semibold">{l.label}</span>
-                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
-                        ›
-                      </span>
+                      <span className="text-muted transition-transform group-hover:translate-x-0.5">›</span>
                     </Link>
                   )
                 })}
@@ -623,15 +662,13 @@ export default function NavBarEs() {
               <div className="mt-5 h-px w-full bg-border/70" />
 
               <div className="mt-5">
-                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
-                  AJUSTES
-                </div>
+                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">AJUSTES</div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {showToggles ? (
                     <>
                       <ThemeToggle />
-                      <AccentToggle />
+                      <CharacterToggle />
                     </>
                   ) : null}
 

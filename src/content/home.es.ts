@@ -1,3 +1,4 @@
+// src/content/home.es.ts
 import { getLatestPostTileEs } from "./home.helpers"
 
 export const homeEs = {
@@ -6,14 +7,15 @@ export const homeEs = {
       eyebrow: "",
       headline: "Curiosidad, diseñada.",
       subheadline:
-        "Exploraciones cortas y cinematográficas de ciencia, tecnología y futuro—para encender mejores preguntas, no más ruido.",
+        "Exploraciones cortas y cinematográficas de ciencia, tecnología y futuro—pensadas para encender mejores preguntas, no más ruido.",
+      // ✅ 2 botones, mismo criterio que EN
       primaryCta: { label: "Empieza aquí", href: "/es/start-here" },
-      secondaryCta: { label: "Únete al newsletter", href: "/es/newsletter" },
+      secondaryCta: { label: "Explorar posts", href: "/es/posts" },
     },
     meet: {
       title: "Tres anfitriones. Un universo.",
       subtitle:
-        "Iris, Atom y Core no son personas reales: son interfaces narrativas para explorar ciencia, tecnología y futuro con claridad.",
+        "Iris, Atom y Core no son personas reales: son interfaces narrativas diseñadas para explorar ciencia, tecnología y futuro con claridad.",
       items: [
         { name: "Iris", role: "Ranked" },
         { name: "Atom", role: "Curiosity" },

@@ -1,3 +1,4 @@
+//app\(en)\page.tsx
 import type { Metadata } from "next"
 import HomeLanding from "@/components/pages/HomeLanding"
 import { homeEn } from "@/content/home.en"

@@ -1,3 +1,4 @@
+// app/es/about/page.tsx
 import Link from "next/link"
 import Image from "next/image"
 import type { Metadata } from "next"
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/es/about",
     languages: {
-      en: "/en/about",
+      en: "/about",
       es: "/es/about",
     },
   },
@@ -42,34 +43,35 @@ function CharacterCard({
       ? "/characters/atom.png"
       : "/characters/core.png"
 
-  // Sub-acento por personaje (controlado, nada gamer)
+  // Sub-acento por personaje (controlado, premium)
+  // Atom = accent, Iris = accent-alt, Core = neutral white (NO palette creep)
   const accentGlow =
     id === "atom"
       ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent)/0.20),transparent_60%)]"
       : id === "iris"
       ? "bg-[radial-gradient(circle_at_25%_10%,rgb(var(--accent-alt)/0.18),transparent_60%)]"
-      : "bg-[radial-gradient(circle_at_25%_10%,rgb(34_197_94/0.16),transparent_60%)]"
+      : "bg-[radial-gradient(circle_at_25%_10%,rgba(255,255,255,0.10),transparent_62%)]"
 
   const badgeBorder =
     id === "atom"
       ? "border-accent/35"
       : id === "iris"
       ? "border-[rgb(var(--accent-alt)/0.35)]"
-      : "border-[rgb(34_197_94/0.30)]"
+      : "border-white/15"
 
   const badgeText =
     id === "atom"
       ? "text-accent"
       : id === "iris"
       ? "text-[rgb(var(--accent-alt))]"
-      : "text-[rgb(34_197_94)]"
+      : "text-white/80"
 
   const hoverText =
     id === "atom"
       ? "group-hover:text-accent"
       : id === "iris"
       ? "group-hover:text-[rgb(var(--accent-alt))]"
-      : "group-hover:text-[rgb(34_197_94)]"
+      : "group-hover:text-white"
 
   return (
     <div
@@ -161,7 +163,7 @@ function StepCard({
 
 export default function Page() {
   return (
-    <main className="relative w-full overflow-hidden bg-bg">
+    <div className="relative w-full overflow-hidden bg-bg">
       {/* Background: editorial/cinemático, más presente */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
@@ -206,7 +208,7 @@ export default function Page() {
                 "inline-flex items-center justify-center rounded-xl",
                 "bg-accent px-6 py-3 text-sm font-semibold text-bg",
                 "shadow-accent transition hover:brightness-110",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               ].join(" ")}
             >
               Empieza aquí <span aria-hidden className="ml-2">→</span>
@@ -219,6 +221,7 @@ export default function Page() {
                 "border border-border bg-surface-1 px-6 py-3",
                 "text-sm font-semibold text-text transition",
                 "hover:bg-surface-2 hover:border-accent/30 hover:text-accent",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               ].join(" ")}
             >
               Únete al newsletter <span aria-hidden className="ml-2">→</span>
@@ -347,7 +350,7 @@ export default function Page() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/es/community"
+              href="/es/comunidad"
               className="inline-flex items-center gap-2 text-sm font-semibold text-text hover:text-accent"
             >
               Unirte a la comunidad <span aria-hidden>→</span>
@@ -407,7 +410,7 @@ export default function Page() {
                   "inline-flex items-center justify-center rounded-xl",
                   "bg-accent px-6 py-3 text-sm font-semibold text-bg",
                   "shadow-accent transition hover:brightness-110",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 ].join(" ")}
               >
                 Únete al newsletter <span aria-hidden className="ml-2">→</span>
@@ -416,7 +419,6 @@ export default function Page() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   )
 }
-

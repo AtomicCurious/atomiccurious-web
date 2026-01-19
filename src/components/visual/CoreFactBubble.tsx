@@ -14,6 +14,21 @@ type CoreFactBubbleProps = {
   nextLabel?: string
   closeLabel?: string
   ariaLabel?: string
+
+  /**
+   * ✅ NEW (optional): rotate character each time you click "next"
+   * Default: true
+   */
+  rotateCharacters?: boolean
+}
+
+type CharacterKey = "core" | "iris" | "atom"
+
+type CharacterDef = {
+  key: CharacterKey
+  name: string
+  img: string
+  aria: string
 }
 
 function clamp(n: number, min: number, max: number) {
@@ -37,7 +52,8 @@ export default function CoreFactBubble({
   title = "Core",
   nextLabel = "Otro dato",
   closeLabel = "Cerrar",
-  ariaLabel = "Core curiosity",
+  ariaLabel = "Curiosity bubble",
+  rotateCharacters = true,
 }: CoreFactBubbleProps) {
   const bubbleRef = useRef<HTMLDivElement | null>(null)
 
@@ -51,10 +67,27 @@ export default function CoreFactBubble({
   // Tail position inside bubble (px from RIGHT edge)
   const [tailRight, setTailRight] = useState<number>(24)
 
-  // Non-repeating rotation
+  // Non-repeating rotation for facts
   const [order, setOrder] = useState<number[]>([])
   const [idx, setIdx] = useState<number>(0)
   const lastFactRef = useRef<string>("")
+
+  // ✅ Character rotation (Core -> Iris -> Atom)
+  const characters: CharacterDef[] = useMemo(
+    () => [
+      { key: "core", name: "Core", img: "/characters/core.png", aria: "Core curiosity" },
+      { key: "iris", name: "Iris", img: "/characters/iris.png", aria: "Iris curiosity" },
+      { key: "atom", name: "Atom", img: "/characters/atom.png", aria: "Atom curiosity" },
+    ],
+    []
+  )
+
+  const [charIdx, setCharIdx] = useState(0)
+
+  function bumpCharacter() {
+    if (!rotateCharacters) return
+    setCharIdx((c) => (c + 1) % characters.length)
+  }
 
   // Mount / unmount with exit animation
   useEffect(() => {
@@ -68,7 +101,7 @@ export default function CoreFactBubble({
     const t = window.setTimeout(() => {
       setMounted(false)
       setLeaving(false)
-    }, 160) // a touch longer than CSS to be safe
+    }, 160)
     return () => window.clearTimeout(t)
   }, [open, mounted])
 
@@ -78,16 +111,16 @@ export default function CoreFactBubble({
     const n = Math.max(0, facts.length)
     const base = Array.from({ length: n }, (_, i) => i)
 
-    // If we have no facts, reset
     if (n === 0) {
       setOrder([])
       setIdx(0)
       setFact("")
       lastFactRef.current = ""
+      // reset character when there are no facts
+      setCharIdx(0)
       return
     }
 
-    // Shuffle, but try to avoid putting the last shown fact first (soft rule)
     const shuffled = shuffle(base)
     const last = lastFactRef.current
     if (last) {
@@ -102,6 +135,9 @@ export default function CoreFactBubble({
     const first = facts[shuffled[0]] ?? ""
     setFact(first)
     lastFactRef.current = first
+
+    // ✅ On refresh, start from Core again (so it feels consistent)
+    setCharIdx(0)
   }, [facts, mounted])
 
   // When it opens, ensure we show a fact (and reset if needed)
@@ -121,20 +157,29 @@ export default function CoreFactBubble({
       const first = facts[shuffled[0]] ?? ""
       setFact(first)
       lastFactRef.current = first
+
+      // ✅ On first open, begin at Core
+      setCharIdx(0)
       return
     }
 
-    // Otherwise, keep current fact (feels consistent), but if empty pick first
+    // Otherwise, keep current fact, but if empty pick first
     if (!fact) {
       const first = facts[order[0]] ?? facts[0] ?? ""
       setFact(first)
       lastFactRef.current = first
+
+      // If bubble opens with empty state, ensure char is not weird
+      setCharIdx((c) => (Number.isFinite(c) ? c : 0))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   function nextFact() {
     if (!facts.length) return
+
+    // ✅ rotate character with each "next"
+    bumpCharacter()
 
     // If order is invalid, rebuild
     if (!order.length || order.length !== facts.length) {
@@ -267,6 +312,13 @@ export default function CoreFactBubble({
     }
   }, [mounted, onClose, anchorEl])
 
+  const activeCharacter = characters[Math.min(charIdx, characters.length - 1)] ?? characters[0]!
+
+  // If user passes title explicitly and does NOT want rotation, keep that.
+  // Otherwise, show rotating character name.
+  const shownTitle = rotateCharacters ? activeCharacter.name : title
+  const shownAria = rotateCharacters ? activeCharacter.aria : ariaLabel
+
   const bubble = useMemo(() => {
     if (!mounted) return null
 
@@ -274,7 +326,7 @@ export default function CoreFactBubble({
       <div
         ref={bubbleRef}
         role="dialog"
-        aria-label={ariaLabel}
+        aria-label={shownAria}
         tabIndex={-1}
         className={[
           "fixed z-[80]",
@@ -287,7 +339,9 @@ export default function CoreFactBubble({
 
           // ✨ micro animation in/out
           "origin-top-right",
-          leaving ? "animate-[coreBubbleOut_140ms_ease-in_forwards]" : "animate-[coreBubbleIn_140ms_ease-out]",
+          leaving
+            ? "animate-[coreBubbleOut_140ms_ease-in_forwards]"
+            : "animate-[coreBubbleIn_140ms_ease-out]",
           "motion-reduce:animate-none",
         ].join(" ")}
         style={{ top: pos.top, left: pos.left }}
@@ -300,13 +354,17 @@ export default function CoreFactBubble({
         />
 
         <div className="flex items-start gap-3">
-          {/* Core avatar */}
+          {/* Avatar (Core/Iris/Atom) */}
           <div className="relative mt-0.5 h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border/70 bg-surface-2/40">
-            <img src="/characters/core.png" alt="Core" className="h-full w-full object-cover" />
+            <img
+              src={activeCharacter.img}
+              alt={activeCharacter.name}
+              className="h-full w-full object-cover"
+            />
           </div>
 
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-text">{title}</p>
+            <p className="text-sm font-semibold text-text">{shownTitle}</p>
 
             <p className="mt-1 text-sm leading-relaxed text-muted">{fact}</p>
 
@@ -358,7 +416,20 @@ export default function CoreFactBubble({
         `}</style>
       </div>
     )
-  }, [mounted, leaving, ariaLabel, pos.top, pos.left, tailRight, title, fact, nextLabel, closeLabel])
+  }, [
+    mounted,
+    leaving,
+    pos.top,
+    pos.left,
+    tailRight,
+    fact,
+    nextLabel,
+    closeLabel,
+    shownTitle,
+    shownAria,
+    activeCharacter.img,
+    activeCharacter.name,
+  ])
 
   return bubble
 }

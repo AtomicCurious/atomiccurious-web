@@ -1,3 +1,4 @@
+//src\components\SocialLinks.tsx
 "use client"
 
 import Link from "next/link"
@@ -5,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
 type Social = {
-  label: "YouTube" | "TikTok" | "Instagram"
+  label: "YouTube" | "TikTok" | "Instagram" | "Facebook"
   href: string
 }
 
@@ -33,6 +34,12 @@ function SocialIcon({
       return (
         <svg className={className} viewBox="0 0 24 24" fill="currentColor">
           <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5ZM17.5 6a1 1 0 1 1-1 1 1 1 0 0 1 1-1Z" />
+        </svg>
+      )
+    case "Facebook":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24h11.495v-9.294H9.691V11.01h3.13V8.41c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.31h3.587l-.467 3.696h-3.12V24h6.116C23.403 24 24 23.403 24 22.674V1.326C24 .597 23.403 0 22.675 0z" />
         </svg>
       )
   }
@@ -74,6 +81,7 @@ export default function SocialLinks({
       YouTube: "group-hover:text-red-500 group-hover:border-red-500/30",
       TikTok: "group-hover:text-cyan-400 group-hover:border-cyan-400/30",
       Instagram: "group-hover:text-pink-400 group-hover:border-pink-400/30",
+      Facebook: "group-hover:text-blue-500 group-hover:border-blue-500/30",
     }),
     []
   )
@@ -94,7 +102,7 @@ export default function SocialLinks({
     const displayTitle = title?.trim() ? title.trim() : t.defaultTitle
 
     return (
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3 -ml-35">
         {/* Title (siempre 1 sola vez) */}
         <span className="shrink-0 text-[11px] font-semibold tracking-wide text-muted">
           {displayTitle}
@@ -107,7 +115,7 @@ export default function SocialLinks({
               key={s.label}
               href={s.href}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className={[
                 "group inline-flex items-center gap-2 whitespace-nowrap",
                 "rounded-full border border-border/70",
@@ -195,7 +203,7 @@ export default function SocialLinks({
                       key={s.label}
                       href={s.href}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       onClick={() => setOpen(false)}
                       className={[
                         "group flex items-center justify-between rounded-2xl border px-4 py-3",
@@ -242,7 +250,7 @@ export default function SocialLinks({
             key={s.label}
             href={s.href}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={[
               "group inline-flex items-center gap-2",
               "rounded-full border border-border/80",

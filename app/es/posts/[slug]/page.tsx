@@ -1,48 +1,20 @@
+// app/es/posts/[slug]/page.tsx
 import Link from "next/link"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { compileMDX } from "next-mdx-remote/rsc"
+import fs from "node:fs/promises"
+import path from "node:path"
+
 import { postsEs, PostFormat } from "@/content/posts.es"
 
-type Post = {
-  title: string
-  description: string
-  date: string
-  youtubeId?: string
-  sections: { heading: string; body: string }[]
-  takeaways: string[]
-}
+import MakeItRealCard from "@/components/posts/MakeItRealCard"
+import CharacterCallout from "@/components/posts/CharacterCallout"
+import PostHeroHost from "@/components/posts/PostHeroHost"
 
-const POSTS: Record<string, Post> = {
-  "por-que-sonamos": {
-    title: "Por qué soñamos: el propósito oculto de las historias del sueño",
-    description:
-      "Una exploración cinematográfica de lo que dice la ciencia sobre los sueños—y por qué tu cerebro los genera.",
-    date: "2025-12-29",
-    youtubeId: "dQw4w9WgXcQ",
-    sections: [
-      {
-        heading: "Los sueños no son aleatorios",
-        body:
-          "Las teorías modernas sugieren que soñar puede ayudar a regular emociones, consolidar memorias y simular amenazas—como un sandbox mental nocturno.",
-      },
-      {
-        heading: "Memoria, emoción y construcción de patrones",
-        body:
-          "Durante el sueño, el cerebro repite y remezcla experiencias. Los sueños pueden ser la “interfaz” subjetiva de ese proceso.",
-      },
-      {
-        heading: "Lo que todavía no sabemos",
-        body:
-          "Ninguna teoría lo explica todo. El misterio es parte de lo interesante—y de la frontera científica.",
-      },
-    ],
-    takeaways: [
-      "Soñar podría apoyar la consolidación de memoria y el procesamiento emocional.",
-      "Puede ser un espacio de simulación para resolver problemas y construir patrones.",
-      "La ciencia aún debate la función “principal”: múltiples roles pueden coexistir.",
-    ],
-  },
-}
-
+// ---------------------------
+// Helpers
+// ---------------------------
 function normalizeSlug(raw?: string) {
   return (raw ?? "")
     .trim()
@@ -57,6 +29,44 @@ const formatLabels: Record<PostFormat, string> = {
   quiz: "Quiz · Core",
 }
 
+// Mapea format -> host (tu regla CRÍTICA)
+const formatToHost = (format: PostFormat) => {
+  if (format === "curiosity") return "atom" as const
+  if (format === "ranked") return "iris" as const
+  return "core" as const
+}
+
+// ✅ IMPORTANTE: tus MDX están en src/content/posts/es
+async function readMdxEs(slug: string) {
+  const filePath = path.join(
+    process.cwd(),
+    "src",
+    "content",
+    "posts",
+    "es",
+    `${slug}.mdx`
+  )
+  return fs.readFile(filePath, "utf8")
+}
+
+// Heurística simple para decidir si mostrar PostHeroHost
+function estimateWords(source: string) {
+  const text = source
+    .replace(/<[^>]+>/g, " ")
+    .replace(/[`*_#>\-\[\]\(\)]/g, " ")
+  const words = text.trim().split(/\s+/).filter(Boolean)
+  return words.length
+}
+
+function readingTimeLabel(words: number) {
+  if (!words) return undefined
+  const minutes = Math.max(3, Math.round(words / 220))
+  return `${minutes} min`
+}
+
+// ---------------------------
+// Next.js: metadata
+// ---------------------------
 export async function generateMetadata({
   params,
 }: {
@@ -64,7 +74,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await Promise.resolve(params)
   const slug = normalizeSlug(resolvedParams?.slug)
-
   const metaPost = postsEs.find((p) => p.slug === slug)
 
   if (!slug || !metaPost) {
@@ -80,6 +89,18 @@ export async function generateMetadata({
   }
 }
 
+// Recomendado: static params para build
+export async function generateStaticParams() {
+  return postsEs.map((p) => ({ slug: p.slug }))
+}
+
+// ---------------------------
+// Page
+// ---------------------------
+type Frontmatter = {
+  youtubeId?: string
+}
+
 export default async function Page({
   params,
 }: {
@@ -87,138 +108,172 @@ export default async function Page({
 }) {
   const resolvedParams = await Promise.resolve(params)
   const slug = normalizeSlug(resolvedParams?.slug)
-  const post = POSTS[slug]
 
   const metaPost = postsEs.find((p) => p.slug === slug)
-  const format = metaPost?.format
+  if (!slug || !metaPost) return notFound()
 
   // "Más de este formato"
-  const moreFromFormat =
-    format
-      ? postsEs
-          .filter((p) => p.format === format && p.slug !== slug)
-          .slice(0, 4)
-      : []
+  const moreFromFormat = postsEs
+    .filter((p) => p.format === metaPost.format && p.slug !== slug)
+    .slice(0, 4)
 
-  if (!slug || !post || !metaPost) {
-    return (
-      <main className="w-full">
-        <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:px-10">
-          <h1 className="text-2xl font-semibold text-text">
-            Post no encontrado
-          </h1>
-          <p className="mt-3 text-muted">Esta página todavía no existe.</p>
-
-          <div className="mt-4 rounded-2xl border border-border bg-surface-1 p-4 shadow-soft">
-            <p className="text-xs text-muted">Slug solicitado</p>
-            <p className="mt-1 font-mono text-sm text-text/90">
-              {resolvedParams?.slug ?? "(undefined)"}
-            </p>
-            <p className="mt-2 text-xs text-muted">
-              Prueba: <span className="font-mono">/es/posts/por-que-sonamos</span>
-            </p>
-          </div>
-
-          <Link
-            href="/es"
-            className="
-              mt-6 inline-flex rounded-xl
-              border border-border bg-surface-1 px-5 py-2.5
-              text-sm font-semibold text-text shadow-soft transition
-              hover:bg-surface-2 hover:border-accent/30 hover:text-accent
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-            "
-          >
-            Volver al inicio
-          </Link>
-        </div>
-      </main>
-    )
+  // Lee + compila MDX
+  let mdxSource = ""
+  try {
+    mdxSource = await readMdxEs(slug)
+  } catch {
+    return notFound()
   }
+
+  const words = estimateWords(mdxSource)
+  const isLong = words >= 2000
+  const host = formatToHost(metaPost.format)
+  const readingTime = readingTimeLabel(words)
+
+  const { content, frontmatter } = await compileMDX<Frontmatter>({
+    source: mdxSource,
+    components: {
+      // ✅ disponibles dentro del MDX
+      MakeItRealCard: (props: any) => <MakeItRealCard host={host} {...props} />,
+      CharacterCallout: (props: any) => (
+        <CharacterCallout host={host} {...props} />
+      ),
+    },
+    options: { parseFrontmatter: true },
+  })
+
+  const youtubeId = frontmatter?.youtubeId
 
   return (
     <main className="w-full">
-      <article className="mx-auto w-full max-w-3xl px-6 py-14 sm:px-10 sm:py-20">
-        {/* Breadcrumb */}
-        <nav className="mb-8 text-sm text-muted">
-          <Link className="hover:text-text" href="/es">
-            Inicio
-          </Link>
-          <span className="mx-2 text-muted/70">›</span>
-          <Link className="hover:text-text" href="/es/posts">
-            Posts
-          </Link>
-          <span className="mx-2 text-muted/70">›</span>
-          <span className="text-text/90">{formatLabels[metaPost.format]}</span>
-        </nav>
+      {/* ✅ Layout “divulgación moderna” (como EN):
+          - Contenedor exterior más ancho
+          - Header en 2 columnas (desktop)
+          - Módulos (video, cards) a max-w-5xl
+          - Body más ancho para lectura visual-first */}
+      <article className="mx-auto w-full max-w-6xl px-6 py-8 sm:px-10 sm:py-12">
+        {/* ✅ Breadcrumb eliminado */}
 
-        <header>
-          <p className="text-xs font-medium tracking-wide text-muted">
-            ATOMICCURIOUS · POST
-          </p>
+        {/* ✅ Header en grid para lg+ */}
+        <header className="mx-auto w-full max-w-6xl">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+            {/* LEFT */}
+            <div className="min-w-0">
+              <p className="text-xs font-medium tracking-wide text-muted">
+                ATOMICCURIOUS · POST
+              </p>
 
-          <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl">
-            {post.title}
-          </h1>
+              <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl">
+                {metaPost.title}
+              </h1>
 
-          <p className="mt-4 text-pretty text-base leading-relaxed text-muted sm:text-lg">
-            {post.description}
-          </p>
+              <p className="mt-4 text-pretty text-base leading-relaxed text-muted sm:text-lg">
+                {metaPost.description}
+              </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-border bg-surface-1 px-3 py-1 text-xs text-muted">
-              {formatLabels[metaPost.format]}
-            </span>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <span className="rounded-full border border-border bg-surface-1 px-3 py-1 text-xs text-muted">
+                  {formatLabels[metaPost.format]}
+                </span>
 
-            {metaPost.tag ? (
-              <span className="rounded-full border border-border bg-bg/30 px-3 py-1 text-xs text-muted">
-                {metaPost.tag}
-              </span>
-            ) : null}
+                {metaPost.tag ? (
+                  <span className="rounded-full border border-border bg-bg/30 px-3 py-1 text-xs text-muted">
+                    {metaPost.tag}
+                  </span>
+                ) : null}
+              </div>
 
-            <span className="ml-auto text-xs text-muted">{post.date}</span>
+              {/* PostHeroHost (OPCIONAL, solo si es largo) */}
+              <div className="mt-7">
+                <PostHeroHost
+                  host={host}
+                  title={metaPost.title}
+                  subheadline={metaPost.description}
+                  readingTime={readingTime}
+                  show={isLong}
+                />
+              </div>
+            </div>
+
+            {/* RIGHT */}
+            <aside className="lg:sticky lg:top-24">
+              <div className="rounded-2xl border border-border bg-surface-1 p-5 shadow-soft">
+                <p className="text-xs font-medium tracking-wide text-muted">
+                  DETALLES
+                </p>
+
+                <div className="mt-3 space-y-3 text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted">Fecha</span>
+                    <span className="text-text/90">{metaPost.date}</span>
+                  </div>
+
+                  {readingTime ? (
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-muted">Lectura</span>
+                      <span className="text-text/90">{readingTime}</span>
+                    </div>
+                  ) : null}
+
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted">Formato</span>
+                    <span className="text-text/90">
+                      {formatLabels[metaPost.format]}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 border-t border-border/60 pt-4">
+                  <Link
+                    href={`/es/posts?format=${metaPost.format}`}
+                    className="
+                      inline-flex w-full items-center justify-center rounded-xl
+                      border border-border bg-bg/30 px-4 py-2.5
+                      text-sm font-semibold text-text shadow-soft transition
+                      hover:bg-surface-2 hover:border-accent/30 hover:text-accent
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                    "
+                  >
+                    Más como este
+                    <span className="ml-2 text-muted">›</span>
+                  </Link>
+                </div>
+              </div>
+            </aside>
           </div>
         </header>
 
-        {post.youtubeId && (
-          <section className="mt-10 overflow-hidden rounded-2xl border border-border bg-bg/30 shadow-soft">
+        {/* YouTube via frontmatter (opcional) */}
+        {youtubeId ? (
+          <section className="mx-auto mt-10 w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-bg/30 shadow-soft">
             <div className="aspect-video w-full">
               <iframe
                 className="h-full w-full"
-                src={`https://www.youtube.com/embed/${post.youtubeId}`}
-                title={post.title}
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                title={metaPost.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             </div>
           </section>
-        )}
+        ) : null}
 
-        <section className="mt-12 space-y-10">
-          {post.sections.map((s) => (
-            <div key={s.heading}>
-              <h2 className="text-xl font-semibold text-text">{s.heading}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-                {s.body}
-              </p>
-            </div>
-          ))}
+        {/* ✅ Lead: más ancho, sin justificar, y sin meter texto inventado */}
+        <section className="mx-auto mt-10 w-full max-w-5xl lg:px-6">
+          <p className="mx-auto max-w-5xl text-pretty text-base leading-relaxed text-text/85 sm:text-lg">
+            {metaPost.description}
+          </p>
         </section>
 
-        <section className="mt-12 rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
-          <h3 className="text-lg font-semibold text-text">Ideas clave</h3>
-          <ul className="mt-4 space-y-2 text-sm text-muted">
-            {post.takeaways.map((t) => (
-              <li key={t} className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/70" />
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
+        {/* ✅ CUERPO MDX: más ancho (max-w-5xl) para “divulgación moderna” */}
+        <section className="mx-auto mt-8 w-full max-w-5xl lg:px-6">
+          <div className="space-y-6 text-sm leading-relaxed text-muted sm:text-base sm:leading-relaxed">
+            {content}
+          </div>
         </section>
 
         {/* Más de este formato */}
-        <section className="mt-12 border-t border-border/60 pt-12">
+        <section className="mx-auto mt-12 w-full max-w-5xl border-t border-border/60 pt-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-medium tracking-wide text-muted">
@@ -291,7 +346,7 @@ export default async function Page({
         </section>
 
         {/* Newsletter */}
-        <section className="mt-12 rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
+        <section className="mx-auto mt-12 w-full max-w-5xl rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-lg font-semibold text-text">
@@ -315,7 +370,7 @@ export default async function Page({
           </div>
         </section>
 
-        <div className="mt-12">
+        <div className="mx-auto mt-12 w-full max-w-5xl">
           <Link
             href="/es/posts"
             className="
@@ -333,4 +388,3 @@ export default async function Page({
     </main>
   )
 }
-
