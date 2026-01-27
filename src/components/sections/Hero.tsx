@@ -4,7 +4,6 @@
 import type { ReactElement, ReactNode } from "react"
 import { Children, isValidElement } from "react"
 import { useEffect } from "react"
-import AmbientMotion from "@/components/visual/AmbientMotion"
 
 type HeroCopy = {
   eyebrow: string
@@ -175,14 +174,6 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
     }
   })
 
-  /**
-   * ✅ SAFETY:
-   * If someone uses <Hero hostRow="trio" /> on a page, we mirror that request into:
-   *   <main data-chmode="..."> and body[data-chmode="..."]
-   * This ensures your global.css show rules work even without manual page attributes.
-   *
-   * Home stays clean because hostRow defaults to "none".
-   */
   useEffect(() => {
     if (hostRow === "none") return
 
@@ -192,8 +183,6 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
     document.body.setAttribute("data-chmode", mode)
 
     return () => {
-      // restore to whatever the layout boot decides on next route render
-      // (we only remove if it still matches our injected value)
       const m = document.querySelector("main")
       if (m?.getAttribute("data-chmode") === mode) m.removeAttribute("data-chmode")
       if (document.body.getAttribute("data-chmode") === mode) document.body.removeAttribute("data-chmode")
@@ -246,12 +235,12 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
     <section
       className={[
         "relative w-full",
-        "min-h-[calc(100svh-72px-50px)]",
+        "min-h-[calc(100svh-var(--ac-header-h,72px)-var(--ac-footer-h,56px))]",
         "overflow-hidden bg-bg",
         "isolate",
       ].join(" ")}
     >
-      {/* Background */}
+      {/* Background (STATIC) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 z-[1] bg-gradient-to-b from-bg via-bg to-bg" />
 
@@ -295,8 +284,6 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
           className="absolute right-0 top-[55%] z-[3] h-px w-64 bg-gradient-to-l from-transparent via-accent-alt to-transparent opacity-22 dark:h-[2px] dark:opacity-40 dark:animate-pulse"
           style={{ animationDelay: "1s" }}
         />
-
-        <AmbientMotion intensity="low" />
       </div>
 
       {/* TOP CONTENT */}
@@ -516,7 +503,10 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
                   <ul className="mt-3 space-y-2 text-[13px] text-gray-300">
                     {tiles.latest.bullets.map((b) => (
                       <li key={b.text} className="flex gap-2">
-                        <span className="mt-[6px] h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor(b.dot) }} />
+                        <span
+                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: dotColor(b.dot) }}
+                        />
                         <span>{b.text}</span>
                       </li>
                     ))}

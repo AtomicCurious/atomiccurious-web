@@ -1,25 +1,24 @@
-// src/components/visual/CoreFactBubble.tsx
+// src/components/visual/AtomNoteBubble.tsx
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
 
-type CoreFactBubbleProps = {
+type AtomNoteBubbleProps = {
   open: boolean
   onClose: () => void
   anchorEl: HTMLElement | null
-  facts: string[]
+  notes: string[]
   title?: string
-
-  // Optional labels (so EN can pass: "Another fact" / "Close")
   nextLabel?: string
   closeLabel?: string
   ariaLabel?: string
 
   /**
-   * Deprecated: character rotation is disabled (Core only).
-   * Kept for backward compatibility with callers.
+   * Nudges (optional):
+   * - Allows fine positioning without touching layout logic
    */
-  rotateCharacters?: boolean
+  offsetX?: number
+  offsetY?: number
 }
 
 function clamp(n: number, min: number, max: number) {
@@ -35,42 +34,32 @@ function shuffle<T>(arr: T[]) {
   return a
 }
 
-export default function CoreFactBubble({
+export default function AtomNoteBubble({
   open,
   onClose,
   anchorEl,
-  facts,
-  title = "Core",
-  nextLabel = "Otro dato",
-  closeLabel = "Cerrar",
-  ariaLabel = "Burbuja de curiosidad",
-}: CoreFactBubbleProps) {
+  notes,
+  title = "Atom",
+  nextLabel = "Another note",
+  closeLabel = "Close",
+  ariaLabel = "Editor’s note",
+  offsetX = 0,
+  offsetY = 0,
+}: AtomNoteBubbleProps) {
   const bubbleRef = useRef<HTMLDivElement | null>(null)
 
-  // Mounted/exit animation support
   const [mounted, setMounted] = useState(false)
   const [leaving, setLeaving] = useState(false)
 
-  const [fact, setFact] = useState("")
+  const [text, setText] = useState("")
   const [pos, setPos] = useState<{ top: number; left: number }>({ top: 80, left: 24 })
 
-  // Tail position inside bubble (px from RIGHT edge)
-  const [tailRight, setTailRight] = useState<number>(24)
+  // Tail position inside bubble (px from LEFT edge)
+  const [tailLeft, setTailLeft] = useState<number>(40)
 
-  // Non-repeating rotation for facts
   const [order, setOrder] = useState<number[]>([])
   const [idx, setIdx] = useState<number>(0)
-  const lastFactRef = useRef<string>("")
-
-  // ✅ Core-only (no rotation)
-  const coreCharacter = useMemo(
-    () => ({
-      name: "Core",
-      img: "/characters/core.png",
-      aria: "Curiosidad de Core",
-    }),
-    []
-  )
+  const lastRef = useRef<string>("")
 
   // Mount / unmount with exit animation
   useEffect(() => {
@@ -88,146 +77,135 @@ export default function CoreFactBubble({
     return () => window.clearTimeout(t)
   }, [open, mounted])
 
-  // Build/refresh order when facts change
+  // Build/refresh order when notes change
   useEffect(() => {
     if (!mounted) return
-    const n = Math.max(0, facts.length)
+    const n = Math.max(0, notes.length)
     const base = Array.from({ length: n }, (_, i) => i)
 
     if (n === 0) {
       setOrder([])
       setIdx(0)
-      setFact("")
-      lastFactRef.current = ""
+      setText("")
+      lastRef.current = ""
       return
     }
 
     const shuffled = shuffle(base)
-    const last = lastFactRef.current
+    const last = lastRef.current
     if (last) {
-      const firstFact = facts[shuffled[0]] ?? ""
-      if (firstFact === last && shuffled.length > 1) {
+      const first = notes[shuffled[0]] ?? ""
+      if (first === last && shuffled.length > 1) {
         ;[shuffled[0], shuffled[1]] = [shuffled[1], shuffled[0]]
       }
     }
 
     setOrder(shuffled)
     setIdx(0)
-    const first = facts[shuffled[0]] ?? ""
-    setFact(first)
-    lastFactRef.current = first
-  }, [facts, mounted])
+    const first = notes[shuffled[0]] ?? ""
+    setText(first)
+    lastRef.current = first
+  }, [notes, mounted])
 
-  // When it opens, ensure we show a fact (and reset if needed)
+  // Ensure a note is shown on open
   useEffect(() => {
     if (!open) return
-    if (!facts.length) {
-      setFact("")
+    if (!notes.length) {
+      setText("")
       return
     }
 
     if (!order.length) {
-      const base = Array.from({ length: facts.length }, (_, i) => i)
+      const base = Array.from({ length: notes.length }, (_, i) => i)
       const shuffled = shuffle(base)
       setOrder(shuffled)
       setIdx(0)
-      const first = facts[shuffled[0]] ?? ""
-      setFact(first)
-      lastFactRef.current = first
+      const first = notes[shuffled[0]] ?? ""
+      setText(first)
+      lastRef.current = first
       return
     }
 
-    if (!fact) {
-      const first = facts[order[0]] ?? facts[0] ?? ""
-      setFact(first)
-      lastFactRef.current = first
+    if (!text) {
+      const first = notes[order[0]] ?? notes[0] ?? ""
+      setText(first)
+      lastRef.current = first
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  function nextFact() {
-    if (!facts.length) return
+  function nextNote() {
+    if (!notes.length) return
 
-    if (!order.length || order.length !== facts.length) {
-      const base = Array.from({ length: facts.length }, (_, i) => i)
+    if (!order.length || order.length !== notes.length) {
+      const base = Array.from({ length: notes.length }, (_, i) => i)
       const shuffled = shuffle(base)
       setOrder(shuffled)
       setIdx(0)
-      const first = facts[shuffled[0]] ?? ""
-      setFact(first)
-      lastFactRef.current = first
+      const first = notes[shuffled[0]] ?? ""
+      setText(first)
+      lastRef.current = first
       return
     }
 
     const next = idx + 1
 
     if (next >= order.length) {
-      const base = Array.from({ length: facts.length }, (_, i) => i)
+      const base = Array.from({ length: notes.length }, (_, i) => i)
       const shuffled = shuffle(base)
 
-      const last = lastFactRef.current
+      const last = lastRef.current
       if (last && shuffled.length > 1) {
-        const firstFact = facts[shuffled[0]] ?? ""
-        if (firstFact === last) {
+        const first = notes[shuffled[0]] ?? ""
+        if (first === last) {
           ;[shuffled[0], shuffled[1]] = [shuffled[1], shuffled[0]]
         }
       }
 
       setOrder(shuffled)
       setIdx(0)
-      const f = facts[shuffled[0]] ?? ""
-      setFact(f)
-      lastFactRef.current = f
+      const t = notes[shuffled[0]] ?? ""
+      setText(t)
+      lastRef.current = t
       return
     }
 
     setIdx(next)
-    const f = facts[order[next]] ?? ""
-    setFact(f)
-    lastFactRef.current = f
+    const t = notes[order[next]] ?? ""
+    setText(t)
+    lastRef.current = t
   }
 
-  // Position bubble near the rocket — strong LEFT bias + tail aims at rocket MID-BODY
+  // Position bubble: centered BELOW the notebook icon
   useEffect(() => {
     if (!mounted) return
     if (!open) return
     if (!anchorEl) return
 
     const update = () => {
-      const rBtn = anchorEl.getBoundingClientRect()
+      const r = anchorEl.getBoundingClientRect()
 
+      // ✅ Match CoreFactBubble sizing
       const bubbleW = 320
       const bubbleH = 240
-      const gap = 14
+      const gapY = 28
       const viewportPadding = 16
 
-      // Prefer LEFT
-      let left = rBtn.left - bubbleW - gap
-      let top = rBtn.bottom + 12
+      const anchorCenterX = r.left + r.width / 2
 
-      if (left < viewportPadding) {
-        left = viewportPadding
-        top = rBtn.bottom + 28
-      }
+      let left = anchorCenterX - bubbleW / 2 + offsetX
+      let top = r.bottom + gapY + offsetY
 
       left = clamp(left, viewportPadding, window.innerWidth - bubbleW - viewportPadding)
       top = clamp(top, viewportPadding, window.innerHeight - bubbleH - viewportPadding)
 
       setPos({ top, left })
 
-      // ---- Tail alignment ----
-      const svgEl = anchorEl.querySelector("svg") as SVGElement | null
-      const r = (svgEl ?? anchorEl).getBoundingClientRect()
-
-      // ✅ Put the tail at the MID of the rocket body
-      const BODY_AIM = 0.66
-      const aimX = r.left + r.width * BODY_AIM
-      const centerInsideBubble = aimX - left
-
-      let nextTailRight = bubbleW - centerInsideBubble - 8
-      nextTailRight = clamp(nextTailRight, 18, bubbleW - 18)
-
-      setTailRight(nextTailRight)
+      // Tail centered to the anchor center
+      const centerInside = anchorCenterX - left
+      let nextTailLeft = centerInside - 8 // tail is 16px; center it
+      nextTailLeft = clamp(nextTailLeft, 18, bubbleW - 18)
+      setTailLeft(nextTailLeft)
     }
 
     update()
@@ -238,18 +216,16 @@ export default function CoreFactBubble({
       window.removeEventListener("resize", update)
       window.removeEventListener("scroll", update, true)
     }
-  }, [mounted, open, anchorEl])
+  }, [mounted, open, anchorEl, offsetX, offsetY])
 
-  // Focus bubble on open
+  // Focus on open
   useEffect(() => {
     if (!open) return
-    const t = window.setTimeout(() => {
-      bubbleRef.current?.focus()
-    }, 0)
+    const t = window.setTimeout(() => bubbleRef.current?.focus(), 0)
     return () => window.clearTimeout(t)
   }, [open])
 
-  // Close on ESC + outside click (also while leaving)
+  // Close on ESC + outside click
   useEffect(() => {
     if (!mounted) return
 
@@ -274,9 +250,6 @@ export default function CoreFactBubble({
     }
   }, [mounted, onClose, anchorEl])
 
-  const shownTitle = title // keep prop override if you want "Core" / "Editor"
-  const shownAria = ariaLabel || coreCharacter.aria
-
   const bubble = useMemo(() => {
     if (!mounted) return null
 
@@ -284,7 +257,7 @@ export default function CoreFactBubble({
       <div
         ref={bubbleRef}
         role="dialog"
-        aria-label={shownAria}
+        aria-label={ariaLabel}
         tabIndex={-1}
         className={[
           "fixed z-[80]",
@@ -294,38 +267,39 @@ export default function CoreFactBubble({
           "shadow-[0_20px_80px_rgba(0,0,0,0.55)]",
           "p-4",
           "outline-none",
-          "origin-top-right",
+
+          // animation
+          "origin-top",
           leaving ? "animate-[coreBubbleOut_140ms_ease-in_forwards]" : "animate-[coreBubbleIn_140ms_ease-out]",
           "motion-reduce:animate-none",
         ].join(" ")}
         style={{ top: pos.top, left: pos.left }}
       >
-        {/* Tail — aligned to rocket MID body */}
+        {/* Tail — centered under notebook */}
         <div
           aria-hidden="true"
           className="absolute -top-2 h-4 w-4 rotate-45 border-l border-t border-border/70 bg-surface-1/85 backdrop-blur-xl"
-          style={{ right: tailRight }}
+          style={{ left: tailLeft }}
         />
 
         <div className="flex items-start gap-3">
-          {/* ✅ Avatar (Core only) */}
+          {/* ✅ Avatar: bigger + stronger border + subtle lift + better image pop */}
           <div className="relative mt-0.5 h-11 w-11 shrink-0 overflow-hidden rounded-full border border-border/90 bg-surface-2/50 shadow-[0_0_0_2px_rgba(0,0,0,0.25),0_10px_30px_rgba(0,0,0,0.35)]">
             <img
-              src={coreCharacter.img}
-              alt={coreCharacter.name}
+              src="/characters/atom.png"
+              alt="Atom"
               className="h-full w-full object-cover contrast-110 saturate-110"
             />
           </div>
 
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-text">{shownTitle}</p>
-
-            <p className="mt-1 text-sm leading-relaxed text-muted">{fact}</p>
+            <p className="text-sm font-semibold text-text">{title}</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted">{text}</p>
 
             <div className="mt-3 flex items-center gap-2">
               <button
                 type="button"
-                onClick={nextFact}
+                onClick={nextNote}
                 className="rounded-lg border border-border/70 bg-surface-2/40 px-3 py-1.5 text-xs font-medium text-text/90 hover:bg-surface-2/60"
               >
                 {nextLabel}
@@ -370,20 +344,7 @@ export default function CoreFactBubble({
         `}</style>
       </div>
     )
-  }, [
-    mounted,
-    leaving,
-    pos.top,
-    pos.left,
-    tailRight,
-    fact,
-    nextLabel,
-    closeLabel,
-    shownTitle,
-    shownAria,
-    coreCharacter.img,
-    coreCharacter.name,
-  ])
+  }, [mounted, leaving, pos.top, pos.left, tailLeft, text, title, nextLabel, closeLabel, ariaLabel])
 
   return bubble
 }

@@ -41,9 +41,9 @@ function LegalLinksEn() {
 
 // ✅ CAMBIA SOLO ESTOS 3 NÚMEROS (px)
 // positivo = derecha | negativo = izquierda
-const SOCIAL_NUDGE_PX = 400
-const LEGAL_NUDGE_PX = -725
-const COPYRIGHT_NUDGE_PX = -27
+const SOCIAL_NUDGE_PX = 430
+const LEGAL_NUDGE_PX = -917
+const COPYRIGHT_NUDGE_PX = 120
 
 export default function EnLayout({ children }: { children: ReactNode }) {
   return (
@@ -101,7 +101,7 @@ export default function EnLayout({ children }: { children: ReactNode }) {
               style={{ transform: `translateX(${COPYRIGHT_NUDGE_PX}px)` }}
             >
               <p className="text-[11px] text-muted leading-none whitespace-nowrap">
-                © {new Date().getFullYear()} AtomicCurious · Curiosity, by design.
+                © {new Date().getFullYear()} AtomicCurious 
               </p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function EnLayout({ children }: { children: ReactNode }) {
             <LegalLinksEn />
 
             <p className="text-[11px] text-muted leading-none whitespace-nowrap">
-              © {new Date().getFullYear()} AtomicCurious · Curiosity, by design.
+              © {new Date().getFullYear()} AtomicCurious 
             </p>
           </div>
         </div>

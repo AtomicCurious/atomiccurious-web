@@ -9,7 +9,7 @@ type CharacterMode = "atom" | "iris" | "core"
 const STORAGE_KEY = "ac_character"
 const LEGACY_KEY = "ac_accent"
 
-// 👇 NUEVO: atributo SOLO para “lock visual” del Home
+// 👇 atributo SOLO para “lock visual” del Home
 const HOME_IMAGE_LOCK_ATTR = "data-home-hero"
 
 function normalize(v: string | null): CharacterMode | null {
@@ -54,7 +54,7 @@ function applyCharacter(mode: CharacterMode | null) {
   }
 }
 
-// ✅ NUEVO: lock solo visual (NO personalidad)
+// ✅ lock solo visual (NO personalidad)
 function setHomeHeroImageLock(mode: CharacterMode | null) {
   if (typeof document === "undefined") return
   const body = document.body
@@ -63,7 +63,6 @@ function setHomeHeroImageLock(mode: CharacterMode | null) {
   if (!mode) body.removeAttribute(HOME_IMAGE_LOCK_ATTR)
   else body.setAttribute(HOME_IMAGE_LOCK_ATTR, mode)
 
-  // (opcional) si quieres que algún componente reaccione a esto
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("ac:home-hero"))
   }
@@ -79,6 +78,11 @@ export default function HomeThemeLock() {
   const prevThemeRef = useRef<string | null>(null)
   const prevCharRef = useRef<CharacterMode | null>(null)
   const prevAccentRef = useRef<CharacterMode | null>(null)
+
+  // ✅ NEW: remember inline overflow styles to restore safely
+  const prevHtmlOverflowRef = useRef<string>("")
+  const prevBodyOverflowRef = useRef<string>("")
+  const prevBodyOverflowYRef = useRef<string>("")
 
   useEffect(() => {
     if (typeof document === "undefined") return
@@ -104,13 +108,28 @@ export default function HomeThemeLock() {
       html.classList.add("dark")
 
       // ✅ SOLO LOCK VISUAL: Home hero image ALWAYS IRIS
-      // 🚫 NO aplicamos applyCharacter("iris") para no copiar personalidad
       setHomeHeroImageLock("iris")
+
+      // 🔒 KILL SCROLL ON HOME (this removes the “deslizador”)
+      // Store previous inline styles so we can restore precisely
+      prevHtmlOverflowRef.current = html.style.overflow || ""
+      prevBodyOverflowRef.current = body.style.overflow || ""
+      prevBodyOverflowYRef.current = body.style.overflowY || ""
+
+      html.style.overflow = "hidden"
+      body.style.overflow = "hidden"
+      body.style.overflowY = "hidden"
+
       return
     }
 
     // Leaving Home: remove visual lock
     setHomeHeroImageLock(null)
+
+    // ✅ Restore overflow to whatever it was before Home
+    html.style.overflow = prevHtmlOverflowRef.current
+    body.style.overflow = prevBodyOverflowRef.current
+    body.style.overflowY = prevBodyOverflowYRef.current
 
     // Restore theme (if it existed)
     const prevTheme = prevThemeRef.current

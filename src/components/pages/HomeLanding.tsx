@@ -59,9 +59,6 @@ type HomeTiles = {
   }
 }
 
-/** -------------------------------------------------------
- *  Overlay visual: personaje (HOME = imagen fija via body attr)
- *  ----------------------------------------------------- */
 function CharacterOverlay({ mode }: { mode: CharacterMode }) {
   const img =
     mode === "iris"
@@ -74,15 +71,12 @@ function CharacterOverlay({ mode }: { mode: CharacterMode }) {
 
   return (
     <div className="pointer-events-none mx-auto w-full max-w-[420px] lg:max-w-[480px]">
-      {/* ✅ Final alignment happens HERE (not in Hero.tsx) */}
       <div className="relative lg:translate-y-[10px]">
-        {/* soft glow (moved slightly DOWN to avoid “gap illusion”) */}
         <div className="absolute inset-0 -z-10 blur-[40px] opacity-70">
           <div className="absolute left-1/2 top-14 h-56 w-56 -translate-x-1/2 rounded-full bg-accent/20" />
           <div className="absolute left-1/2 top-28 h-56 w-56 -translate-x-1/2 rounded-full bg-accent-alt/15" />
         </div>
 
-        {/* character image */}
         <div className="relative mx-auto aspect-[1/1] w-[280px] sm:w-[320px] md:w-[360px] lg:w-[380px]">
           <Image
             src={img}
@@ -91,7 +85,6 @@ function CharacterOverlay({ mode }: { mode: CharacterMode }) {
             priority
             className={[
               "object-contain",
-              // ✅ Reduce bottom shadow so you can sit lower without “fake space”
               "drop-shadow-[0_28px_60px_rgba(0,0,0,0.45)]",
             ].join(" ")}
           />
@@ -102,7 +95,6 @@ function CharacterOverlay({ mode }: { mode: CharacterMode }) {
 }
 
 export default function HomeLanding({ copy, tiles }: { copy: HomeCopy; tiles: HomeTiles }) {
-  // ✅ HOME NEUTRAL: no personalidades, no microcopy dinámico, no CTAs de personajes
   useVoice({ disable: true })
 
   const [lockedHero, setLockedHero] = useState<CharacterMode | null>(null)

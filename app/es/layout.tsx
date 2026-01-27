@@ -12,8 +12,8 @@ function LegalLinksEs() {
     "focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
 
   return (
-    <nav aria-label="Enlaces legales">
-      <ul className="flex items-center gap-6 text-[11px] font-medium text-muted/70">
+    <nav aria-label="Enlaces legales" className="w-full">
+      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-medium text-muted/70">
         <li>
           <Link href="/es/privacidad" className={linkClass}>
             Privacidad
@@ -41,9 +41,9 @@ function LegalLinksEs() {
 
 // ✅ CAMBIA SOLO ESTOS 3 NÚMEROS (px)
 // positivo = derecha | negativo = izquierda
-const SOCIAL_NUDGE_PX = 400
-const LEGAL_NUDGE_PX = -470
-const COPYRIGHT_NUDGE_PX = -27
+const SOCIAL_NUDGE_PX = 450
+const LEGAL_NUDGE_PX = -855
+const COPYRIGHT_NUDGE_PX = 120
 
 export default function EsLayout({ children }: { children: ReactNode }) {
   return (
@@ -55,54 +55,19 @@ export default function EsLayout({ children }: { children: ReactNode }) {
 
       {/* ✅ Root main: Boot should ALWAYS target this node */}
       {/* ✅ Default SSR mode prevents flash; Boot updates per-route */}
-      <main
-        className="w-full flex-1 bg-bg text-text"
-        data-chroot="1"
-        data-chmode="host"
-      >
+      <main className="w-full flex-1 bg-bg text-text" data-chroot="1" data-chmode="host">
         {children}
       </main>
 
       <footer className="border-t border-border/70 bg-bg">
         <div className="mx-auto max-w-6xl px-6 py-4">
-          {/* Desktop / Tablet — single row */}
-          <div className="hidden md:flex items-center justify-between">
-            {/* Left — Social + Legal */}
-            <div className="flex items-center">
-              <div style={{ transform: `translateX(${SOCIAL_NUDGE_PX}px)` }}>
-                <SocialLinks
-                  variant="footer"
-                  title="Sigue el universo"
-                  items={[
-                    { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
-                    { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
-                    { label: "Instagram", href: "https://instagram.com/atomiccurious" },
-                    { label: "Facebook", href: "https://facebook.com/atomiccurious" },
-                  ]}
-                />
-              </div>
-
-              <div className="ml-8" style={{ transform: `translateX(${LEGAL_NUDGE_PX}px)` }}>
-                <LegalLinksEs />
-              </div>
-            </div>
-
-            {/* Right — Copyright */}
-            <p
-              className="text-[11px] text-muted leading-none whitespace-nowrap"
-              style={{ transform: `translateX(${COPYRIGHT_NUDGE_PX}px)` }}
+          {/* Desktop / Tablet — compact 3-zone layout (match EN) */}
+          <div className="hidden md:grid items-center gap-4 [grid-template-columns:1fr_auto_auto]">
+            {/* Left — Social */}
+            <div
+              className="flex items-center justify-start"
+              style={{ transform: `translateX(${SOCIAL_NUDGE_PX}px)` }}
             >
-              © {new Date().getFullYear()} AtomicCurious · Curiosidad, por diseño.
-            </p>
-          </div>
-
-          {/* Mobile — stacked but still clean */}
-          <div className="flex flex-col gap-3 md:hidden">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-[11px] text-muted leading-none whitespace-nowrap">
-                © {new Date().getFullYear()} AtomicCurious · Curiosidad, por diseño.
-              </p>
-
               <SocialLinks
                 variant="footer"
                 title="Sigue el universo"
@@ -110,14 +75,54 @@ export default function EsLayout({ children }: { children: ReactNode }) {
                   { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
                   { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
                   { label: "Instagram", href: "https://instagram.com/atomiccurious" },
-                  { label: "Facebook", href: "https://facebook.com/atomiccurious" },
+                  {
+                    label: "Facebook",
+                    href: "https://www.facebook.com/profile.php?id=61586519350627",
+                  },
                 ]}
               />
             </div>
 
-            <div className="flex justify-center">
+            {/* Center — Legal */}
+            <div
+              className="flex items-center justify-center"
+              style={{ transform: `translateX(${LEGAL_NUDGE_PX}px)` }}
+            >
               <LegalLinksEs />
             </div>
+
+            {/* Right — Copyright */}
+            <div
+              className="flex items-center justify-start"
+              style={{ transform: `translateX(${COPYRIGHT_NUDGE_PX}px)` }}
+            >
+              <p className="text-[11px] text-muted leading-none whitespace-nowrap">
+                © {new Date().getFullYear()} AtomicCurious
+              </p>
+            </div>
+          </div>
+
+          {/* Mobile — stacked, centered, clean (match EN) */}
+          <div className="md:hidden flex flex-col items-center gap-3">
+            <SocialLinks
+              variant="footer"
+              title="Sigue el universo"
+              items={[
+                { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
+                { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
+                { label: "Instagram", href: "https://instagram.com/atomiccurious" },
+                {
+                  label: "Facebook",
+                  href: "https://www.facebook.com/profile.php?id=61586519350627",
+                },
+              ]}
+            />
+
+            <LegalLinksEs />
+
+            <p className="text-[11px] text-muted leading-none whitespace-nowrap">
+              © {new Date().getFullYear()} AtomicCurious 
+            </p>
           </div>
         </div>
       </footer>
