@@ -286,7 +286,7 @@ export default function AtomNoteBubble({
           {/* ✅ Avatar: bigger + stronger border + subtle lift + better image pop */}
           <div className="relative mt-0.5 h-11 w-11 shrink-0 overflow-hidden rounded-full border border-border/90 bg-surface-2/50 shadow-[0_0_0_2px_rgba(0,0,0,0.25),0_10px_30px_rgba(0,0,0,0.35)]">
             <img
-              src="/characters/atom.png"
+              src="/characters/atom.webp"
               alt="Atom"
               className="h-full w-full object-cover contrast-110 saturate-110"
             />

@@ -30,8 +30,12 @@ const HEADER_NUDGE_X = -20 // px
 ========================================================= */
 const SECTION_BRAND_NUDGE_X = -180 // Rocket/Sigil + AtomicCurious together
 const SECTION_NAV_NUDGE_X = -100 // All section links together
-const SECTION_LANG_NUDGE_X = 20 // ES only
-const SECTION_EDITOR_NOTE_NUDGE_X = 120 // Label + quill together
+
+// ✅ NEW: ThemeToggle + CharacterToggle together (one knob)
+const SECTION_TOGGLES_NUDGE_X = 70 // Negative = left, Positive = right
+
+const SECTION_LANG_NUDGE_X = 80 // ES only
+const SECTION_EDITOR_NOTE_NUDGE_X = 135 // Label + quill together
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/"
@@ -40,6 +44,7 @@ function isActive(pathname: string, href: string) {
 
 function toEs(pathname: string) {
   const map: Record<string, string> = {
+    "/calendar": "/es/calendario",
     "/resources": "/es/recursos",
     "/community": "/es/comunidad",
     "/contact": "/es/contacto",
@@ -386,7 +391,10 @@ function CuriosityByDesignLabel({ compact = false }: { compact?: boolean }) {
       Curiosity, by design.
       <span
         aria-hidden="true"
-        className={["pointer-events-none absolute", compact ? "left-2 right-[-1px] -bottom-[1px] h-[9px]" : "left-3 right-[-2px] -bottom-[1px] h-[10px]"].join(" ")}
+        className={[
+          "pointer-events-none absolute",
+          compact ? "left-2 right-[-1px] -bottom-[1px] h-[9px]" : "left-3 right-[-2px] -bottom-[1px] h-[10px]",
+        ].join(" ")}
       >
         <svg viewBox="0 0 320 40" className="h-full w-full overflow-visible">
           {/* base ink */}
@@ -1166,129 +1174,149 @@ export default function NavBarEn() {
         </nav>
 
         {/* RIGHT (desktop) */}
-        <div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
-          <ThemeToggle />
-          <CharacterToggle />
+<div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
+  {/* ✅ Theme + Character toggles (single nudge control) */}
+  <div
+    className="flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+  >
+    <ThemeToggle />
+    <CharacterToggle />
+  </div>
 
-          <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
-            <Link
-              href={esHref}
-              className="
-                inline-flex items-center rounded-full
-                border border-border/80 bg-surface-1
-                px-3 py-1.5 text-xs font-semibold text-text
-                shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              ES
-            </Link>
-          </div>
+  <div
+    className="flex items-center will-change-transform"
+    style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}
+  >
+    <Link
+      href={esHref}
+      className="
+        inline-flex items-center rounded-full
+        border border-border/80 bg-surface-1
+        px-3 py-1.5 text-xs font-semibold text-text
+        shadow-soft transition
+        hover:border-accent/35 hover:bg-surface-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      ES
+    </Link>
+  </div>
 
-          {/* ✅ slogan + quill (hover animates underline) */}
-          <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
-            <CuriosityByDesignLabel />
+  {/* ✅ slogan + quill (hover animates underline) */}
+  <div
+    className="ac-editor-signature flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}
+  >
+    <CuriosityByDesignLabel />
 
-            {/* ✅ quill -> Home */}
-            <Link
-              href="/"
-              aria-label="Go to Home"
-              className="
-                group inline-flex items-center justify-center rounded-full
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              <span
-                aria-hidden="true"
-                className={[
-                  "relative inline-flex items-center justify-center",
-                  "h-8 w-8 sm:h-9 sm:w-9",
-                  "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-                ].join(" ")}
-                style={{
-                  transformOrigin: "55% 60%",
-                  transform: "rotate(-14deg)",
-                  filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-                }}
-              >
-                <QuillFeatherIcon className="h-full w-full" />
-              </span>
-            </Link>
-          </div>
-        </div>
+    {/* ✅ quill -> Home */}
+    <Link
+      href="/"
+      aria-label="Go to Home"
+      className="
+        group inline-flex items-center justify-center rounded-full
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "relative inline-flex items-center justify-center",
+          "h-8 w-8 sm:h-9 sm:w-9",
+          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
+        ].join(" ")}
+        style={{
+          transformOrigin: "55% 60%",
+          transform: "rotate(-14deg)",
+          filter:
+            "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
+        }}
+      >
+        <QuillFeatherIcon className="h-full w-full" />
+      </span>
+    </Link>
+  </div>
+</div>
 
-        {/* RIGHT (mobile) */}
-        <div className="flex items-center justify-end gap-2 sm:hidden">
-          <ThemeToggle />
-          <CharacterToggle />
+       {/* RIGHT (mobile) */}
+<div className="flex items-center justify-end gap-2 sm:hidden">
+  {/* ✅ Theme + Character toggles (single nudge control) */}
+  <div
+    className="flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+  >
+    <ThemeToggle />
+    <CharacterToggle />
+  </div>
 
-          <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
-            <Link
-              href={esHref}
-              className="
-                inline-flex items-center rounded-full
-                border border-border/80 bg-surface-1
-                px-3 py-1.5 text-xs font-semibold text-text
-                shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              ES
-            </Link>
-          </div>
+  <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
+    <Link
+      href={esHref}
+      className="
+        inline-flex items-center rounded-full
+        border border-border/80 bg-surface-1
+        px-3 py-1.5 text-xs font-semibold text-text
+        shadow-soft transition
+        hover:border-accent/35 hover:bg-surface-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      ES
+    </Link>
+  </div>
 
-          <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
-            <CuriosityByDesignLabel compact />
+  <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
+    <CuriosityByDesignLabel compact />
 
-            <Link
-              href="/"
-              aria-label="Go to Home"
-              className="
-                group inline-flex items-center justify-center rounded-full
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              <span
-                aria-hidden="true"
-                className={[
-                  "relative inline-flex items-center justify-center",
-                  "h-8 w-8",
-                  "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-                ].join(" ")}
-                style={{
-                  transformOrigin: "55% 60%",
-                  transform: "rotate(-14deg)",
-                  filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-                }}
-              >
-                <QuillFeatherIcon className="h-full w-full" />
-              </span>
-            </Link>
-          </div>
+    <Link
+      href="/"
+      aria-label="Go to Home"
+      className="
+        group inline-flex items-center justify-center rounded-full
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "relative inline-flex items-center justify-center",
+          "h-8 w-8",
+          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
+        ].join(" ")}
+        style={{
+          transformOrigin: "55% 60%",
+          transform: "rotate(-14deg)",
+          filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
+        }}
+      >
+        <QuillFeatherIcon className="h-full w-full" />
+      </span>
+    </Link>
+  </div>
 
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            className="
-              inline-flex items-center justify-center rounded-full
-              border border-border/80 bg-surface-1
-              px-3 py-1.5 text-xs font-semibold text-text
-              shadow-soft transition
-              hover:border-accent/35 hover:bg-surface-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-            "
-            aria-label="Open menu"
-            aria-haspopup="dialog"
-            aria-expanded={menuOpen}
-          >
-            Menu <span className="ml-2 text-muted">≡</span>
-          </button>
-        </div>
-      </div>
+  <button
+    type="button"
+    onClick={() => setMenuOpen(true)}
+    className="
+      inline-flex items-center justify-center rounded-full
+      border border-border/80 bg-surface-1
+      px-3 py-1.5 text-xs font-semibold text-text
+      shadow-soft transition
+      hover:border-accent/35 hover:bg-surface-2
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+    "
+    aria-label="Open menu"
+    aria-haspopup="dialog"
+    aria-expanded={menuOpen}
+  >
+    Menu <span className="ml-2 text-muted">≡</span>
+  </button>
+</div>
+</div>  {/* ✅ cierra el grid container */}
+
 
       {/* MOBILE DRAWER (reused) */}
       {menuOpen ? (

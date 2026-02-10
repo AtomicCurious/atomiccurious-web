@@ -29,7 +29,7 @@ export const homeEn = {
     latest: getLatestPostTileEn(),
 
     download: {
-      href: "/en/resources/calendar-2026",
+      href: "/calendar",
       badge: "FREE DOWNLOAD",
       badgeDot: "pink" as const,
       title: "AtomicCurious Science Calendar 2026",

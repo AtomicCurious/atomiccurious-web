@@ -1,3 +1,4 @@
+//atomiccurious-web\middleware.ts
 import { NextRequest, NextResponse } from "next/server"
 
 const SUPPORTED = ["en", "es"] as const

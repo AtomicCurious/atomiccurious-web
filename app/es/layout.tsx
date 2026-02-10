@@ -47,21 +47,21 @@ const COPYRIGHT_NUDGE_PX = 120
 
 export default function EsLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-[100svh] flex flex-col bg-bg text-text">
+    <div className="min-h-[100svh] bg-bg text-text">
       <NavBarEs />
 
-      {/* ✅ Sets per-page mode: host | trio | none (mirrors on body, applies to <main>) */}
+      {/* Sets per-page mode */}
       <CharacterModeBoot />
 
-      {/* ✅ Root main: Boot should ALWAYS target this node */}
-      {/* ✅ Default SSR mode prevents flash; Boot updates per-route */}
-      <main className="w-full flex-1 bg-bg text-text" data-chroot="1" data-chmode="host">
+      {/* ✅ Normal flow: NO flex layouts, NO “push footer down” behavior */}
+      <main className="w-full" data-chroot="1" data-chmode="host">
         {children}
       </main>
 
-      <footer className="border-t border-border/70 bg-bg">
+      {/* ✅ Hard override: if anything tries to fix/stick footer, this fights it */}
+      <footer className="static border-t border-border/70 bg-bg">
         <div className="mx-auto max-w-6xl px-6 py-4">
-          {/* Desktop / Tablet — compact 3-zone layout (match EN) */}
+          {/* Desktop / Tablet */}
           <div className="hidden md:grid items-center gap-4 [grid-template-columns:1fr_auto_auto]">
             {/* Left — Social */}
             <div
@@ -102,7 +102,7 @@ export default function EsLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          {/* Mobile — stacked, centered, clean (match EN) */}
+          {/* Mobile */}
           <div className="md:hidden flex flex-col items-center gap-3">
             <SocialLinks
               variant="footer"
@@ -121,7 +121,7 @@ export default function EsLayout({ children }: { children: ReactNode }) {
             <LegalLinksEs />
 
             <p className="text-[11px] text-muted leading-none whitespace-nowrap">
-              © {new Date().getFullYear()} AtomicCurious 
+              © {new Date().getFullYear()} AtomicCurious
             </p>
           </div>
         </div>

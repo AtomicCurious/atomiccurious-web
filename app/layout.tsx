@@ -12,8 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         data-theme="dark"
-        className="min-h-[100svh] overflow-x-hidden overflow-y-auto bg-bg text-text antialiased"
+        className="min-h-[100svh] overflow-x-hidden bg-bg text-text antialiased"
       >
         <HomeThemeLock />
         {children}

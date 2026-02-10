@@ -32,8 +32,13 @@ const HEADER_NUDGE_X = 0 // px
 ========================================================= */
 const SECTION_BRAND_NUDGE_X = -180 // Sigil + AtomicCurious juntos
 const SECTION_NAV_NUDGE_X = -100 // Todos los links de secciones juntos
-const SECTION_LANG_NUDGE_X = 20 // EN only
+
+// ✅ NEW: ThemeToggle + CharacterToggle together (one knob)
+const SECTION_TOGGLES_NUDGE_X = 70 // Negative = left, Positive = right
+
+const SECTION_LANG_NUDGE_X = 80 // EN only
 const SECTION_EDITOR_NOTE_NUDGE_X = 120 // Slogan + pluma juntos
+
 
 function isActive(pathname: string, href: string) {
   if (href === "/es") return pathname === "/es" || pathname === "/es/"
@@ -42,6 +47,7 @@ function isActive(pathname: string, href: string) {
 
 function toEn(pathname: string) {
   const map: Record<string, string> = {
+    "/es/calendario": "/calendar", // ✅ FIX
     "/es/recursos": "/resources",
     "/es/comunidad": "/community",
     "/es/contacto": "/contact",
@@ -885,80 +891,92 @@ export default function NavBarEs() {
             </div>
           </div>
 
-          {/* RIGHT (mobile) */}
-          <div className="flex items-center justify-end gap-2 sm:hidden">
-            {showToggles ? (
-              <>
-                <ThemeToggle />
-                <CharacterToggle />
-              </>
-            ) : null}
+         {/* RIGHT (mobile) */}
+<div className="flex items-center justify-end gap-2 sm:hidden">
+  {showToggles ? (
+    /* ✅ Theme + Character toggles (single nudge control) */
+    <div
+      className="flex items-center gap-2 will-change-transform"
+      style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+    >
+      <ThemeToggle />
+      <CharacterToggle />
+    </div>
+  ) : null}
 
-            <div className="flex items-center will-change-transform" style={{ transform: `translateX(${LANG_SWITCH_NUDGE_X}px)` }}>
-              <Link
-                href={enHref}
-                className="
-                  inline-flex items-center rounded-full
-                  border border-border/80 bg-surface-1
-                  px-3 py-1.5 text-xs font-semibold text-text
-                  shadow-soft transition
-                  hover:border-accent/35 hover:bg-surface-2
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                "
-              >
-                EN
-              </Link>
-            </div>
+  <div
+    className="flex items-center will-change-transform"
+    style={{ transform: `translateX(${LANG_SWITCH_NUDGE_X}px)` }}
+  >
+    <Link
+      href={enHref}
+      className="
+        inline-flex items-center rounded-full
+        border border-border/80 bg-surface-1
+        px-3 py-1.5 text-xs font-semibold text-text
+        shadow-soft transition
+        hover:border-accent/35 hover:bg-surface-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      EN
+    </Link>
+  </div>
 
-            <div className="flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${EDITOR_NOTE_NUDGE_X}px)` }}>
-              {/* ✅ MATCH EN mobile: same accent, slightly softer */}
-              <span className="select-none rounded-full px-2 py-1 text-[11px] text-[rgb(var(--accent))]/60">Nota del editor</span>
+  <div
+    className="flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${EDITOR_NOTE_NUDGE_X}px)` }}
+  >
+    {/* ✅ MATCH EN mobile: same accent, slightly softer */}
+    <span className="select-none rounded-full px-2 py-1 text-[11px] text-[rgb(var(--accent))]/60">
+      Nota del editor
+    </span>
 
-              <button
-                ref={noteRefMobile}
-                type="button"
-                onClick={() => {
-                  setNoteOpen((v) => !v)
-                  setNoteHasNew(false)
-                }}
-                className={["group relative inline-flex items-center", notePing ? "ac-note-ping" : ""].join(" ")}
-                aria-label="Abrir nota del editor"
-              >
-                <NotebookMark />
-                {noteHasNew ? (
-                  <span
-                    aria-hidden="true"
-                    className={[
-                      "pointer-events-none absolute",
-                      "-top-1.5 -left-1.5",
-                      "h-2.5 w-2.5 rounded-full",
-                      "bg-accent-alt",
-                      "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent-alt),0.45)]",
-                    ].join(" ")}
-                  />
-                ) : null}
-              </button>
-            </div>
+    <button
+      ref={noteRefMobile}
+      type="button"
+      onClick={() => {
+        setNoteOpen((v) => !v)
+        setNoteHasNew(false)
+      }}
+      className={["group relative inline-flex items-center", notePing ? "ac-note-ping" : ""].join(" ")}
+      aria-label="Abrir nota del editor"
+    >
+      <NotebookMark />
+      {noteHasNew ? (
+        <span
+          aria-hidden="true"
+          className={[
+            "pointer-events-none absolute",
+            "-top-1.5 -left-1.5",
+            "h-2.5 w-2.5 rounded-full",
+            "bg-accent-alt",
+            "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent-alt),0.45)]",
+          ].join(" ")}
+        />
+      ) : null}
+    </button>
+  </div>
 
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="
-                inline-flex items-center justify-center rounded-full
-                border border-border/80 bg-surface-1
-                px-3 py-1.5 text-xs font-semibold text-text
-                shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-              aria-label="Abrir menú"
-              aria-haspopup="dialog"
-              aria-expanded={menuOpen}
-            >
-              Menú <span className="ml-2 text-muted">≡</span>
-            </button>
-          </div>
-        </div>
+  <button
+    type="button"
+    onClick={() => setMenuOpen(true)}
+    className="
+      inline-flex items-center justify-center rounded-full
+      border border-border/80 bg-surface-1
+      px-3 py-1.5 text-xs font-semibold text-text
+      shadow-soft transition
+      hover:border-accent/35 hover:bg-surface-2
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+    "
+    aria-label="Abrir menú"
+    aria-haspopup="dialog"
+    aria-expanded={menuOpen}
+  >
+    Menú <span className="ml-2 text-muted">≡</span>
+  </button>
+</div>
+</div>
 
         {/* MOBILE DRAWER */}
         {menuOpen ? (
@@ -1152,125 +1170,147 @@ export default function NavBarEs() {
         </nav>
 
         {/* RIGHT (desktop) */}
-        <div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
-          <ThemeToggle />
-          <CharacterToggle />
+<div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
+  {/* ✅ Theme + Character toggles (single nudge control) */}
+  <div
+    className="flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+  >
+    <ThemeToggle />
+    <CharacterToggle />
+  </div>
 
-          <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
-            <Link
-              href={enHref}
-              className="
-                inline-flex items-center rounded-full
-                border border-border/80 bg-surface-1
-                px-3 py-1.5 text-xs font-semibold text-text
-                shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              EN
-            </Link>
-          </div>
+  <div
+    className="flex items-center will-change-transform"
+    style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}
+  >
+    <Link
+      href={enHref}
+      className="
+        inline-flex items-center rounded-full
+        border border-border/80 bg-surface-1
+        px-3 py-1.5 text-xs font-semibold text-text
+        shadow-soft transition
+        hover:border-accent/35 hover:bg-surface-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      EN
+    </Link>
+  </div>
 
-          {/* ✅ slogan + quill (hover animates underline) */}
-          <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
-            <CuriosityByDesignLabel />
+  {/* ✅ slogan + quill (hover animates underline) */}
+  <div
+    className="ac-editor-signature flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}
+  >
+    <CuriosityByDesignLabel />
 
-            {/* ✅ quill -> ES Home */}
-            <Link
-              href="/es"
-              aria-label="Ir al inicio"
-              className="
-                group inline-flex items-center justify-center rounded-full
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              <span
-                aria-hidden="true"
-                className={[
-                  "relative inline-flex items-center justify-center",
-                  "h-8 w-8 sm:h-9 sm:w-9",
-                  "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-                ].join(" ")}
-                style={{
-                  transformOrigin: "55% 60%",
-                  transform: "rotate(-14deg)",
-                  filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-                }}
-              >
-                <QuillFeatherIcon className="h-full w-full" />
-              </span>
-            </Link>
-          </div>
-        </div>
+    {/* ✅ quill -> ES Home */}
+    <Link
+      href="/es"
+      aria-label="Ir al inicio"
+      className="
+        group inline-flex items-center justify-center rounded-full
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "relative inline-flex items-center justify-center",
+          "h-8 w-8 sm:h-9 sm:w-9",
+          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
+        ].join(" ")}
+        style={{
+          transformOrigin: "55% 60%",
+          transform: "rotate(-14deg)",
+          filter:
+            "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
+        }}
+      >
+        <QuillFeatherIcon className="h-full w-full" />
+      </span>
+    </Link>
+  </div>
+</div>
+{/* RIGHT (mobile) */}
+<div className="flex items-center justify-end gap-2 sm:hidden">
+  {/* ✅ Theme + Character toggles (single nudge control) */}
+  <div
+    className="flex items-center gap-2 will-change-transform"
+    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+  >
+    <ThemeToggle />
+    <CharacterToggle />
+  </div>
 
-        {/* RIGHT (mobile) */}
-        <div className="flex items-center justify-end gap-2 sm:hidden">
-          <ThemeToggle />
-          <CharacterToggle />
+  <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
+    <Link
+      href={enHref}
+      className="
+        inline-flex items-center rounded-full
+        border border-border/80 bg-surface-1
+        px-3 py-1.5 text-xs font-semibold text-text
+        shadow-soft transition
+        hover:border-accent/35 hover:bg-surface-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      EN
+    </Link>
+  </div>
 
-          <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
-            <Link
-              href={enHref}
-              className="
-                inline-flex items-center rounded-full
-                border border-border/80 bg-surface-1
-                px-3 py-1.5 text-xs font-semibold text-text
-                shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              EN
-            </Link>
-          </div>
+  <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
+    <CuriosityByDesignLabel compact />
 
-          <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
-            <CuriosityByDesignLabel compact />
+    <Link
+      href="/es"
+      aria-label="Ir al inicio"
+      className="
+        group inline-flex items-center justify-center rounded-full
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      "
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "relative inline-flex items-center justify-center",
+          "h-8 w-8",
+          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
+        ].join(" ")}
+        style={{
+          transformOrigin: "55% 60%",
+          transform: "rotate(-14deg)",
+          filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
+        }}
+      >
+        <QuillFeatherIcon className="h-full w-full" />
+      </span>
+    </Link>
+  </div>
 
-            <Link
-              href="/es"
-              aria-label="Ir al inicio"
-              className="
-                group inline-flex items-center justify-center rounded-full
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              <span
-                aria-hidden="true"
-                className={["relative inline-flex items-center justify-center", "h-8 w-8", "opacity-90 group-hover:opacity-100 transition-opacity duration-300"].join(" ")}
-                style={{
-                  transformOrigin: "55% 60%",
-                  transform: "rotate(-14deg)",
-                  filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-                }}
-              >
-                <QuillFeatherIcon className="h-full w-full" />
-              </span>
-            </Link>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            className="
-              inline-flex items-center justify-center rounded-full
-              border border-border/80 bg-surface-1
-              px-3 py-1.5 text-xs font-semibold text-text
-              shadow-soft transition
-              hover:border-accent/35 hover:bg-surface-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-            "
-            aria-label="Abrir menú"
-            aria-haspopup="dialog"
-            aria-expanded={menuOpen}
-          >
-            Menú <span className="ml-2 text-muted">≡</span>
-          </button>
-        </div>
-      </div>
+  <button
+    type="button"
+    onClick={() => setMenuOpen(true)}
+    className="
+      inline-flex items-center justify-center rounded-full
+      border border-border/80 bg-surface-1
+      px-3 py-1.5 text-xs font-semibold text-text
+      shadow-soft transition
+      hover:border-accent/35 hover:bg-surface-2
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+    "
+    aria-label="Abrir menú"
+    aria-haspopup="dialog"
+    aria-expanded={menuOpen}
+  >
+    Menú <span className="ml-2 text-muted">≡</span>
+  </button>
+</div>
+</div>
 
       {/* MOBILE DRAWER (reused) */}
       {menuOpen ? (

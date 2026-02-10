@@ -378,16 +378,27 @@ body {
 
 body {
   position: relative;
+  overflow-x: hidden;
 
   background-color: rgb(var(--bg));
   background-image: var(--bg-grad);
-  background-attachment: fixed;
+
+  /* ✅ FIX: avoid mobile/Android fixed-attachment scroll artifacts */
+  background-attachment: scroll;
+
   background-repeat: no-repeat;
   background-size: cover;
 
   color: rgb(var(--text));
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ✅ Desktop only: allow fixed attachment for premium parallax feel */
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 /* =========================================================
@@ -408,11 +419,12 @@ a {
 
 /* =========================================================
    Anti-banding / Luxury grain
-   ✅ FIX: apply to body (not :root) so LIGHT can truly disable it
+   ✅ FIX: use absolute (not fixed) to keep layout/flow sane
+   ✅ Still sits behind content
    ========================================================= */
 body::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
@@ -835,4 +847,14 @@ body[data-chmode="none"] .ac-tip {
     transition: none !important;
     transform: none !important;
   }
+}
+
+/* Hide scrollbar (scoped helper) */
+.no-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge legacy */
+  scrollbar-width: none; /* Firefox */
 }

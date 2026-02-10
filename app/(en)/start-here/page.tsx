@@ -195,7 +195,7 @@ function CharacterVisual() {
 
 {/* IRIS */}
 <Image
-  src="/images/sections/start-here/iris.webp"
+  src="/images/sections/start-here/iris1.webp"
   alt="Your guide"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"
