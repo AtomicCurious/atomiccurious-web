@@ -1,0 +1,75 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  source      String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  downloads Download[]
+  links     DownloadLink[]
+
+  @@map("Lead")
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  assetSlug String
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  // Relación al link que generó la descarga (para medir email → descarga)
+  linkId String?
+  link   DownloadLink? @relation(fields: [linkId], references: [id], onDelete: SetNull)
+
+  @@index([assetSlug])
+  @@index([leadId])
+  @@index([createdAt])
+  @@index([linkId])
+
+  @@map("Download")
+}
+
+model DownloadLink {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  clickedAt DateTime?
+
+  assetSlug String
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  // Guardar SOLO el hash del token (seguridad)
+  tokenHash String @unique
+
+  // Metadata opcional para analítica básica
+  ip        String?
+  userAgent String?
+
+  // Relación inversa requerida por Prisma
+  downloads Download[]
+
+  @@index([leadId])
+  @@index([assetSlug])
+  @@index([createdAt])
+  @@index([clickedAt])
+
+  @@map("DownloadLink")
+}

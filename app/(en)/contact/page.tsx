@@ -106,7 +106,7 @@ export default function Page() {
                   <div className="relative aspect-[4/5] w-full">
                     {/* Default / Atom */}
                     <Image
-                      src="/images/sections/contact/atom.webp"
+                      src="/images/sections/contact/atom_contact.webp"
                       alt=""
                       aria-hidden="true"
                       fill
@@ -116,7 +116,7 @@ export default function Page() {
 
                     {/* Iris */}
                     <Image
-                      src="/images/sections/contact/iris.webp"
+                      src="/images/sections/contact/iris_contact.webp"
                       alt=""
                       aria-hidden="true"
                       fill
@@ -126,7 +126,7 @@ export default function Page() {
 
                     {/* Core */}
                     <Image
-                      src="/images/sections/contact/core.webp"
+                      src="/images/sections/contact/core_contact.webp"
                       alt=""
                       aria-hidden="true"
                       fill

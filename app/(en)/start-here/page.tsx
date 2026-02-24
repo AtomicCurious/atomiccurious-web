@@ -185,7 +185,7 @@ function CharacterVisual() {
       >
         {/* ATOM */}
 <Image
-  src="/images/sections/start-here/atom.webp"
+  src="/images/sections/start-here/atom_start_here.webp"
   alt="Your guide"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"
@@ -195,7 +195,7 @@ function CharacterVisual() {
 
 {/* IRIS */}
 <Image
-  src="/images/sections/start-here/iris1.webp"
+  src="/images/sections/start-here/iris_start_here.webp"
   alt="Your guide"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"
@@ -205,7 +205,7 @@ function CharacterVisual() {
 
 {/* CORE */}
 <Image
-  src="/images/sections/start-here/core.webp"
+  src="/images/sections/start-here/core_start_here.webp"
   alt="Your guide"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"

@@ -5,13 +5,34 @@ import Image from "next/image"
 export const metadata = {
   title: "Recursos | AtomicCurious",
   description:
-    "Ebooks, plantillas, revista y futuros productos para mentes curiosas.",
+    "Ebooks, plantillas, revista y futuros productos para mentes curiosas. Lanzamiento: 18 de julio de 2026.",
 }
 
+const LAUNCH_DATE = "18 de julio de 2026"
+
 /**
- * SSR-safe, page-scoped CSS (sin styled-jsx).
- * - Filtro (radio buttons) controla qué secciones se ven.
- * - (Opcional) resalta la sección del personaje actual vía body[data-character].
+ * Cambia esto cuando lances Recursos.
+ * - false = vista mínima Próximamente (Core esperando)
+ * - true  = experiencia completa (tu página original)
+ */
+const IS_RECURSOS_LIVE = false
+
+/**
+ * Grain sutil (consistente con tus “Coming Soon”)
+ */
+const COMING_SOON_CSS = `
+.ac-grain{
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.10), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(var(--accent),0.10), transparent 55%),
+    radial-gradient(circle at 70% 40%, rgba(var(--accent-alt),0.08), transparent 58%),
+    linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 55%);
+  mix-blend-mode: normal;
+}
+`
+
+/**
+ * Tu CSS original (con filtro por guía) — se conserva intacto.
  */
 const RECURSOS_CSS = `
 /* ===== Resaltado opcional según personaje seleccionado ===== */
@@ -94,6 +115,109 @@ type GuideSection = {
   avatarSrc: string
   byline: string
   items: ResourceCard[]
+}
+
+function ComingSoonRecursos() {
+  return (
+    <section className="relative w-full overflow-hidden bg-bg">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_70%_at_50%_-10%,rgb(var(--accent)/0.10),transparent_62%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_70%_20%,rgb(var(--accent-alt)/0.07),transparent_62%)]" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
+        <div className="mx-auto w-full max-w-5xl">
+          <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-surface-1/40 p-6 shadow-soft backdrop-blur sm:p-8">
+            <div className="pointer-events-none absolute inset-0 ac-grain" />
+
+            {/* Imagen */}
+            <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-bg/20 shadow-soft">
+              <div className="relative aspect-video w-full">
+                {/* gradient fallback sutil */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_20%_20%,rgba(var(--accent),0.16),transparent_60%),radial-gradient(ellipse_120%_90%_at_80%_30%,rgba(var(--accent-alt),0.12),transparent_62%),linear-gradient(to_bottom,rgba(255,255,255,0.05),transparent_60%)]" />
+
+                <Image
+                  src="/images/sections/Community/Core_Secciones_Inactivas.webp"
+                  alt="Core esperando el lanzamiento de Recursos"
+                  fill
+                  sizes="(min-width: 1024px) 960px, 92vw"
+                  className="object-cover"
+                  priority
+                />
+
+                {/* Viñeta premium */}
+                <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent_75%)] bg-black/35" />
+
+                {/* Label */}
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/30 px-3 py-1 text-[11px] font-semibold tracking-wide text-text shadow-soft backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent/80" />
+                  PRÓXIMAMENTE
+                </div>
+              </div>
+            </div>
+
+            {/* Copy */}
+            <div className="relative mt-6 text-center">
+              <p className="text-xs font-semibold tracking-wide text-muted">
+                ATOMICCURIOUS · RECURSOS
+              </p>
+
+              <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl">
+                Recursos
+              </h1>
+
+              <p className="mx-auto mt-4 max-w-2xl text-balance text-base text-muted sm:text-lg">
+                Ebooks, plantillas y productos cuidadosamente diseñados — para
+                pensar mejor, aprender más profundo y construir con intención.
+              </p>
+
+              <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/25 px-4 py-2 text-xs font-semibold text-text shadow-soft backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent/80" />
+                Lanzamiento{" "}
+                <span className="text-text">{LAUNCH_DATE}</span>
+              </div>
+
+              <p className="mx-auto mt-4 max-w-xl text-sm text-muted">
+                Los primeros releases se abrirán poco a poco.
+              </p>
+
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/es/newsletter"
+                  className="
+                    inline-flex items-center justify-center rounded-xl
+                    border border-border bg-bg/35 px-5 py-2.5
+                    text-sm font-semibold text-text
+                    transition hover:border-accent/35 hover:bg-surface-2
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+                    focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                  "
+                >
+                  Recibir avisos →
+                </Link>
+
+                <Link
+                  href="/es"
+                  className="
+                    inline-flex items-center justify-center rounded-xl
+                    border border-border px-5 py-2.5
+                    text-sm font-semibold text-text
+                    transition hover:bg-surface-2
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+                    focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                  "
+                >
+                  Volver al inicio
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
 }
 
 function GuideHeader({
@@ -214,7 +338,7 @@ function ResourceItemCard({ item }: { item: ResourceCard }) {
   )
 }
 
-export default function RecursosPage() {
+function FullRecursosPage() {
   const sections: GuideSection[] = [
     {
       guide: "core",
@@ -309,143 +433,148 @@ export default function RecursosPage() {
   ]
 
   return (
-    <main className="w-full" data-chmode="none">
-      <style dangerouslySetInnerHTML={{ __html: RECURSOS_CSS }} />
+    <section className="relative w-full overflow-hidden bg-bg">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.10),transparent_65%)]" />
+      </div>
 
-      <section className="relative w-full overflow-hidden bg-bg">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-bg" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_-10%,rgb(var(--accent)/0.10),transparent_65%)]" />
-        </div>
-
-        <div className="relative mx-auto w-full max-w-6xl px-6 py-20">
-          <header className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold tracking-wide text-muted">
-              ATOMICCURIOUS · RECURSOS
-            </p>
-
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-text sm:text-5xl">
-              Recursos para mentes curiosas
-            </h1>
-
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
-              Ebooks, plantillas, una futura revista y productos diseñados con
-              intención. Todo pensado para aprender mejor y pensar más profundo.
-            </p>
-          </header>
-
-          {/* FILTRO + PANEL (CSS-only) */}
-          <div className="mx-auto mt-10 w-full max-w-4xl ac-filter">
-            {/* radios (default = ALL) */}
-            <input
-              type="radio"
-              name="ac-guide"
-              id="ac-f-all"
-              defaultChecked
-            />
-            <input type="radio" name="ac-guide" id="ac-f-core" />
-            <input type="radio" name="ac-guide" id="ac-f-iris" />
-            <input type="radio" name="ac-guide" id="ac-f-atom" />
-
-            {/* Barra filtro */}
-            <div className="ac-filterbar rounded-2xl border border-border bg-surface-1/40 px-4 py-3 shadow-soft backdrop-blur">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <span className="mr-2 text-xs font-semibold tracking-wide text-muted">
-                  Filtrar por guía:
-                </span>
-
-                <label
-                  htmlFor="ac-f-core"
-                  className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
-                >
-                  Core
-                </label>
-                <label
-                  htmlFor="ac-f-iris"
-                  className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
-                >
-                  Iris
-                </label>
-                <label
-                  htmlFor="ac-f-atom"
-                  className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
-                >
-                  Atom
-                </label>
-                <label
-                  htmlFor="ac-f-all"
-                  className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/20 px-3 py-1 text-xs font-semibold text-muted transition"
-                >
-                  Todo
-                </label>
-              </div>
-            </div>
-
-            {/* Panel */}
-            <div className="ac-panel mt-12 rounded-3xl border border-border bg-surface-1/35 p-6 shadow-soft backdrop-blur sm:p-7">
-              <div className="space-y-10">
-                {sections.map((sec) => (
-                  <section
-                    key={sec.guide}
-                    className={[
-                      "ac-res-section rounded-2xl border border-border/60 bg-bg/20 p-5 sm:p-6",
-                      sec.guide === "core"
-                        ? "ac-guide-core"
-                        : sec.guide === "iris"
-                        ? "ac-guide-iris"
-                        : "ac-guide-atom",
-                    ].join(" ")}
-                    data-guide={sec.guide}
-                    aria-label={sec.heading}
-                  >
-                    <GuideHeader
-                      emoji={sec.emoji}
-                      heading={sec.heading}
-                      avatarSrc={sec.avatarSrc}
-                      byline={sec.byline}
-                    />
-
-                    <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                      {sec.items.map((it) => (
-                        <ResourceItemCard key={it.title} item={it} />
-                      ))}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* CTAs */}
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/es/newsletter"
-              className="
-                rounded-xl bg-accent px-6 py-3 font-semibold text-bg
-                transition hover:opacity-90
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              Únete al boletín
-            </Link>
-
-            <Link
-              href="/es"
-              className="
-                rounded-xl border border-border px-6 py-3 font-semibold text-text
-                transition hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              Volver al inicio
-            </Link>
-          </div>
-
-          <p className="mt-12 text-center text-sm text-muted">
-            Los primeros lanzamientos llegarán pronto.
+      <div className="relative mx-auto w-full max-w-6xl px-6 py-20">
+        <header className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold tracking-wide text-muted">
+            ATOMICCURIOUS · RECURSOS
           </p>
+
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-text sm:text-5xl">
+            Recursos para mentes curiosas
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
+            Ebooks, plantillas, una futura revista y productos diseñados con
+            intención. Todo pensado para aprender mejor y pensar más profundo.
+          </p>
+        </header>
+
+        {/* FILTRO + PANEL (CSS-only) */}
+        <div className="mx-auto mt-10 w-full max-w-4xl ac-filter">
+          {/* radios (default = ALL) */}
+          <input type="radio" name="ac-guide" id="ac-f-all" defaultChecked />
+          <input type="radio" name="ac-guide" id="ac-f-core" />
+          <input type="radio" name="ac-guide" id="ac-f-iris" />
+          <input type="radio" name="ac-guide" id="ac-f-atom" />
+
+          {/* Barra filtro */}
+          <div className="ac-filterbar rounded-2xl border border-border bg-surface-1/40 px-4 py-3 shadow-soft backdrop-blur">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <span className="mr-2 text-xs font-semibold tracking-wide text-muted">
+                Filtrar por guía:
+              </span>
+
+              <label
+                htmlFor="ac-f-core"
+                className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
+              >
+                Core
+              </label>
+              <label
+                htmlFor="ac-f-iris"
+                className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
+              >
+                Iris
+              </label>
+              <label
+                htmlFor="ac-f-atom"
+                className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/30 px-3 py-1 text-xs font-semibold text-text transition"
+              >
+                Atom
+              </label>
+              <label
+                htmlFor="ac-f-all"
+                className="ac-pill inline-flex items-center justify-center rounded-full border border-border bg-bg/20 px-3 py-1 text-xs font-semibold text-muted transition"
+              >
+                Todo
+              </label>
+            </div>
+          </div>
+
+          {/* Panel */}
+          <div className="ac-panel mt-12 rounded-3xl border border-border bg-surface-1/35 p-6 shadow-soft backdrop-blur sm:p-7">
+            <div className="space-y-10">
+              {sections.map((sec) => (
+                <section
+                  key={sec.guide}
+                  className={[
+                    "ac-res-section rounded-2xl border border-border/60 bg-bg/20 p-5 sm:p-6",
+                    sec.guide === "core"
+                      ? "ac-guide-core"
+                      : sec.guide === "iris"
+                      ? "ac-guide-iris"
+                      : "ac-guide-atom",
+                  ].join(" ")}
+                  data-guide={sec.guide}
+                  aria-label={sec.heading}
+                >
+                  <GuideHeader
+                    emoji={sec.emoji}
+                    heading={sec.heading}
+                    avatarSrc={sec.avatarSrc}
+                    byline={sec.byline}
+                  />
+
+                  <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                    {sec.items.map((it) => (
+                      <ResourceItemCard key={it.title} item={it} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
+
+        {/* CTAs */}
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link
+            href="/es/newsletter"
+            className="
+              rounded-xl bg-accent px-6 py-3 font-semibold text-bg
+              transition hover:opacity-90
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+          >
+            Únete al boletín
+          </Link>
+
+          <Link
+            href="/es"
+            className="
+              rounded-xl border border-border px-6 py-3 font-semibold text-text
+              transition hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+          >
+            Volver al inicio
+          </Link>
+        </div>
+
+        <p className="mt-12 text-center text-sm text-muted">
+          Los primeros lanzamientos llegarán pronto.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+export default function RecursosPage() {
+  return (
+    <main className="w-full" data-chmode="none">
+      <style
+        dangerouslySetInnerHTML={{
+          __html: (IS_RECURSOS_LIVE ? RECURSOS_CSS : "") + COMING_SOON_CSS,
+        }}
+      />
+
+      {IS_RECURSOS_LIVE ? <FullRecursosPage /> : <ComingSoonRecursos />}
     </main>
   )
 }

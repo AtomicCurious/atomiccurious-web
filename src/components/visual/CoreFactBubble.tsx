@@ -66,7 +66,7 @@ export default function CoreFactBubble({
   const coreCharacter = useMemo(
     () => ({
       name: "Core",
-      img: "/characters/core.webp",
+      img: "/images/sections/home/core_home.webp",
       aria: "Curiosidad de Core",
     }),
     []

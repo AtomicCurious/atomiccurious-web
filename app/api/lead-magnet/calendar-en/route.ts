@@ -1,6 +1,8 @@
 // app/api/lead-magnet/calendar-en/route.ts
 import { NextResponse } from "next/server"
+import crypto from "crypto"
 import { resend, RESEND_FROM, SITE_URL } from "@/lib/resend"
+import { prisma } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -40,6 +42,20 @@ function isRateLimited(key: string) {
   return entry.count > MAX_PER_WINDOW
 }
 
+// ---- token helpers ----
+function generateToken() {
+  return crypto.randomBytes(32).toString("hex") // 64 chars
+}
+
+function hashToken(token: string) {
+  return crypto.createHash("sha256").update(token).digest("hex")
+}
+
+const LINK_TTL_HOURS = 72
+function addHours(date: Date, hours: number) {
+  return new Date(date.getTime() + hours * 60 * 60 * 1000)
+}
+
 export async function POST(req: Request) {
   // Only JSON
   const ct = req.headers.get("content-type") || ""
@@ -63,11 +79,55 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const downloadUrl =
+  const assetSlug =
     variant === "print"
-      ? `${SITE_URL}/downloads/calendar-science-2026-en-print.pdf`
-      : `${SITE_URL}/downloads/calendar-science-2026-en.pdf`
+      ? "calendar-science-2026-en-print"
+      : "calendar-science-2026-en"
 
+  // ---- persist lead + create unique download link token ----
+  let tokenForEmail: string | null = null
+
+  try {
+    const lead = await prisma.lead.upsert({
+      where: { email },
+      update: {
+        // opcional: mantener source fijo y refrescar utms si llegan
+        source: "lead-magnet",
+        utmSource: body?.utmSource ?? null,
+        utmMedium: body?.utmMedium ?? null,
+        utmCampaign: body?.utmCampaign ?? null,
+      },
+      create: {
+        email,
+        source: "lead-magnet",
+        utmSource: body?.utmSource ?? null,
+        utmMedium: body?.utmMedium ?? null,
+        utmCampaign: body?.utmCampaign ?? null,
+      },
+    })
+
+    const token = generateToken()
+    const tokenHash = hashToken(token)
+
+    await prisma.downloadLink.create({
+      data: {
+        leadId: lead.id,
+        assetSlug,
+        tokenHash,
+        expiresAt: addHours(new Date(), LINK_TTL_HOURS),
+      },
+    })
+
+    tokenForEmail = token
+  } catch (dbErr) {
+    console.error("[calendar-en] db error:", dbErr)
+    // Si falla DB, igual respondemos ok para no filtrar señales
+    return NextResponse.json({ ok: true }, { status: 200 })
+  }
+
+  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
+
+  // ---- send email ----
   try {
     await resend.emails.send({
       from: RESEND_FROM,
@@ -76,7 +136,8 @@ export async function POST(req: Request) {
       text:
         `Thanks for downloading the Science Calendar 2026.\n\n` +
         `Version: ${variant === "print" ? "Print" : "Standard"}\n\n` +
-        `Direct download:\n${downloadUrl}\n\n` +
+        `Download here:\n${trackedDownloadUrl}\n\n` +
+        `This link expires in ${LINK_TTL_HOURS} hours.\n\n` +
         `— AtomicCurious Team`,
     })
   } catch (err) {

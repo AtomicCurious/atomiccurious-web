@@ -175,7 +175,7 @@ function CharacterVisualEs() {
       >
         {/* ATOM */}
 <Image
-  src="/images/sections/start-here/atom.webp"
+  src="/images/sections/start-here/atom_start_here.webp"
   alt="Tu guía"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"
@@ -185,7 +185,7 @@ function CharacterVisualEs() {
 
 {/* IRIS */}
 <Image
-  src="/images/sections/start-here/iris.webp"
+  src="/images/sections/start-here/iris_start_here.webp"
   alt="Tu guía"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"
@@ -195,7 +195,7 @@ function CharacterVisualEs() {
 
 {/* CORE */}
 <Image
-  src="/images/sections/start-here/core.webp"
+  src="/images/sections/start-here/core_start_here.webp"
   alt="Tu guía"
   fill
   sizes="(max-width: 1024px) 100vw, 45vw"

@@ -95,7 +95,7 @@ function HostVisualEs() {
       <div className="relative aspect-[16/7] w-full">
         {/* ATOM */}
         <Image
-          src="/images/sections/posts/atom.webp"
+          src="/images/sections/posts/atom_posts.webp"
           alt="Atom — Curiosidad"
           fill
           sizes="(max-width: 768px) 100vw, 1100px"
@@ -105,7 +105,7 @@ function HostVisualEs() {
 
         {/* IRIS */}
         <Image
-          src="/images/sections/posts/iris.webp"
+          src="/images/sections/posts/iris_posts.webp"
           alt="Iris — Rankings"
           fill
           sizes="(max-width: 768px) 100vw, 1100px"
@@ -115,7 +115,7 @@ function HostVisualEs() {
 
         {/* CORE */}
         <Image
-          src="/images/sections/posts/core.webp"
+          src="/images/sections/posts/core_posts.webp"
           alt="Core — Quiz"
           fill
           sizes="(max-width: 768px) 100vw, 1100px"

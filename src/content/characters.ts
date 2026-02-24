@@ -18,7 +18,7 @@ export const characters: Record<CharacterId, Character> = {
     age: 23,
     description:
       "Comparaciones, rankings y claridad. Iris te guía a través de la complejidad con estructura.",
-    image: "/characters/iris.png",
+    image: "/images/sections/home/iris_home.webp",
     rev: "2026-01-04-1",
   },
 
