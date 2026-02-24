@@ -67,23 +67,23 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
   const userAgent = req.headers.get("user-agent");
 
-  // Contar 1 descarga real por token (idempotente)
-  await prisma.$transaction(async (tx) => {
-    if (!link.clickedAt) {
-      await tx.downloadLink.update({
-        where: { id: link.id },
-        data: { clickedAt: new Date(), ip, userAgent },
-      });
-
-      await tx.download.create({
-        data: {
-          leadId: link.leadId,
-          assetSlug: link.assetSlug,
-          linkId: link.id,
-        },
-      });
-    }
+  // Idempotente sin callback tx (evita "implicit any")
+  // 1) Intentar marcar clickedAt solo si aún es null
+  const updated = await prisma.downloadLink.updateMany({
+    where: { id: link.id, clickedAt: null },
+    data: { clickedAt: new Date(), ip, userAgent },
   });
+
+  // 2) Si se marcó (primer click), registrar Download
+  if (updated.count === 1) {
+    await prisma.download.create({
+      data: {
+        leadId: link.leadId,
+        assetSlug: link.assetSlug,
+        linkId: link.id,
+      },
+    });
+  }
 
   const redirectUrl = new URL(assetPath, req.url);
   const res = NextResponse.redirect(redirectUrl, 302);
