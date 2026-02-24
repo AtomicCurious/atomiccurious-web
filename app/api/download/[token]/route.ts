@@ -15,15 +15,18 @@ const assetMap: Record<string, string> = {
   // ES
   "calendario-ciencia-2026-es": "/downloads/calendario-ciencia-2026-es.pdf",
 
-  // ⚠️ Solo descomenta si el archivo realmente existe
+  // Si existe el PDF de imprimir ES, descomenta:
   // "calendario-ciencia-2026-es-imprimir": "/downloads/calendario-ciencia-2026-es-imprimir.pdf",
 };
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
-  const rawToken = (params.token || "").trim();
+type RouteContext = {
+  params: Promise<{ token: string }>;
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
+  const { token } = await context.params;
+
+  const rawToken = (token || "").trim();
   if (!rawToken) {
     return NextResponse.json({ error: "Missing token" }, { status: 400 });
   }
@@ -64,7 +67,7 @@ export async function GET(
 
   const userAgent = req.headers.get("user-agent");
 
-  // Registrar solo 1 descarga real por token
+  // Contar 1 descarga real por token (idempotente)
   await prisma.$transaction(async (tx) => {
     if (!link.clickedAt) {
       await tx.downloadLink.update({
@@ -82,12 +85,8 @@ export async function GET(
     }
   });
 
-  // Redirección al archivo público
   const redirectUrl = new URL(assetPath, req.url);
   const res = NextResponse.redirect(redirectUrl, 302);
-
-  // Evita cache del endpoint de token
   res.headers.set("Cache-Control", "no-store, max-age=0");
-
   return res;
 }
