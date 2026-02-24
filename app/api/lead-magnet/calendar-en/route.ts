@@ -62,6 +62,17 @@ const assetMap: Record<string, string> = {
   "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
 }
 
+function getErrorMessage(err: unknown) {
+  if (!err) return "unknown error"
+  if (typeof err === "string") return err
+  if (err instanceof Error) return err.message
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
+
 export async function POST(req: Request) {
   // Only JSON
   const ct = req.headers.get("content-type") || ""
@@ -129,7 +140,7 @@ export async function POST(req: Request) {
   // ✅ Link directo al PDF (evita el error del primer click en /api/download)
   const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
 
-  // ---- send email ----
+  // ---- send email (si falla, NO lo ocultes) ----
   try {
     await resend.emails.send({
       from: RESEND_FROM,
@@ -142,7 +153,12 @@ export async function POST(req: Request) {
         `— AtomicCurious Team`,
     })
   } catch (err) {
+    const detail = getErrorMessage(err)
     console.error("[calendar-en] resend error:", err)
+    return NextResponse.json(
+      { ok: false, error: "resend_failed", detail },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ ok: true }, { status: 200 })

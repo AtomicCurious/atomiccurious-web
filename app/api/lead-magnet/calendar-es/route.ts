@@ -62,6 +62,17 @@ function addHours(date: Date, hours: number) {
 // ✅ Link directo a PDF ES (siempre funciona al primer click)
 const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
 
+function getErrorMessage(err: unknown) {
+  if (!err) return "unknown error"
+  if (typeof err === "string") return err
+  if (err instanceof Error) return err.message
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
+
 export async function POST(req: Request) {
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
@@ -137,7 +148,12 @@ export async function POST(req: Request) {
         `— Equipo AtomicCurious`,
     })
   } catch (err) {
+    const detail = getErrorMessage(err)
     console.error("[calendar-es] resend error:", err)
+    return NextResponse.json(
+      { ok: false, error: "resend_failed", detail },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ ok: true }, { status: 200 })
