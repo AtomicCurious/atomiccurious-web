@@ -56,6 +56,12 @@ function addHours(date: Date, hours: number) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000)
 }
 
+// Map: assetSlug -> archivo real en /public/downloads
+const assetMap: Record<string, string> = {
+  "calendar-science-2026-en": "/downloads/calendar-science-2026-en.pdf",
+  "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
+}
+
 export async function POST(req: Request) {
   // Only JSON
   const ct = req.headers.get("content-type") || ""
@@ -85,13 +91,10 @@ export async function POST(req: Request) {
       : "calendar-science-2026-en"
 
   // ---- persist lead + create unique download link token ----
-  let tokenForEmail: string | null = null
-
   try {
     const lead = await prisma.lead.upsert({
       where: { email },
       update: {
-        // opcional: mantener source fijo y refrescar utms si llegan
         source: "lead-magnet",
         utmSource: body?.utmSource ?? null,
         utmMedium: body?.utmMedium ?? null,
@@ -117,15 +120,14 @@ export async function POST(req: Request) {
         expiresAt: addHours(new Date(), LINK_TTL_HOURS),
       },
     })
-
-    tokenForEmail = token
   } catch (dbErr) {
     console.error("[calendar-en] db error:", dbErr)
     // Si falla DB, igual respondemos ok para no filtrar señales
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
+  // ✅ Link directo al PDF (evita el error del primer click en /api/download)
+  const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
 
   // ---- send email ----
   try {
@@ -136,8 +138,7 @@ export async function POST(req: Request) {
       text:
         `Thanks for downloading the Science Calendar 2026.\n\n` +
         `Version: ${variant === "print" ? "Print" : "Standard"}\n\n` +
-        `Download here:\n${trackedDownloadUrl}\n\n` +
-        `This link expires in ${LINK_TTL_HOURS} hours.\n\n` +
+        `Download here:\n${directPdfUrl}\n\n` +
         `— AtomicCurious Team`,
     })
   } catch (err) {

@@ -9,7 +9,6 @@ export const runtime = "nodejs"
 type Variant = "standard" | "print"
 
 function isValidEmail(email: string) {
-  // mínima, suficiente para lead magnet
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 }
 
@@ -23,11 +22,11 @@ const MAX_PER_WINDOW = 6
 const hits = new Map<string, { count: number; start: number }>()
 
 function rateLimitKey(req: Request) {
-  const ip =
+  return (
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     req.headers.get("x-real-ip") ||
     "unknown"
-  return ip
+  )
 }
 
 function isRateLimited(key: string) {
@@ -48,7 +47,7 @@ function isRateLimited(key: string) {
 
 // ---- token helpers ----
 function generateToken() {
-  return crypto.randomBytes(32).toString("hex") // 64 chars
+  return crypto.randomBytes(32).toString("hex")
 }
 
 function hashToken(token: string) {
@@ -60,14 +59,15 @@ function addHours(date: Date, hours: number) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000)
 }
 
+// ✅ Link directo a PDF ES (siempre funciona al primer click)
+const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
+
 export async function POST(req: Request) {
-  // 1) Content-Type básico
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  // 2) Rate limit
   const key = rateLimitKey(req)
   if (isRateLimited(key)) {
     return NextResponse.json({ ok: true }, { status: 200 })
@@ -78,7 +78,6 @@ export async function POST(req: Request) {
   const email = (body?.email ?? "").toString().trim().toLowerCase()
   const variant = normalizeVariant(body?.variant)
 
-  // Honeypot
   const honey = (body?.company ?? "").toString().trim()
   if (honey) return NextResponse.json({ ok: true }, { status: 200 })
 
@@ -86,13 +85,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const assetSlug =
-    variant === "print"
-      ? "calendario-ciencia-2026-es-imprimir"
-      : "calendario-ciencia-2026-es"
-
-  // ---- persist lead + create unique download link token ----
-  let tokenForEmail: string | null = null
+  // ✅ Fuerza siempre el slug estándar (evita "Unknown asset")
+  const assetSlug = "calendario-ciencia-2026-es"
 
   try {
     const lead = await prisma.lead.upsert({
@@ -123,16 +117,14 @@ export async function POST(req: Request) {
         expiresAt: addHours(new Date(), LINK_TTL_HOURS),
       },
     })
-
-    tokenForEmail = token
   } catch (dbErr) {
     console.error("[calendar-es] db error:", dbErr)
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
+  // ✅ Email con link directo (no pasa por /api/download)
+  const directPdfUrl = `${SITE_URL}${ES_PDF_PATH}`
 
-  // ---- send email ----
   try {
     await resend.emails.send({
       from: RESEND_FROM,
@@ -140,9 +132,8 @@ export async function POST(req: Request) {
       subject: "Tu Calendario de Ciencia 2026 📅",
       text:
         `Gracias por descargar el Calendario de Ciencia 2026.\n\n` +
-        `Versión: ${variant === "print" ? "Imprimir" : "Estándar"}\n\n` +
-        `Descárgalo aquí:\n${trackedDownloadUrl}\n\n` +
-        `Este link expira en ${LINK_TTL_HOURS} horas.\n\n` +
+        `Versión solicitada: ${variant === "print" ? "Imprimir" : "Estándar"}\n\n` +
+        `Descárgalo aquí:\n${directPdfUrl}\n\n` +
         `— Equipo AtomicCurious`,
     })
   } catch (err) {
