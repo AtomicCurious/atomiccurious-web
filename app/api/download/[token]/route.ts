@@ -14,7 +14,7 @@ const assetMap: Record<string, string> = {
   "calendario-ciencia-2026-es": "/downloads/calendario-ciencia-2026-es.pdf",
 }
 
-// ✅ IMPORTANTE: en tu proyecto el context.params ES Promise (así compila en Netlify)
+// ✅ Netlify/Next build: params suele venir como Promise
 type RouteContext = {
   params: Promise<{ token: string }>
 }
@@ -27,11 +27,14 @@ function getClientIp(req: NextRequest) {
   )
 }
 
-// Heurística simple para NO contar bots/prefetch agresivo.
-// (No es perfecto, pero evita inflar métricas)
+// Heurística simple para NO contar bots/prefetch.
+// ✅ CAMBIO: si NO hay UA, NO lo trates como bot (si no, nunca contarás algunos clicks reales)
 function looksLikePrefetchOrBot(req: NextRequest) {
-  const ua = (req.headers.get("user-agent") || "").toLowerCase()
-  if (!ua) return true
+  const uaRaw = req.headers.get("user-agent") || ""
+  const ua = uaRaw.toLowerCase()
+
+  if (!ua) return false // ✅ antes: true (bloqueaba descargas con UA vacío)
+
   return (
     ua.includes("bot") ||
     ua.includes("crawler") ||
@@ -46,7 +49,6 @@ function looksLikePrefetchOrBot(req: NextRequest) {
   )
 }
 
-// ✅ Un solo handler para GET/HEAD: HEAD no cuenta download
 async function handle(req: NextRequest, context: RouteContext, countDownload: boolean) {
   const { token } = await context.params
   const rawToken = (token || "").trim()
@@ -57,6 +59,7 @@ async function handle(req: NextRequest, context: RouteContext, countDownload: bo
 
   const tokenHash = hashToken(rawToken)
 
+  // 1) Leer link
   const link = await prisma.downloadLink.findUnique({
     where: { tokenHash },
     select: {
@@ -84,36 +87,57 @@ async function handle(req: NextRequest, context: RouteContext, countDownload: bo
     )
   }
 
-  // Redirect siempre (la descarga NO debe depender del tracking)
+  // 2) Redirect SIEMPRE
   const redirectUrl = new URL(assetPath, req.url)
   const res = NextResponse.redirect(redirectUrl, 302)
   res.headers.set("Cache-Control", "no-store, max-age=0")
 
-  // ===== Tracking (best-effort) =====
+  // Defaults debug headers
+  res.headers.set("x-ac-clicked", link.clickedAt ? "1" : "0")
+  res.headers.set("x-ac-download", "pending")
+
+  // 3) Tracking (best-effort)
   try {
     const ip = getClientIp(req)
     const userAgent = req.headers.get("user-agent")
 
-    // clickedAt + metadata SOLO en el primer uso
+    // clickedAt SOLO primer click (con metadata)
     if (!link.clickedAt) {
       await prisma.downloadLink.update({
         where: { id: link.id },
         data: { clickedAt: new Date(), ip, userAgent },
       })
+      res.headers.set("x-ac-clicked", "1")
     }
 
-    // Download = cada GET real (NO HEAD y NO bots/prefetch)
-    if (countDownload && !looksLikePrefetchOrBot(req) && link.leadId) {
-      await prisma.download.create({
-        data: {
-          leadId: link.leadId,
-          assetSlug: link.assetSlug,
-          linkId: link.id,
-        },
-      })
+    // Download SOLO en GET real (no HEAD) y no bot/prefetch
+    if (!countDownload) {
+      res.headers.set("x-ac-download", "skipped_head")
+      return res
     }
-  } catch {
-    // NO rompas la descarga
+
+    if (looksLikePrefetchOrBot(req)) {
+      res.headers.set("x-ac-download", "skipped_bot")
+      return res
+    }
+
+    if (!link.leadId) {
+      res.headers.set("x-ac-download", "skipped_no_lead")
+      return res
+    }
+
+    await prisma.download.create({
+      data: {
+        leadId: link.leadId,
+        assetSlug: link.assetSlug,
+        linkId: link.id,
+      },
+    })
+
+    res.headers.set("x-ac-download", "created")
+  } catch (e) {
+    console.error("[download] tracking failed:", e)
+    res.headers.set("x-ac-download", "error")
   }
 
   return res
@@ -123,7 +147,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
   return handle(req, context, true)
 }
 
-// HEAD no cuenta downloads (evita scanners/prefetch)
 export async function HEAD(req: NextRequest, context: RouteContext) {
   return handle(req, context, false)
 }
