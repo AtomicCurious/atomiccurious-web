@@ -59,10 +59,10 @@ function addHours(date: Date, hours: number) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000)
 }
 
-// ✅ Link directo a PDF ES (siempre funciona al primer click)
+// Link directo al PDF
 const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
 
-// Build/commit id for debugging deploy correctness
+// Build id para debug
 const BUILD = (
   process.env.COMMIT_REF ||
   process.env.VERCEL_GIT_COMMIT_SHA ||
@@ -87,6 +87,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
+  // ❌ TEMPORALMENTE DESACTIVADO (serverless mantiene memoria y bloquea IP)
+  /*
   const key = rateLimitKey(req)
   if (isRateLimited(key)) {
     return NextResponse.json(
@@ -94,6 +96,7 @@ export async function POST(req: Request) {
       { status: 429 }
     )
   }
+  */
 
   const body = await req.json().catch(() => null)
 
@@ -107,7 +110,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
-  // ✅ Fuerza siempre el slug estándar (evita "Unknown asset")
   const assetSlug = "calendario-ciencia-2026-es"
 
   try {
@@ -144,11 +146,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
-  // ✅ Email con link directo (no pasa por /api/download)
   const directPdfUrl = `${SITE_URL}${ES_PDF_PATH}`
 
   try {
-    await resend.emails.send({
+    const sent = await resend.emails.send({
       from: RESEND_FROM,
       to: email,
       subject: "Tu Calendario de Ciencia 2026 📅",
@@ -158,6 +159,11 @@ export async function POST(req: Request) {
         `Descárgalo aquí:\n${directPdfUrl}\n\n` +
         `— Equipo AtomicCurious`,
     })
+
+    return NextResponse.json(
+      { ok: true, build: BUILD, resend: sent },
+      { status: 200 }
+    )
   } catch (err) {
     const detail = getErrorMessage(err)
     console.error("[calendar-es] resend error:", err)
@@ -166,6 +172,4 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
-
-  return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
 }
