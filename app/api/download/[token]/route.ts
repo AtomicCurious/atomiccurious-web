@@ -95,7 +95,7 @@ async function handle(
     return NextResponse.json({ error: "Invalid token" }, { status: 404 })
   }
 
-  // ✅ Null-safe: si expiresAt existe y ya pasó, expira
+  // expiresAt (en tu DB es NOT NULL, pero dejamos safe por si acaso)
   if (link.expiresAt && new Date() > link.expiresAt) {
     return NextResponse.json({ error: "Token expired" }, { status: 410 })
   }
@@ -141,6 +141,7 @@ async function handle(
       return res
     }
 
+    // (En tu schema leadId es NOT NULL, pero lo dejamos por seguridad)
     if (!link.leadId) {
       res.headers.set("x-ac-download", "skipped_no_lead")
       return res
@@ -168,15 +169,23 @@ async function handle(
     })
 
     res.headers.set("x-ac-download", "created")
-  } catch (e) {
-    console.error("[download] tracking failed:", {
-      error: e,
+  } catch (e: any) {
+    // ✅ Mejora clave: loguear código/meta de Prisma + reflejarlo en header
+    const prismaCode = e?.code
+    const prismaMeta = e?.meta
+    const message = e?.message
+
+    console.error("[download] tracking failed", {
+      prismaCode,
+      prismaMeta,
+      message,
       tokenHash,
       linkId: link?.id,
       leadId: link?.leadId,
       assetSlug: link?.assetSlug,
     })
-    res.headers.set("x-ac-download", "error")
+
+    res.headers.set("x-ac-download", prismaCode ? `error_${prismaCode}` : "error")
   }
 
   return res
