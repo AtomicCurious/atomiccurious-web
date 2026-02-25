@@ -44,7 +44,7 @@ function isRateLimited(key: string) {
 
 // ---- token helpers ----
 function generateToken() {
-  return crypto.randomBytes(32).toString("hex") // 64 chars
+  return crypto.randomBytes(32).toString("hex")
 }
 
 function hashToken(token: string) {
@@ -62,14 +62,6 @@ const assetMap: Record<string, string> = {
   "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
 }
 
-// Build/commit id for debugging deploy correctness
-const BUILD = (
-  process.env.COMMIT_REF ||
-  process.env.VERCEL_GIT_COMMIT_SHA ||
-  process.env.GIT_COMMIT ||
-  "unknown"
-).slice(0, 7)
-
 function getErrorMessage(err: unknown) {
   if (!err) return "unknown error"
   if (typeof err === "string") return err
@@ -85,16 +77,15 @@ export async function POST(req: Request) {
   // Only JSON
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  // Rate limit (exposed)
+  // ❌ TEMPORALMENTE DESACTIVADO (serverless mantiene memoria y puede bloquear IP)
+  /*
   if (isRateLimited(rateLimitKey(req))) {
-    return NextResponse.json(
-      { ok: false, build: BUILD, error: "rate_limited" },
-      { status: 429 }
-    )
+    return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 })
   }
+  */
 
   const body = await req.json().catch(() => null)
 
@@ -104,7 +95,7 @@ export async function POST(req: Request) {
 
   // Honeypot / invalid
   if (honey || !email || !isValidEmail(email)) {
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
   const assetSlug =
@@ -144,16 +135,18 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[calendar-en] db error:", dbErr)
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    // Si falla DB, igual respondemos ok para no filtrar señales
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
   const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
 
-  // ---- send email (return Resend response id) ----
+  // ---- send email ----
   try {
-    const sent = await resend.emails.send({
-      from: RESEND_FROM,
+    await resend.emails.send({
+      from: RESEND_FROM, // debe ser @send.atomiccurious.com (dominio verificado)
       to: email,
+      replyTo: "hello.atomiccurious@gmail.com", // ✅ respuestas llegan a Gmail
       subject: "Your Science Calendar 2026 📅",
       text:
         `Thanks for downloading the Science Calendar 2026.\n\n` +
@@ -162,13 +155,13 @@ export async function POST(req: Request) {
         `— AtomicCurious Team`,
     })
 
-    // ✅ return Resend result so we can verify delivery in dashboard
-    return NextResponse.json({ ok: true, build: BUILD, resend: sent }, { status: 200 })
+    // ✅ respuesta limpia
+    return NextResponse.json({ ok: true }, { status: 200 })
   } catch (err) {
     const detail = getErrorMessage(err)
     console.error("[calendar-en] resend error:", err)
     return NextResponse.json(
-      { ok: false, build: BUILD, error: "resend_failed", detail },
+      { ok: false, error: "resend_failed", detail },
       { status: 500 }
     )
   }

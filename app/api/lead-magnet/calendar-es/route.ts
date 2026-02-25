@@ -62,14 +62,6 @@ function addHours(date: Date, hours: number) {
 // Link directo al PDF
 const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
 
-// Build id para debug
-const BUILD = (
-  process.env.COMMIT_REF ||
-  process.env.VERCEL_GIT_COMMIT_SHA ||
-  process.env.GIT_COMMIT ||
-  "unknown"
-).slice(0, 7)
-
 function getErrorMessage(err: unknown) {
   if (!err) return "unknown error"
   if (typeof err === "string") return err
@@ -84,17 +76,14 @@ function getErrorMessage(err: unknown) {
 export async function POST(req: Request) {
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  // ❌ TEMPORALMENTE DESACTIVADO (serverless mantiene memoria y bloquea IP)
+  // ❌ TEMPORALMENTE DESACTIVADO (serverless mantiene memoria y puede bloquear IP)
   /*
   const key = rateLimitKey(req)
   if (isRateLimited(key)) {
-    return NextResponse.json(
-      { ok: false, build: BUILD, error: "rate_limited" },
-      { status: 429 }
-    )
+    return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 })
   }
   */
 
@@ -104,10 +93,10 @@ export async function POST(req: Request) {
   const variant = normalizeVariant(body?.variant)
 
   const honey = (body?.company ?? "").toString().trim()
-  if (honey) return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+  if (honey) return NextResponse.json({ ok: true }, { status: 200 })
 
   if (!email || !isValidEmail(email)) {
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
   const assetSlug = "calendario-ciencia-2026-es"
@@ -143,15 +132,16 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[calendar-es] db error:", dbErr)
-    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
   const directPdfUrl = `${SITE_URL}${ES_PDF_PATH}`
 
   try {
-    const sent = await resend.emails.send({
-      from: RESEND_FROM,
+    await resend.emails.send({
+      from: RESEND_FROM, // debe ser @send.atomiccurious.com (dominio verificado)
       to: email,
+      replyTo: "hello.atomiccurious@gmail.com", // ✅ respuestas llegan a Gmail
       subject: "Tu Calendario de Ciencia 2026 📅",
       text:
         `Gracias por descargar el Calendario de Ciencia 2026.\n\n` +
@@ -160,15 +150,13 @@ export async function POST(req: Request) {
         `— Equipo AtomicCurious`,
     })
 
-    return NextResponse.json(
-      { ok: true, build: BUILD, resend: sent },
-      { status: 200 }
-    )
+    // ✅ respuesta limpia
+    return NextResponse.json({ ok: true }, { status: 200 })
   } catch (err) {
     const detail = getErrorMessage(err)
     console.error("[calendar-es] resend error:", err)
     return NextResponse.json(
-      { ok: false, build: BUILD, error: "resend_failed", detail },
+      { ok: false, error: "resend_failed", detail },
       { status: 500 }
     )
   }
