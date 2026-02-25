@@ -62,6 +62,14 @@ const assetMap: Record<string, string> = {
   "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
 }
 
+// Build/commit id for debugging deploy correctness
+const BUILD = (
+  process.env.COMMIT_REF ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.GIT_COMMIT ||
+  "unknown"
+).slice(0, 7)
+
 function getErrorMessage(err: unknown) {
   if (!err) return "unknown error"
   if (typeof err === "string") return err
@@ -77,12 +85,15 @@ export async function POST(req: Request) {
   // Only JSON
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
-  // Rate limit
+  // Rate limit (exposed)
   if (isRateLimited(rateLimitKey(req))) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json(
+      { ok: false, build: BUILD, error: "rate_limited" },
+      { status: 429 }
+    )
   }
 
   const body = await req.json().catch(() => null)
@@ -93,7 +104,7 @@ export async function POST(req: Request) {
 
   // Honeypot / invalid
   if (honey || !email || !isValidEmail(email)) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
   const assetSlug =
@@ -133,14 +144,14 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[calendar-en] db error:", dbErr)
-    // Si falla DB, igual respondemos ok para no filtrar señales
-    return NextResponse.json({ ok: true }, { status: 200 })
+    // If DB fails, still respond ok to avoid leaking signals
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
   // ✅ Link directo al PDF (evita el error del primer click en /api/download)
   const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
 
-  // ---- send email (si falla, NO lo ocultes) ----
+  // ---- send email (if fails, return error) ----
   try {
     await resend.emails.send({
       from: RESEND_FROM,
@@ -156,10 +167,10 @@ export async function POST(req: Request) {
     const detail = getErrorMessage(err)
     console.error("[calendar-en] resend error:", err)
     return NextResponse.json(
-      { ok: false, error: "resend_failed", detail },
+      { ok: false, build: BUILD, error: "resend_failed", detail },
       { status: 500 }
     )
   }
 
-  return NextResponse.json({ ok: true }, { status: 200 })
+  return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
 }

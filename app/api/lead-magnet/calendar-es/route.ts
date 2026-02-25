@@ -62,6 +62,14 @@ function addHours(date: Date, hours: number) {
 // ✅ Link directo a PDF ES (siempre funciona al primer click)
 const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
 
+// Build/commit id for debugging deploy correctness
+const BUILD = (
+  process.env.COMMIT_REF ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.GIT_COMMIT ||
+  "unknown"
+).slice(0, 7)
+
 function getErrorMessage(err: unknown) {
   if (!err) return "unknown error"
   if (typeof err === "string") return err
@@ -76,12 +84,15 @@ function getErrorMessage(err: unknown) {
 export async function POST(req: Request) {
   const ct = req.headers.get("content-type") || ""
   if (!ct.includes("application/json")) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
   const key = rateLimitKey(req)
   if (isRateLimited(key)) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json(
+      { ok: false, build: BUILD, error: "rate_limited" },
+      { status: 429 }
+    )
   }
 
   const body = await req.json().catch(() => null)
@@ -90,10 +101,10 @@ export async function POST(req: Request) {
   const variant = normalizeVariant(body?.variant)
 
   const honey = (body?.company ?? "").toString().trim()
-  if (honey) return NextResponse.json({ ok: true }, { status: 200 })
+  if (honey) return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
 
   if (!email || !isValidEmail(email)) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
   // ✅ Fuerza siempre el slug estándar (evita "Unknown asset")
@@ -130,7 +141,7 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[calendar-es] db error:", dbErr)
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
   // ✅ Email con link directo (no pasa por /api/download)
@@ -151,10 +162,10 @@ export async function POST(req: Request) {
     const detail = getErrorMessage(err)
     console.error("[calendar-es] resend error:", err)
     return NextResponse.json(
-      { ok: false, error: "resend_failed", detail },
+      { ok: false, build: BUILD, error: "resend_failed", detail },
       { status: 500 }
     )
   }
 
-  return NextResponse.json({ ok: true }, { status: 200 })
+  return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
 }
