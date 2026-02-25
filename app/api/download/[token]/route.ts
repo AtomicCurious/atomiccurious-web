@@ -1,3 +1,4 @@
+// app/api/download/[token]/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
@@ -13,8 +14,9 @@ const assetMap: Record<string, string> = {
   "calendario-ciencia-2026-es": "/downloads/calendario-ciencia-2026-es.pdf",
 }
 
+// ✅ IMPORTANTE: en tu proyecto el context.params ES Promise (así compila en Netlify)
 type RouteContext = {
-  params: { token: string }
+  params: Promise<{ token: string }>
 }
 
 function getClientIp(req: NextRequest) {
@@ -44,8 +46,11 @@ function looksLikePrefetchOrBot(req: NextRequest) {
   )
 }
 
-async function handleGET(req: NextRequest, context: RouteContext) {
-  const rawToken = (context.params.token || "").trim()
+// ✅ Un solo handler para GET/HEAD: HEAD no cuenta download
+async function handle(req: NextRequest, context: RouteContext, countDownload: boolean) {
+  const { token } = await context.params
+  const rawToken = (token || "").trim()
+
   if (!rawToken) {
     return NextResponse.json({ error: "Missing token" }, { status: 400 })
   }
@@ -79,27 +84,26 @@ async function handleGET(req: NextRequest, context: RouteContext) {
     )
   }
 
-  // URL absoluta al PDF
+  // Redirect siempre (la descarga NO debe depender del tracking)
   const redirectUrl = new URL(assetPath, req.url)
-
-  // Respuesta de redirect (la descarga NO debe depender del tracking)
   const res = NextResponse.redirect(redirectUrl, 302)
   res.headers.set("Cache-Control", "no-store, max-age=0")
 
   // ===== Tracking (best-effort) =====
-  // 1) clickedAt solo si es el primer uso
-  // 2) Download se registra en cada GET "real" (no HEAD y no bots)
   try {
-    // marca primer click sin bloquear si ya existía
+    const ip = getClientIp(req)
+    const userAgent = req.headers.get("user-agent")
+
+    // clickedAt + metadata SOLO en el primer uso
     if (!link.clickedAt) {
       await prisma.downloadLink.update({
         where: { id: link.id },
-        data: { clickedAt: new Date() },
+        data: { clickedAt: new Date(), ip, userAgent },
       })
     }
 
-    // registra download en cada GET real
-    if (!looksLikePrefetchOrBot(req) && link.leadId) {
+    // Download = cada GET real (NO HEAD y NO bots/prefetch)
+    if (countDownload && !looksLikePrefetchOrBot(req) && link.leadId) {
       await prisma.download.create({
         data: {
           leadId: link.leadId,
@@ -116,29 +120,10 @@ async function handleGET(req: NextRequest, context: RouteContext) {
 }
 
 export async function GET(req: NextRequest, context: RouteContext) {
-  return handleGET(req, context)
+  return handle(req, context, true)
 }
 
-// HEAD NO cuenta downloads (evita scanners/prefetch)
+// HEAD no cuenta downloads (evita scanners/prefetch)
 export async function HEAD(req: NextRequest, context: RouteContext) {
-  // responde igual que GET (redirect), pero sin tracking.
-  // Para simplificar, mandamos el mismo redirect sin tocar DB.
-  const rawToken = (context.params.token || "").trim()
-  if (!rawToken) return new NextResponse(null, { status: 400 })
-
-  const tokenHash = hashToken(rawToken)
-  const link = await prisma.downloadLink.findUnique({
-    where: { tokenHash },
-    select: { assetSlug: true, expiresAt: true },
-  })
-  if (!link) return new NextResponse(null, { status: 404 })
-  if (new Date() > link.expiresAt) return new NextResponse(null, { status: 410 })
-
-  const assetPath = assetMap[link.assetSlug]
-  if (!assetPath) return new NextResponse(null, { status: 404 })
-
-  const redirectUrl = new URL(assetPath, req.url)
-  const res = NextResponse.redirect(redirectUrl, 302)
-  res.headers.set("Cache-Control", "no-store, max-age=0")
-  return res
+  return handle(req, context, false)
 }
