@@ -1,7 +1,7 @@
 // app/api/lead-magnet/calendar-en/route.ts
 import { NextResponse } from "next/server"
 import crypto from "crypto"
-import { resend, RESEND_FROM, SITE_URL } from "@/lib/resend"
+import { resend, RESEND_FROM, APP_URL } from "@/lib/resend"
 import { prisma } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -54,12 +54,6 @@ function hashToken(token: string) {
 const LINK_TTL_HOURS = 72
 function addHours(date: Date, hours: number) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000)
-}
-
-// Map: assetSlug -> archivo real en /public/downloads
-const assetMap: Record<string, string> = {
-  "calendar-science-2026-en": "/downloads/calendar-science-2026-en.pdf",
-  "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
 }
 
 function getErrorMessage(err: unknown) {
@@ -145,7 +139,8 @@ export async function POST(req: Request) {
   }
 
   // ✅ Link trackeado (marca clickedAt + crea Download en /api/download/[token])
-  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
+  // IMPORTANT: usar APP_URL (no SITE_URL) porque Netlify puede sobreescribir SITE_URL internamente
+  const trackedDownloadUrl = `${APP_URL}/api/download/${tokenForEmail}`
 
   // ---- send email ----
   try {

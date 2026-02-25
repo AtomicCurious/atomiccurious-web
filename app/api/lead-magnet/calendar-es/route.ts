@@ -1,7 +1,7 @@
 // app/api/lead-magnet/calendar-es/route.ts
 import { NextResponse } from "next/server"
 import crypto from "crypto"
-import { resend, RESEND_FROM, SITE_URL } from "@/lib/resend"
+import { resend, RESEND_FROM, APP_URL } from "@/lib/resend"
 import { prisma } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -140,7 +140,8 @@ export async function POST(req: Request) {
   }
 
   // ✅ Link trackeado (marca clickedAt + crea Download en /api/download/[token])
-  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
+  // IMPORTANT: usar APP_URL (no SITE_URL) porque Netlify puede sobreescribir SITE_URL internamente
+  const trackedDownloadUrl = `${APP_URL}/api/download/${tokenForEmail}`
 
   try {
     await resend.emails.send({
