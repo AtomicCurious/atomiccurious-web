@@ -1,41 +1,57 @@
-//atomiccurious-web\app\api\download\[token]\route.ts
-import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server"
+import crypto from "crypto"
+import { prisma } from "@/lib/prisma"
 
 function hashToken(token: string) {
-  return crypto.createHash("sha256").update(token).digest("hex");
+  return crypto.createHash("sha256").update(token).digest("hex")
 }
 
+// Map: assetSlug -> archivo real en /public/downloads
 const assetMap: Record<string, string> = {
   "calendar-science-2026-en": "/downloads/calendar-science-2026-en.pdf",
   "calendar-science-2026-en-print": "/downloads/calendar-science-2026-en-print.pdf",
   "calendario-ciencia-2026-es": "/downloads/calendario-ciencia-2026-es.pdf",
-};
+}
 
 type RouteContext = {
-  params: Promise<{ token: string }>;
-};
+  params: { token: string }
+}
 
 function getClientIp(req: NextRequest) {
   return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
     null
-  );
+  )
 }
 
-async function handle(req: NextRequest, context: RouteContext) {
-  const { token } = await context.params;
-  const rawToken = (token || "").trim();
+// Heurística simple para NO contar bots/prefetch agresivo.
+// (No es perfecto, pero evita inflar métricas)
+function looksLikePrefetchOrBot(req: NextRequest) {
+  const ua = (req.headers.get("user-agent") || "").toLowerCase()
+  if (!ua) return true
+  return (
+    ua.includes("bot") ||
+    ua.includes("crawler") ||
+    ua.includes("spider") ||
+    ua.includes("preview") ||
+    ua.includes("facebookexternalhit") ||
+    ua.includes("slackbot") ||
+    ua.includes("discordbot") ||
+    ua.includes("whatsapp") ||
+    ua.includes("telegram") ||
+    ua.includes("googleimageproxy")
+  )
+}
 
+async function handleGET(req: NextRequest, context: RouteContext) {
+  const rawToken = (context.params.token || "").trim()
   if (!rawToken) {
-    return NextResponse.json({ error: "Missing token" }, { status: 400 });
+    return NextResponse.json({ error: "Missing token" }, { status: 400 })
   }
 
-  const tokenHash = hashToken(rawToken);
+  const tokenHash = hashToken(rawToken)
 
-  // 1) Leer link (si esto falla por DB, sí conviene devolver error)
   const link = await prisma.downloadLink.findUnique({
     where: { tokenHash },
     select: {
@@ -45,67 +61,84 @@ async function handle(req: NextRequest, context: RouteContext) {
       expiresAt: true,
       clickedAt: true,
     },
-  });
+  })
 
   if (!link) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 404 });
+    return NextResponse.json({ error: "Invalid token" }, { status: 404 })
   }
 
   if (new Date() > link.expiresAt) {
-    return NextResponse.json({ error: "Token expired" }, { status: 410 });
+    return NextResponse.json({ error: "Token expired" }, { status: 410 })
   }
 
-  const assetPath = assetMap[link.assetSlug];
+  const assetPath = assetMap[link.assetSlug]
   if (!assetPath) {
     return NextResponse.json(
       { error: `Unknown asset: ${link.assetSlug}` },
       { status: 404 }
-    );
+    )
   }
 
-  // 2) Preparar redirect (esto debe suceder aunque el tracking falle)
-  const redirectUrl = new URL(assetPath, req.url);
-  const res = NextResponse.redirect(redirectUrl, 302);
-  res.headers.set("Cache-Control", "no-store, max-age=0");
+  // URL absoluta al PDF
+  const redirectUrl = new URL(assetPath, req.url)
 
-  // 3) Tracking best-effort (no bloquea descarga)
-  const ip = getClientIp(req);
-  const userAgent = req.headers.get("user-agent");
+  // Respuesta de redirect (la descarga NO debe depender del tracking)
+  const res = NextResponse.redirect(redirectUrl, 302)
+  res.headers.set("Cache-Control", "no-store, max-age=0")
 
+  // ===== Tracking (best-effort) =====
+  // 1) clickedAt solo si es el primer uso
+  // 2) Download se registra en cada GET "real" (no HEAD y no bots)
   try {
-    const updated = await prisma.downloadLink.updateMany({
-      where: { id: link.id, clickedAt: null },
-      data: { clickedAt: new Date(), ip, userAgent },
-    });
-
-    if (updated.count === 1) {
-      // Evita 500 si leadId es null o si tu schema requiere leadId
-      if (link.leadId) {
-        await prisma.download.create({
-          data: {
-            leadId: link.leadId,
-            assetSlug: link.assetSlug,
-            linkId: link.id,
-          },
-        });
-      } else {
-        // Si quieres, puedes registrar sin leadId (si tu schema lo permite)
-        // o crear otro registro tipo "anonymousDownload".
-      }
+    // marca primer click sin bloquear si ya existía
+    if (!link.clickedAt) {
+      await prisma.downloadLink.update({
+        where: { id: link.id },
+        data: { clickedAt: new Date() },
+      })
     }
-  } catch (e) {
-    // Importante: NO rompas la descarga
-    // (Opcional) console.error("Download tracking failed", e);
+
+    // registra download en cada GET real
+    if (!looksLikePrefetchOrBot(req) && link.leadId) {
+      await prisma.download.create({
+        data: {
+          leadId: link.leadId,
+          assetSlug: link.assetSlug,
+          linkId: link.id,
+        },
+      })
+    }
+  } catch {
+    // NO rompas la descarga
   }
 
-  return res;
+  return res
 }
 
 export async function GET(req: NextRequest, context: RouteContext) {
-  return handle(req, context);
+  return handleGET(req, context)
 }
 
-// Soporta scanners/prefetch que mandan HEAD
+// HEAD NO cuenta downloads (evita scanners/prefetch)
 export async function HEAD(req: NextRequest, context: RouteContext) {
-  return handle(req, context);
+  // responde igual que GET (redirect), pero sin tracking.
+  // Para simplificar, mandamos el mismo redirect sin tocar DB.
+  const rawToken = (context.params.token || "").trim()
+  if (!rawToken) return new NextResponse(null, { status: 400 })
+
+  const tokenHash = hashToken(rawToken)
+  const link = await prisma.downloadLink.findUnique({
+    where: { tokenHash },
+    select: { assetSlug: true, expiresAt: true },
+  })
+  if (!link) return new NextResponse(null, { status: 404 })
+  if (new Date() > link.expiresAt) return new NextResponse(null, { status: 410 })
+
+  const assetPath = assetMap[link.assetSlug]
+  if (!assetPath) return new NextResponse(null, { status: 404 })
+
+  const redirectUrl = new URL(assetPath, req.url)
+  const res = NextResponse.redirect(redirectUrl, 302)
+  res.headers.set("Cache-Control", "no-store, max-age=0")
+  return res
 }
