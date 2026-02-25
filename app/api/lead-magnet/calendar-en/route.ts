@@ -144,16 +144,14 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[calendar-en] db error:", dbErr)
-    // If DB fails, still respond ok to avoid leaking signals
     return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
   }
 
-  // ✅ Link directo al PDF (evita el error del primer click en /api/download)
   const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
 
-  // ---- send email (if fails, return error) ----
+  // ---- send email (return Resend response id) ----
   try {
-    await resend.emails.send({
+    const sent = await resend.emails.send({
       from: RESEND_FROM,
       to: email,
       subject: "Your Science Calendar 2026 📅",
@@ -163,6 +161,9 @@ export async function POST(req: Request) {
         `Download here:\n${directPdfUrl}\n\n` +
         `— AtomicCurious Team`,
     })
+
+    // ✅ return Resend result so we can verify delivery in dashboard
+    return NextResponse.json({ ok: true, build: BUILD, resend: sent }, { status: 200 })
   } catch (err) {
     const detail = getErrorMessage(err)
     console.error("[calendar-en] resend error:", err)
@@ -171,6 +172,4 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
-
-  return NextResponse.json({ ok: true, build: BUILD }, { status: 200 })
 }
