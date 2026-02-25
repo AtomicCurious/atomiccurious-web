@@ -59,9 +59,6 @@ function addHours(date: Date, hours: number) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000)
 }
 
-// Link directo al PDF
-const ES_PDF_PATH = "/downloads/calendario-ciencia-2026-es.pdf"
-
 function getErrorMessage(err: unknown) {
   if (!err) return "unknown error"
   if (typeof err === "string") return err
@@ -99,7 +96,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
+  // Nota: por ahora solo existe ES estándar; si luego agregas PDF "print", aquí puedes bifurcar.
   const assetSlug = "calendario-ciencia-2026-es"
+
+  // ---- persist lead + create unique download link token ----
+  let tokenForEmail: string | null = null
 
   try {
     const lead = await prisma.lead.upsert({
@@ -119,7 +120,10 @@ export async function POST(req: Request) {
       },
     })
 
+    // ✅ Genera token y GUARDA el raw token para el email (solo el hash va a DB)
     const token = generateToken()
+    tokenForEmail = token
+
     const tokenHash = hashToken(token)
 
     await prisma.downloadLink.create({
@@ -135,7 +139,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const directPdfUrl = `${SITE_URL}${ES_PDF_PATH}`
+  // ✅ Link trackeado (marca clickedAt + crea Download en /api/download/[token])
+  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
 
   try {
     await resend.emails.send({
@@ -146,11 +151,11 @@ export async function POST(req: Request) {
       text:
         `Gracias por descargar el Calendario de Ciencia 2026.\n\n` +
         `Versión solicitada: ${variant === "print" ? "Imprimir" : "Estándar"}\n\n` +
-        `Descárgalo aquí:\n${directPdfUrl}\n\n` +
+        `Descárgalo aquí:\n${trackedDownloadUrl}\n\n` +
+        `Este link expira en ${LINK_TTL_HOURS} horas.\n\n` +
         `— Equipo AtomicCurious`,
     })
 
-    // ✅ respuesta limpia
     return NextResponse.json({ ok: true }, { status: 200 })
   } catch (err) {
     const detail = getErrorMessage(err)

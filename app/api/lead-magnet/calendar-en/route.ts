@@ -104,6 +104,8 @@ export async function POST(req: Request) {
       : "calendar-science-2026-en"
 
   // ---- persist lead + create unique download link token ----
+  let tokenForEmail: string | null = null
+
   try {
     const lead = await prisma.lead.upsert({
       where: { email },
@@ -122,7 +124,10 @@ export async function POST(req: Request) {
       },
     })
 
+    // ✅ Genera token y GUARDA el raw token para el email (solo el hash va a DB)
     const token = generateToken()
+    tokenForEmail = token
+
     const tokenHash = hashToken(token)
 
     await prisma.downloadLink.create({
@@ -139,7 +144,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
-  const directPdfUrl = `${SITE_URL}${assetMap[assetSlug]}`
+  // ✅ Link trackeado (marca clickedAt + crea Download en /api/download/[token])
+  const trackedDownloadUrl = `${SITE_URL}/api/download/${tokenForEmail}`
 
   // ---- send email ----
   try {
@@ -151,7 +157,8 @@ export async function POST(req: Request) {
       text:
         `Thanks for downloading the Science Calendar 2026.\n\n` +
         `Version: ${variant === "print" ? "Print" : "Standard"}\n\n` +
-        `Download here:\n${directPdfUrl}\n\n` +
+        `Download here:\n${trackedDownloadUrl}\n\n` +
+        `This link expires in ${LINK_TTL_HOURS} hours.\n\n` +
         `— AtomicCurious Team`,
     })
 
