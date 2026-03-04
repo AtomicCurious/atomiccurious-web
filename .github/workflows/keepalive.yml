@@ -2,8 +2,8 @@ name: Keep Supabase awake
 
 on:
   schedule:
-    - cron: "0 15 */3 * *"   # cada 3 días (UTC)
-  workflow_dispatch: {}
+    - cron: "0 15 */3 * *"
+  workflow_dispatch:
 
 jobs:
   ping:
@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Call keepalive endpoint
         run: |
-          curl -fsS "${{ secrets.KEEPALIVE_URL }}"
+          curl -sS "${{ secrets.KEEPALIVE_URL }}"
