@@ -1,51 +1,43 @@
+// app/es/calendario/page.tsx
 import type { Metadata } from "next"
 import CalendarLeadMagnetFormEs from "@/components/lead-magnets/CalendarLeadMagnetFormEs"
 
 export const metadata: Metadata = {
-  title: "Calendario de Ciencia 2026 — AtomicCurious",
-  description: "Descarga gratis el Calendario de Ciencia 2026. Enlace directo por correo.",
+  title: "Calendario Científico 2026 — AtomicCurious",
+  description: "Descarga gratis el Calendario Científico 2026. Recibe el enlace directo por correo.",
   alternates: {
     canonical: "/es/calendario",
     languages: {
+      en: "/calendar",
       es: "/es/calendario",
-      en: "/en/calendar",
     },
   },
   openGraph: {
-    title: "Calendario de Ciencia 2026 — AtomicCurious",
-    description: "Descarga gratis el Calendario de Ciencia 2026. Enlace directo por correo.",
+    title: "Calendario Científico 2026 — AtomicCurious",
+    description: "Descarga gratis el Calendario Científico 2026. Recibe el enlace directo por correo.",
     url: "/es/calendario",
     siteName: "AtomicCurious",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calendario de Ciencia 2026 — AtomicCurious",
-    description: "Descarga gratis el Calendario de Ciencia 2026. Enlace directo por correo.",
+    title: "Calendario Científico 2026 — AtomicCurious",
+    description: "Descarga gratis el Calendario Científico 2026. Recibe el enlace directo por correo.",
   },
 }
 
 export default function Page() {
   return (
-    // ✅ Scroll natural, pero sin scrollbar visible en esta página
     <main className="relative w-full bg-bg overflow-x-hidden no-scrollbar">
-      <div className="mx-auto w-full max-w-[1280px] px-3 pt-7 sm:px-6 sm:pt-9 lg:px-8">
-        <header className="mx-auto w-full max-w-3xl text-center">
-          <p className="text-[11px] font-semibold tracking-wide text-text/70">
-            ATOMICCURIOUS · DESCARGA GRATUITA
-          </p>
-
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Calendario de Ciencia 2026
+      {/* Contenedor externo (responsive + sin espacio desperdiciado en pantallas grandes) */}
+      <div className="mx-auto w-full max-w-7xl px-4 pt-5 pb-10 sm:px-6 sm:pt-6 sm:pb-12 lg:px-8">
+        <header className="mx-auto w-full max-w-4xl text-center">
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+            Calendario Científico 2026
           </h1>
-
-          <p className="mx-auto mt-2 max-w-2xl text-sm text-text/80">
-            Te enviamos un enlace directo por correo.
-          </p>
         </header>
 
-        {/* un poco menos de padding bottom para que se sienta más “sheet” */}
-        <section className="mt-4 pb-8">
+        <section className="mt-6 sm:mt-8">
           <CalendarLeadMagnetFormEs />
         </section>
       </div>

@@ -4,7 +4,7 @@
 /* =========================================================
    AtomicCurious — Luxury Editorial System (DEFINITIVE)
    THEMES (section-scoped via <body data-theme="...">):
-     dark (default) | light | cosmic | ocean | mocha
+     dark (default) | light | aurora | ocean | mocha
 
    ✅ ACCENTS are THEME-DRIVEN (not character-driven)
    - Primary:   --accent
@@ -87,6 +87,9 @@
       rgba(0, 0, 0, 0.55),
       transparent 70%
     );
+
+  /* Ambient lines opacity (default). Override per-theme below */
+  --lineA: 0.14;
 }
 
 /* -----------------------------
@@ -142,34 +145,41 @@ body[data-theme="light"] {
       rgba(255, 255, 255, 0.42),
       transparent 58%
     );
+
+  /* Ambient lines on light: almost invisible */
+  --lineA: 0.06;
 }
 
 /* -----------------------------
-   COSMIC — AURORA FEEL (magenta action + cyan echo)
+   AURORA — CINEMATIC (low saturation, long-read)
+   Replaces: cosmic
 ----------------------------- */
-body[data-theme="cosmic"] {
+body[data-theme="aurora"] {
   color-scheme: dark;
 
-  --bg: 7 10 14;
-  --surface-1: 12 16 24;
-  --surface-2: 18 24 36;
+  /* Base: near-black (readable) */
+  --bg: 6 8 12;
+  --surface-1: 10 14 20;
+  --surface-2: 16 22 32;
 
   --text: 236 240 246;
-  --muted: 165 176 190;
+  --muted: 160 172 188;
 
-  --border: 40 52 72;
+  --border: 34 46 66;
 
-  --accent: 255 0 110; /* magenta action */
-  --accent-soft: 255 0 110;
+  /* Accents: muted (not neon) */
+  --accent: 56 184 137; /* muted green action */
+  --accent-soft: 56 184 137;
 
-  --accent-2: 0 229 255; /* cyan echo */
-  --accent-2-soft: 0 229 255;
+  --accent-2: 58 134 201; /* muted cyan/blue echo */
+  --accent-2-soft: 58 134 201;
 
   --accent-warm: 255 179 71;
 
   --ring: rgb(var(--accent) / 0.55);
-  --selection: rgb(var(--accent-soft) / 0.22);
+  --selection: rgb(var(--accent-soft) / 0.20);
 
+  /* Back-compat */
   --accent-alt: var(--accent-2);
   --accent-alt-soft: var(--accent-2-soft);
 
@@ -179,67 +189,56 @@ body[data-theme="cosmic"] {
     0 1px 0 rgba(255, 255, 255, 0.05),
     0 24px 70px rgba(0, 0, 0, 0.48);
 
+  /* Optional ship colors (keep consistent) */
   --ship-panel: #1d2431;
   --ship-core: #f3f6ff;
   --ship-edge: #d9eeff;
 
+  /* Background: vignette + muted lights + subtle diagonal ribbons */
   --bg-grad:
-    linear-gradient(
-      90deg,
-      rgba(34, 211, 238, 0.22) 0%,
-      rgba(34, 211, 238, 0.14) 34%,
-      rgba(255, 77, 157, 0.14) 66%,
-      rgba(255, 77, 157, 0.20) 100%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(34, 211, 238, 0.10) 0%,
-      rgba(0, 0, 0, 0.00) 40%,
-      rgba(255, 77, 157, 0.09) 100%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.12) 0%,
-      rgba(0, 0, 0, 0.40) 58%,
-      rgba(0, 0, 0, 0.66) 100%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.045) 0px,
-      rgba(255, 255, 255, 0.045) 1px,
-      rgba(255, 255, 255, 0.000) 1px,
-      rgba(255, 255, 255, 0.000) 64px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.045) 0px,
-      rgba(255, 255, 255, 0.045) 1px,
-      rgba(255, 255, 255, 0.000) 1px,
-      rgba(255, 255, 255, 0.000) 64px
-    ),
+    /* VIGNETTE (key for long-read) */
     radial-gradient(
-      1800px 1200px at 50% 16%,
-      rgba(255, 255, 255, 0.070),
+      1200px 900px at 50% 34%,
+      rgba(0, 0, 0, 0.10),
+      rgba(0, 0, 0, 0.66) 72%,
+      rgba(0, 0, 0, 0.92) 100%
+    ),
+
+    /* AMBIENT LIGHTS (muted) */
+    radial-gradient(
+      1100px 760px at 66% 34%,
+      rgba(56, 184, 137, 0.13),
       transparent 62%
     ),
     radial-gradient(
-      1500px 1200px at 18% 42%,
-      rgba(34, 211, 238, 0.14),
-      transparent 62%
-    ),
-    radial-gradient(
-      1500px 1200px at 82% 46%,
-      rgba(255, 77, 157, 0.14),
+      1100px 760px at 84% 56%,
+      rgba(58, 134, 201, 0.11),
       transparent 64%
     ),
     radial-gradient(
-      2600px 1900px at 50% 72%,
-      rgba(0, 0, 0, 0.66),
-      transparent 74%
+      1200px 820px at 24% 84%,
+      rgba(107, 90, 166, 0.10),
+      transparent 66%
     ),
-    radial-gradient(circle at 22% 28%, rgba(255, 255, 255, 0.08) 0 2px, transparent 3px),
-    radial-gradient(circle at 78% 36%, rgba(255, 255, 255, 0.07) 0 2px, transparent 3px),
-    radial-gradient(circle at 62% 62%, rgba(255, 255, 255, 0.06) 0 2px, transparent 3px);
+
+    /* DIAGONAL RIBBONS (very subtle) */
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.020) 0px,
+      rgba(255, 255, 255, 0.020) 1px,
+      transparent 1px,
+      transparent 46px
+    ),
+
+    /* TOP SHEEN (lux) */
+    radial-gradient(
+      2000px 1400px at 50% 14%,
+      rgba(255, 255, 255, 0.030),
+      transparent 62%
+    );
+
+  /* Ambient lines: present, but calmer than neon themes */
+  --lineA: 0.10;
 }
 
 /* -----------------------------
@@ -306,6 +305,9 @@ body[data-theme="ocean"] {
       rgba(0, 0, 0, 0.60),
       transparent 74%
     );
+
+  /* Ambient lines: slightly calmer to reduce edge color bleed */
+  --lineA: 0.11;
 }
 
 /* -----------------------------
@@ -366,6 +368,9 @@ body[data-theme="mocha"] {
       rgba(46, 30, 22, 0.16),
       transparent 76%
     );
+
+  /* Ambient lines: very subtle in warm editorial theme */
+  --lineA: 0.08;
 }
 
 /* =========================================================
@@ -444,8 +449,8 @@ body::after {
 }
 
 /* Theme tuning */
-body[data-theme="cosmic"]::after {
-  opacity: 0.036;
+body[data-theme="aurora"]::after {
+  opacity: 0.033;
   filter: contrast(112%) brightness(112%);
 }
 body[data-theme="ocean"]::after {
@@ -480,13 +485,15 @@ body > * {
 /* =========================================================
    Signature helpers
    ========================================================= */
+
+/* Keep existing classnames, but bind them to AURORA now */
 .ac-cosmic-only {
   display: none;
 }
-body[data-theme="cosmic"] .ac-cosmic-only {
+body[data-theme="aurora"] .ac-cosmic-only {
   display: block;
 }
-body[data-theme="cosmic"] .ac-noncosmic-only {
+body[data-theme="aurora"] .ac-noncosmic-only {
   display: none;
 }
 

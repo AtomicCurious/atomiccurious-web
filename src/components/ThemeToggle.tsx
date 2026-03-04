@@ -4,14 +4,14 @@
 import { useEffect, useMemo, useState } from "react"
 import { usePathname } from "next/navigation"
 
-export type ThemeMode = "dark" | "light" | "cosmic" | "ocean" | "mocha"
+export type ThemeMode = "dark" | "light" | "aurora" | "ocean" | "mocha"
 
 const STORAGE_KEY = "ac_theme"
 
 function getStored(): ThemeMode | null {
   if (typeof window === "undefined") return null
   const raw = window.localStorage.getItem(STORAGE_KEY)
-  if (raw === "dark" || raw === "light" || raw === "cosmic" || raw === "ocean" || raw === "mocha") {
+  if (raw === "dark" || raw === "light" || raw === "aurora" || raw === "ocean" || raw === "mocha") {
     return raw
   }
   return null
@@ -19,7 +19,7 @@ function getStored(): ThemeMode | null {
 
 function isDarkLike(mode: ThemeMode) {
   // ✅ mocha is LIGHT in your globals.css (color-scheme: light)
-  return mode === "dark" || mode === "cosmic" || mode === "ocean"
+  return mode === "dark" || mode === "aurora" || mode === "ocean"
 }
 
 /**
@@ -49,9 +49,9 @@ function applyThemeScoped(mode: ThemeMode, isHome: boolean) {
 }
 
 function cycle(mode: ThemeMode): ThemeMode {
-  // dark → cosmic → ocean → mocha → light → dark
-  if (mode === "dark") return "cosmic"
-  if (mode === "cosmic") return "ocean"
+  // dark → aurora → ocean → mocha → light → dark
+  if (mode === "dark") return "aurora"
+  if (mode === "aurora") return "ocean"
   if (mode === "ocean") return "mocha"
   if (mode === "mocha") return "light"
   return "dark"
@@ -73,11 +73,7 @@ export default function ThemeToggle({
   forceTheme?: ThemeMode
 }) {
   const pathname = usePathname()
-  const isHome =
-    pathname === "/" ||
-    pathname === "/en" ||
-    pathname === "/es" ||
-    pathname === "/es/"
+  const isHome = pathname === "/" || pathname === "/en" || pathname === "/es" || pathname === "/es/"
 
   const locked = Boolean(forceTheme)
   const [mode, setMode] = useState<ThemeMode>("dark")
@@ -157,8 +153,9 @@ export default function ThemeToggle({
               opacity="0.9"
             />
           </>
-        ) : mode === "cosmic" ? (
+        ) : mode === "aurora" ? (
           <>
+            {/* Aurora: spark + soft arc (calm, not "neon") */}
             <path
               d="M12 2l1.1 5.2L18 9l-4.9 1.8L12 16l-1.1-5.2L6 9l4.9-1.8L12 2Z"
               stroke="currentColor"
@@ -170,7 +167,7 @@ export default function ThemeToggle({
               stroke="currentColor"
               strokeWidth="2"
               strokeLinejoin="round"
-              opacity="0.7"
+              opacity="0.65"
             />
           </>
         ) : mode === "ocean" ? (
