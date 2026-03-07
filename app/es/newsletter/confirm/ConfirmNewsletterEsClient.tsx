@@ -1,4 +1,5 @@
-//app\es\newsletter\confirm\ConfirmNewsletterEsClient.tsx"use client"
+//app\es\newsletter\confirm\ConfirmNewsletterEsClient.tsx
+"use client"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
