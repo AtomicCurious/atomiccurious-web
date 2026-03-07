@@ -5,6 +5,7 @@ import { resend, RESEND_FROM, APP_URL } from "@/lib/resend"
 import { prisma } from "@/lib/prisma"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 type Variant = "standard" | "print"
 
@@ -32,11 +33,7 @@ function rateLimitKey(req: Request) {
 function isRateLimited(key: string) {
   const now = Date.now()
   const entry = hits.get(key)
-  if (!entry) {
-    hits.set(key, { count: 1, start: now })
-    return false
-  }
-  if (now - entry.start > WINDOW_MS) {
+  if (!entry || now - entry.start > WINDOW_MS) {
     hits.set(key, { count: 1, start: now })
     return false
   }
@@ -90,9 +87,8 @@ export async function POST(req: Request) {
   const variant = normalizeVariant(body?.variant)
 
   const honey = (body?.company ?? "").toString().trim()
-  if (honey) return NextResponse.json({ ok: true }, { status: 200 })
-
-  if (!email || !isValidEmail(email)) {
+  // Honeypot / invalid
+  if (honey || !email || !isValidEmail(email)) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 
@@ -143,8 +139,9 @@ export async function POST(req: Request) {
   // IMPORTANT: usar APP_URL (no SITE_URL) porque Netlify puede sobreescribir SITE_URL internamente
   const trackedDownloadUrl = `${APP_URL}/api/download/${tokenForEmail}`
 
+  // ---- send email (FIX: Resend returns { data, error }, it may NOT throw) ----
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: RESEND_FROM, // debe ser @send.atomiccurious.com (dominio verificado)
       to: email,
       replyTo: "hello.atomiccurious@gmail.com", // ✅ respuestas llegan a Gmail
@@ -157,12 +154,26 @@ export async function POST(req: Request) {
         `— Equipo AtomicCurious`,
     })
 
-    return NextResponse.json({ ok: true }, { status: 200 })
+    if (error) {
+      console.error("[calendar-es] resend error:", error)
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "resend_failed",
+          detail: (error as any)?.message ?? String(error),
+        },
+        { status: 500 }
+      )
+    }
+
+    console.log("[calendar-es] resend sent:", data?.id)
+    return NextResponse.json({ ok: true, resendId: data?.id }, { status: 200 })
   } catch (err) {
+    // Fallback: network/runtime errors, unexpected exceptions
     const detail = getErrorMessage(err)
-    console.error("[calendar-es] resend error:", err)
+    console.error("[calendar-es] resend exception:", err)
     return NextResponse.json(
-      { ok: false, error: "resend_failed", detail },
+      { ok: false, error: "resend_exception", detail },
       { status: 500 }
     )
   }

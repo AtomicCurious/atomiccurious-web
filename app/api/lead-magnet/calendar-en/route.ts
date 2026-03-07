@@ -142,9 +142,9 @@ export async function POST(req: Request) {
   // IMPORTANT: usar APP_URL (no SITE_URL) porque Netlify puede sobreescribir SITE_URL internamente
   const trackedDownloadUrl = `${APP_URL}/api/download/${tokenForEmail}`
 
-  // ---- send email ----
+  // ---- send email (FIX: Resend returns { data, error }, it may NOT throw) ----
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: RESEND_FROM, // debe ser @send.atomiccurious.com (dominio verificado)
       to: email,
       replyTo: "hello.atomiccurious@gmail.com", // ✅ respuestas llegan a Gmail
@@ -157,13 +157,28 @@ export async function POST(req: Request) {
         `— AtomicCurious Team`,
     })
 
+    if (error) {
+      console.error("[calendar-en] resend error:", error)
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "resend_failed",
+          detail: (error as any)?.message ?? String(error),
+        },
+        { status: 500 }
+      )
+    }
+
+    console.log("[calendar-en] resend sent:", data?.id)
+
     // ✅ respuesta limpia
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json({ ok: true, resendId: data?.id }, { status: 200 })
   } catch (err) {
+    // Fallback: network/runtime errors, unexpected exceptions
     const detail = getErrorMessage(err)
-    console.error("[calendar-en] resend error:", err)
+    console.error("[calendar-en] resend exception:", err)
     return NextResponse.json(
-      { ok: false, error: "resend_failed", detail },
+      { ok: false, error: "resend_exception", detail },
       { status: 500 }
     )
   }

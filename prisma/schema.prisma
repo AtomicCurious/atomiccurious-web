@@ -73,3 +73,42 @@ model DownloadLink {
 
   @@map("DownloadLink")
 }
+
+// =====================================================
+// NEWSLETTER (Double opt-in + unsubscribe)
+// - status: pending | subscribed | unsubscribed
+// - confirmTokenHash: solo hash, nunca el token raw
+// - unsubscribeTokenHash: token separado para bajas seguras
+// =====================================================
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    String   @default("pending")
+
+  // Confirmación (double opt-in)
+  confirmTokenHash String?
+  confirmExpiresAt DateTime?
+
+  // Baja (token separado)
+  unsubscribeTokenHash String?
+
+  subscribedAt   DateTime?
+  unsubscribedAt DateTime?
+
+  // Metadata (útil para analítica ligera)
+  source      String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([subscribedAt])
+  @@index([unsubscribedAt])
+
+  @@map("NewsletterSubscriber")
+}
