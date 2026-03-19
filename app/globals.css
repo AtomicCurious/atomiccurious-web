@@ -378,7 +378,8 @@ body[data-theme="mocha"] {
    ========================================================= */
 html,
 body {
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
 }
 
 body {
@@ -855,13 +856,217 @@ body[data-chmode="none"] .ac-tip {
     transform: none !important;
   }
 }
+/* =========================================================
+   Hero card border energy — fluid + no crossing center
+   Solo contorno energético (sin chispas)
+   ========================================================= */
 
-/* Hide scrollbar (scoped helper) */
-.no-scrollbar::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+.hero-card-rise {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 4;
+  transform: translateZ(0);
 }
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge legacy */
-  scrollbar-width: none; /* Firefox */
+
+.hero-card-rise::before,
+.hero-card-rise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* ---------------------------------------------------------
+   glow exterior
+--------------------------------------------------------- */
+.hero-card-rise::before {
+  will-change: opacity, transform, filter;
+  animation: ac-card-border-glow 10.8s ease-out infinite;
+}
+
+/* ---------------------------------------------------------
+   ring del borde
+   - solo pinta el contorno
+   - no toca el centro
+--------------------------------------------------------- */
+.hero-card-rise::after {
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  will-change: opacity, clip-path, filter;
+  animation: ac-card-border-ring-reveal 10.8s linear infinite;
+
+  background: transparent;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* ---------------------------------------------------------
+   TEAL
+--------------------------------------------------------- */
+.hero-card-rise--teal::after {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(34, 211, 238, 0.92),
+    rgba(34, 211, 238, 0.92)
+  );
+  filter:
+    drop-shadow(0 0 6px rgba(34, 211, 238, 0.18))
+    drop-shadow(0 0 14px rgba(34, 211, 238, 0.12))
+    drop-shadow(0 0 22px rgba(34, 211, 238, 0.08));
+}
+
+/* ---------------------------------------------------------
+   PINK
+--------------------------------------------------------- */
+.hero-card-rise--pink::before {
+  animation-delay: 5.4s;
+}
+
+.hero-card-rise--pink::after {
+  animation-delay: 5.4s;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 77, 157, 0.9),
+    rgba(255, 77, 157, 0.9)
+  );
+  filter:
+    drop-shadow(0 0 6px rgba(255, 77, 157, 0.16))
+    drop-shadow(0 0 14px rgba(255, 77, 157, 0.12))
+    drop-shadow(0 0 22px rgba(255, 77, 157, 0.08));
+}
+
+/* ---------------------------------------------------------
+   glow exterior
+--------------------------------------------------------- */
+@keyframes ac-card-border-glow {
+  0%,
+  34%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+
+  45% {
+    opacity: 0.14;
+    transform: scale(1.002);
+    filter: blur(0.35px);
+  }
+
+  55% {
+    opacity: 0.34;
+    transform: scale(1.004);
+    filter: blur(0.7px);
+  }
+
+  63% {
+    opacity: 0.5;
+    transform: scale(1.006);
+    filter: blur(0.95px);
+  }
+
+  72% {
+    opacity: 0.18;
+    transform: scale(1.003);
+    filter: blur(0.45px);
+  }
+
+  82% {
+    opacity: 0;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* ---------------------------------------------------------
+   reveal del ring desde abajo
+   - fluido
+   - sin cruzar el centro
+--------------------------------------------------------- */
+@keyframes ac-card-border-ring-reveal {
+  0%,
+  38%,
+  100% {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0 round 28px);
+    filter: brightness(1);
+  }
+
+  42% {
+    opacity: 0.16;
+    clip-path: inset(86% 0 0 0 round 28px);
+    filter: brightness(1.01);
+  }
+
+  46% {
+    opacity: 0.3;
+    clip-path: inset(72% 0 0 0 round 28px);
+    filter: brightness(1.02);
+  }
+
+  50% {
+    opacity: 0.46;
+    clip-path: inset(56% 0 0 0 round 28px);
+    filter: brightness(1.03);
+  }
+
+  54% {
+    opacity: 0.62;
+    clip-path: inset(40% 0 0 0 round 28px);
+    filter: brightness(1.05);
+  }
+
+  58% {
+    opacity: 0.78;
+    clip-path: inset(24% 0 0 0 round 28px);
+    filter: brightness(1.07);
+  }
+
+  62% {
+    opacity: 0.92;
+    clip-path: inset(10% 0 0 0 round 28px);
+    filter: brightness(1.09);
+  }
+
+  66% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 28px);
+    filter: brightness(1.1);
+  }
+
+  74% {
+    opacity: 0.5;
+    clip-path: inset(0 0 0 0 round 28px);
+    filter: brightness(1.03);
+  }
+
+  82% {
+    opacity: 0;
+    clip-path: inset(0 0 0 0 round 28px);
+    filter: brightness(1);
+  }
+}
+
+/* ---------------------------------------------------------
+   reduced motion
+--------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-rise::before,
+  .hero-card-rise::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
 }

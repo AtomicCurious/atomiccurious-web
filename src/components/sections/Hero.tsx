@@ -1,4 +1,3 @@
-// src/components/sections/Hero.tsx
 "use client"
 
 import type { ReactElement, ReactNode } from "react"
@@ -13,16 +12,17 @@ type HeroCopy = {
   secondaryCta: { label: string; href: string }
 }
 
-type TileBullet = { text: string; dot: "teal" | "pink" }
-
 type LatestTile = {
   href: string
   badge: string
   badgeDot: "teal" | "pink"
   title: string
   description: string
+  image?: {
+    src: string
+    alt: string
+  }
   tags: readonly string[]
-  bullets: readonly TileBullet[]
   ctaLabel: string
 }
 
@@ -42,11 +42,6 @@ type HeroTiles = {
   download: DownloadTile
 }
 
-/**
- * ✅ FIX:
- * Export overlay as a standalone component
- * AND also keep Hero.Overlay working (so your HomeLanding.tsx does NOT change).
- */
 export function HeroOverlay({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
@@ -58,19 +53,8 @@ type HeroProps = {
   copy: HeroCopy
   tiles: HeroTiles
   children?: ReactNode
-
-  /**
-   * ✅ Optional host UI row (OFF by default)
-   * - "none": render nothing (Home stays clean)
-   * - "host": render the row but CSS shows only active character via body[data-chmode="host"]
-   * - "trio": render the row and CSS shows all via body[data-chmode="trio"]
-   */
   hostRow?: HostRowMode
   hostRowLabel?: string
-}
-
-function dotColor(dot: "teal" | "pink") {
-  return dot === "teal" ? "#22D3EE" : "#FF4D9D"
 }
 
 function HostBadge({
@@ -189,19 +173,27 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
     }
   }, [hostRow])
 
+  const HERO_LAYOUT = {
+    irisTranslateYDesktop: 7,
+    subtitleMarginTop: 24,
+    subtitleMaxWidth: 980,
+    subtitleFontSize: "clamp(1.28rem, 3.15vw, 1.72rem)",
+    subtitleLineHeight: 1.6,
+    subtitleUnderlineWidth: 110,
+    subtitleUnderlineMarginTop: 16,
+  } as const
+
   const STRIP_MAX_W = "max-w-[1280px] 2xl:max-w-[1440px]"
   const STRIP_PX = "px-4 sm:px-6 lg:px-8"
 
   const GRID_COLS_LG = "lg:grid-cols-[minmax(332px,1fr)_244px_minmax(332px,1fr)]"
   const GRID_GAP = "gap-6 lg:gap-10"
 
-  const CARD_MIN_H = "min-h-[166px] sm:min-h-[180px]"
+  const CARD_MIN_H = "min-h-[260px] sm:min-h-[290px]"
   const CARD_P = "p-4"
 
-  const IRIS_TRANSLATE_Y = "translate-y-[18px] sm:translate-y-[26px] md:translate-y-[34px]"
-
   const CARD_BASE = [
-    "group relative h-full overflow-hidden rounded-[28px]",
+    "group relative h-full overflow-visible rounded-[28px]",
     "bg-[#050709]/55 backdrop-blur-xl",
     "shadow-[0_0_0_1px_rgba(34,211,238,0.06),0_18px_60px_rgba(0,0,0,0.55)]",
     "transition-all duration-300",
@@ -234,13 +226,12 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
   return (
     <section
       className={[
-        "relative w-full",
-        "min-h-[calc(100svh-var(--ac-header-h,72px)-var(--ac-footer-h,56px))]",
-        "overflow-hidden bg-bg",
-        "isolate",
+        "relative w-full bg-bg isolate",
+        "overflow-x-hidden overflow-y-visible",
+        "lg:min-h-[calc(100svh-var(--ac-header-h,72px)-var(--ac-footer-h,56px))]",
+        "lg:overflow-hidden",
       ].join(" ")}
     >
-      {/* Background (STATIC) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 z-[1] bg-gradient-to-b from-bg via-bg to-bg" />
 
@@ -249,15 +240,12 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
 
         <div className="absolute inset-0 z-[2] hidden dark:block">
           <div className="absolute inset-0 bg-gradient-to-b from-[#050709] via-[#0A0E12] to-bg" />
-
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_50%_-10%,rgba(34,211,238,0.40),transparent_65%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_15%_10%,rgba(34,211,238,0.30),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_85%_0%,rgba(255,77,157,0.35),transparent_60%)]" />
-
           <div className="absolute -left-20 -top-20 h-[800px] w-[800px] rounded-full bg-[rgba(34,211,238,0.25)] blur-[100px]" />
           <div className="absolute -right-20 top-0 h-[900px] w-[900px] rounded-full bg-[rgba(255,77,157,0.20)] blur-[120px]" />
           <div className="absolute left-1/2 top-1/3 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[rgba(34,211,238,0.15)] blur-[160px]" />
-
           <div className="absolute left-1/4 top-1/2 h-[500px] w-[500px] rounded-full bg-[rgba(139,92,246,0.07)] blur-[140px]" />
         </div>
 
@@ -286,8 +274,7 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
         />
       </div>
 
-      {/* TOP CONTENT */}
-      <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-6 sm:px-6 sm:pt-12 lg:px-8 lg:pt-14">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-14 sm:px-6 sm:pt-12 sm:pb-16 lg:px-8 lg:pt-[56px] lg:pb-[90px]">
         <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center text-center animate-slide-up">
           {hasEyebrow ? (
             <div className="inline-flex items-center rounded-full border border-border/70 bg-surface-1/70 px-4 py-1.5 text-xs text-muted backdrop-blur-xl shadow-soft dark:border-[#22D3EE]/40 dark:bg-gradient-to-r dark:from-[#22D3EE]/15 dark:via-[#FF4D9D]/10 dark:to-[#22D3EE]/15 dark:shadow-[0_0_40px_rgba(34,211,238,0.3),inset_0_0_20px_rgba(34,211,238,0.1)]">
@@ -299,26 +286,30 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
             {copy.headline}
           </h1>
 
-          <p className="mt-5 max-w-2xl text-pretty leading-relaxed text-muted dark:text-gray-300 text-[clamp(1rem,2.4vw,1.25rem)]">
-            {copy.subheadline}
-          </p>
+          <div className="flex flex-col items-center" style={{ marginTop: `${HERO_LAYOUT.subtitleMarginTop}px` }}>
+            <p
+              className="whitespace-pre-line text-balance text-muted dark:text-gray-300"
+              style={{
+                maxWidth: `${HERO_LAYOUT.subtitleMaxWidth}px`,
+                fontSize: HERO_LAYOUT.subtitleFontSize,
+                lineHeight: HERO_LAYOUT.subtitleLineHeight,
+              }}
+            >
+              {copy.subheadline}
+            </p>
+            <span
+              className="block h-px rounded-full bg-gradient-to-r from-transparent via-white/55 to-transparent dark:via-[#22D3EE]/65"
+              style={{
+                marginTop: `${HERO_LAYOUT.subtitleUnderlineMarginTop}px`,
+                width: `${HERO_LAYOUT.subtitleUnderlineWidth}px`,
+              }}
+            />
+          </div>
 
           <div className="mt-7 flex w-full max-w-[360px] flex-col items-center justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-4">
             <a
               href={copy.primaryCta.href}
-              className="
-                group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl
-                bg-gradient-to-r from-accent via-accent to-accent-alt
-                px-8 py-4 text-base font-bold text-[rgb(var(--bg))]
-                shadow-[0_12px_40px_rgb(var(--accent)/0.18)]
-                transition-all hover:shadow-[0_18px_60px_rgb(var(--accent)/0.22)] hover:scale-[1.03]
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                sm:w-auto
-                dark:from-[#22D3EE] dark:via-[#3BDBF0] dark:to-[#FF4D9D]
-                dark:text-[#050709]
-                dark:shadow-[0_0_50px_rgba(34,211,238,0.5),0_0_80px_rgba(255,77,157,0.3)]
-                dark:hover:shadow-[0_0_70px_rgba(34,211,238,0.7),0_0_100px_rgba(255,77,157,0.5)]
-              "
+              className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-accent via-accent to-accent-alt px-8 py-4 text-base font-bold text-[rgb(var(--bg))] shadow-[0_12px_40px_rgb(var(--accent)/0.18)] transition-all hover:scale-[1.03] hover:shadow-[0_18px_60px_rgb(var(--accent)/0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:w-auto dark:from-[#22D3EE] dark:via-[#3BDBF0] dark:to-[#FF4D9D] dark:text-[#050709] dark:shadow-[0_0_50px_rgba(34,211,238,0.5),0_0_80px_rgba(255,77,157,0.3)] dark:hover:shadow-[0_0_70px_rgba(34,211,238,0.7),0_0_100px_rgba(255,77,157,0.5)]"
             >
               <span className="relative z-10 flex items-center">
                 {copy.primaryCta.label}
@@ -328,16 +319,7 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
 
             <a
               href={copy.secondaryCta.href}
-              className="
-                group inline-flex w-full items-center justify-center rounded-xl
-                border border-border/80 bg-surface-1/70 px-8 py-4
-                text-base font-semibold text-text backdrop-blur-xl shadow-soft transition-all
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                sm:w-auto
-                dark:border-2 dark:border-[#22D3EE]/40 dark:bg-[#0A0E12]/60 dark:text-white
-                dark:hover:border-[#22D3EE]/60 dark:hover:bg-[#0A0E12]/80 dark:hover:shadow-[0_0_40px_rgba(34,211,238,0.3)]
-              "
+              className="group inline-flex w-full items-center justify-center rounded-xl border border-border/80 bg-surface-1/70 px-8 py-4 text-base font-semibold text-text backdrop-blur-xl shadow-soft transition-all hover:border-accent/35 hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:w-auto dark:border-2 dark:border-[#22D3EE]/40 dark:bg-[#0A0E12]/60 dark:text-white dark:hover:border-[#22D3EE]/60 dark:hover:bg-[#0A0E12]/80 dark:hover:shadow-[0_0_40px_rgba(34,211,238,0.3)]"
             >
               {copy.secondaryCta.label}
               <span className="ml-2 text-muted transition-transform group-hover:translate-x-1 dark:text-gray-400">
@@ -381,8 +363,7 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
         </div>
       </div>
 
-      {/* STRIP */}
-      <div className="relative z-20 mt-8">
+      <div className="relative z-20 mt-6 sm:mt-8 lg:mt-[-50px]">
         <div className={["mx-auto w-full", STRIP_MAX_W, STRIP_PX].join(" ")}>
           <div className="relative">
             <div className={["grid grid-cols-1", GRID_GAP, GRID_COLS_LG].join(" ")}>
@@ -402,50 +383,72 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
                   <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.10)] blur-[80px]" />
                 </div>
 
+                <div className="hero-card-rise hero-card-rise--teal" />
                 <div className={CARD_GRID_OVERLAY} />
 
-                <div className="relative">
+                <div className="relative z-[3]">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#22D3EE]/25 bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-gray-300">
                     <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#22D3EE" }} />
                     {tiles.download.badge}
                   </div>
 
-                  <h3 className="mt-3 text-balance text-lg font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
+                  <h3 className="mt-2 text-balance text-lg font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#22D3EE]">
                     {tiles.download.title}
                   </h3>
 
-                  <p className="mt-2 max-w-[56ch] text-[13px] leading-relaxed text-gray-300/90">
+                  <p className="mt-1.5 max-w-[56ch] text-[13px] leading-relaxed text-gray-300/90">
                     {tiles.download.description}
                   </p>
 
                   <div className="mt-3">
-                    <div className="relative mx-auto w-full max-w-[230px]">
-                      <div className="relative aspect-[20/9] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_20%,rgba(34,211,238,0.18),transparent_60%)]" />
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_20%,rgba(255,77,157,0.18),transparent_60%)]" />
-
-                        <div className="absolute left-1/2 top-1/2 h-[72%] w-[80%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] rounded-xl border border-white/10 bg-white/5" />
-                        <div className="absolute left-1/2 top-1/2 h-[76%] w-[84%] -translate-x-1/2 -translate-y-1/2 rotate-[-2deg] rounded-xl border border-white/10 bg-white/5" />
-                        <div className="absolute left-1/2 top-1/2 h-[80%] w-[88%] -translate-x-1/2 -translate-y-1/2 rotate-[3deg] rounded-xl border border-white/10 bg-white/5" />
-
-                        <div className="absolute left-1/2 top-[18%] w-[78%] -translate-x-1/2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-center text-[11px] font-semibold tracking-wide text-white">
-                          {tiles.download.mockTitle}
+                    <div className="relative mx-auto h-[180px] w-full max-w-[238px]">
+                      <div className="absolute left-1 top-5 w-[32%] rotate-[-11deg] opacity-60">
+                        <div className="overflow-hidden rounded-[12px] border border-white/14 bg-white/5 shadow-[0_12px_32px_rgba(0,0,0,0.42)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/images/lead-magnets/calendario-2026-es-introduccion.webp"
+                            alt="Vista previa del calendario científico"
+                            className="aspect-[3/4] h-auto w-full object-cover"
+                            loading="lazy"
+                          />
                         </div>
                       </div>
+
+                      <div className="absolute right-1 top-6 w-[32%] rotate-[11deg] opacity-60">
+                        <div className="overflow-hidden rounded-[12px] border border-white/14 bg-white/5 shadow-[0_12px_32px_rgba(0,0,0,0.42)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/images/lead-magnets/calendario-2026-es-enero.webp"
+                            alt="Página de ejemplo del calendario científico"
+                            className="aspect-[3/4] h-auto w-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="absolute left-1/2 top-0 z-10 w-[41%] -translate-x-1/2">
+                        <div className="overflow-hidden rounded-[14px] border border-white/16 bg-white/6 shadow-[0_16px_42px_rgba(0,0,0,0.50)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/images/lead-magnets/calendario-2026-es-portada.webp"
+                            alt="Portada del calendario científico 2026"
+                            className="aspect-[3/4] h-auto w-full object-cover"
+                            loading="eager"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_58%_44%_at_50%_18%,rgba(34,211,238,0.18),transparent_58%)]" />
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_42%_30%_at_52%_28%,rgba(255,77,157,0.10),transparent_62%)]" />
                     </div>
                   </div>
 
-                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    {tiles.download.ctaLabel}{" "}
-                    <span className="transition-transform group-hover:translate-x-1">›</span>
-                  </div>
-
-                  <p className="mt-1.5 text-xs text-gray-400">{tiles.download.footnote}</p>
+                  <p className="mt-2 text-xs text-gray-400">{tiles.download.footnote}</p>
                 </div>
               </a>
 
               {overlayChildren.length > 0 ? (
-                <div className="order-2 flex justify-center lg:hidden pointer-events-none">
+                <div className="order-2 pointer-events-none flex justify-center lg:hidden">
                   <div className="relative w-full">
                     <div className="mx-auto w-full max-w-[360px] py-2">{overlayChildren}</div>
                   </div>
@@ -458,7 +461,7 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
                 href={tiles.latest.href}
                 className={[
                   "order-3",
-                  "group relative h-full overflow-hidden rounded-[28px]",
+                  "group relative h-full overflow-visible rounded-[28px]",
                   "bg-[#050709]/55 backdrop-blur-xl",
                   "border border-[#FF4D9D]/18",
                   "shadow-[0_0_0_1px_rgba(255,77,157,0.06),0_18px_60px_rgba(0,0,0,0.55)]",
@@ -473,23 +476,47 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
                   <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[rgba(255,77,157,0.18)] blur-[70px]" />
                 </div>
 
+                <div className="hero-card-rise hero-card-rise--pink" />
                 <div className={CARD_GRID_OVERLAY} />
 
-                <div className="relative">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-gray-300">
+                <div className="relative z-[3] flex h-full flex-col">
+                  <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#FF4D9D]/18 bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-gray-300">
                     <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#FF4D9D" }} />
                     {tiles.latest.badge}
                   </div>
 
-                  <h3 className="mt-3 text-balance text-lg font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D]">
+                  <h3 className="mt-3 whitespace-nowrap text-[1.28rem] font-semibold leading-[1.12] tracking-tight text-white transition-colors duration-300 group-hover:text-[#FF4D9D] sm:text-[1.38rem]">
                     {tiles.latest.title}
                   </h3>
 
-                  <p className="mt-2 max-w-[56ch] text-[13px] leading-relaxed text-gray-300/90">
+                  <p className="mt-2 text-[13px] leading-relaxed text-gray-300/88">
                     {tiles.latest.description}
                   </p>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {tiles.latest.image ? (
+                    <div className="mt-4 flex justify-center">
+                      <div
+                        className="relative h-[140px] w-[300px] overflow-hidden rounded-[16px] border border-white/12 shadow-[0_14px_36px_rgba(0,0,0,0.38)]
+                        bg-[radial-gradient(ellipse_60%_80%_at_50%_50%,rgba(34,211,238,0.28),transparent_70%),
+                        radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(255,77,157,0.22),transparent_75%),
+                        #0A0E12]"
+                      >
+                        <div
+                          className="pointer-events-none absolute inset-0
+                          bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,rgba(34,211,238,0.12),transparent_70%)]"
+                        />
+
+                        <img
+                          src={tiles.latest.image.src}
+                          alt={tiles.latest.image.alt}
+                          className="relative z-[2] h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     {tiles.latest.tags.map((t) => (
                       <span
                         key={t}
@@ -500,29 +527,20 @@ function Hero({ copy, tiles, children, hostRow = "none", hostRowLabel }: HeroPro
                     ))}
                   </div>
 
-                  <ul className="mt-3 space-y-2 text-[13px] text-gray-300">
-                    {tiles.latest.bullets.map((b) => (
-                      <li key={b.text} className="flex gap-2">
-                        <span
-                          className="mt-[6px] h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: dotColor(b.dot) }}
-                        />
-                        <span>{b.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    {tiles.latest.ctaLabel}{" "}
-                    <span className="transition-transform group-hover:translate-x-1">›</span>
+                  <div className="mt-auto pt-6 text-[13px] leading-relaxed text-gray-300/88">
+                    {tiles.latest.ctaLabel}
                   </div>
                 </div>
               </a>
             </div>
 
             {overlayChildren.length > 0 ? (
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden lg:flex justify-center">
-                <div id="ac-iris-anchor" className={["relative", IRIS_TRANSLATE_Y].join(" ")}>
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden justify-center lg:flex">
+                <div
+                  id="ac-iris-anchor"
+                  className="relative"
+                  style={{ transform: `translateY(${HERO_LAYOUT.irisTranslateYDesktop}px)` }}
+                >
                   {overlayChildren}
                 </div>
               </div>

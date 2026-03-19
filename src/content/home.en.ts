@@ -7,11 +7,11 @@ export const homeEn = {
       eyebrow: "",
       headline: "Curiosity, by design.",
       subheadline:
-        "Short, cinematic explorations of science, technology, and what’s coming next—built to spark better questions, not overwhelm you.",
-      // ✅ Invertido como pediste
+        "Short, cinematic explorations to discover the extraordinary in the world around us.",
       primaryCta: { label: "Start here", href: "/en/start-here" },
       secondaryCta: { label: "Explore posts", href: "/en/posts" },
     },
+
     meet: {
       title: "Three hosts. One universe.",
       subtitle:
@@ -24,8 +24,8 @@ export const homeEn = {
       cta: { label: "Start the journey", href: "/en/start-here" },
     },
   },
+
   tiles: {
-    // ✅ now comes automatically from posts.en.ts
     latest: getLatestPostTileEn(),
 
     download: {
@@ -36,9 +36,8 @@ export const homeEn = {
       description:
         "Official. Visual. Thought-provoking. A premium calendar to fuel your curiosity all year.",
       ctaLabel: "Download free",
-      footnote: "No spam. Just curiosity.",
+      footnote: "Crafted for curious minds.",
       mockTitle: "Science Calendar · 2026",
     },
   },
 } as const
-

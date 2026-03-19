@@ -1,13 +1,13 @@
-//atomiccurious-web\middleware.ts
+// atomiccurious-web/proxy.ts
 import { NextRequest, NextResponse } from "next/server"
 
 const SUPPORTED = ["en", "es"] as const
 const PUBLIC_FILE = /\.(.*)$/
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // ✅ Ignorar internos, API, y archivos estáticos
+  // Ignorar internos, API y archivos estáticos
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -23,14 +23,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ✅ Si empieza con /en o /es, no tocar (pero /en ya no debe usarse)
+  // Si empieza con /en o /es no tocar
   const hasLocale = SUPPORTED.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   )
+
   if (hasLocale) return NextResponse.next()
 
-  // ✅ IMPORTANTE:
-  // Ya NO redirigimos a /en. El inglés vive en la raíz (/).
+  // Inglés vive en la raíz (/)
   return NextResponse.next()
 }
 

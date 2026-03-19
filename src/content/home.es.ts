@@ -1,4 +1,3 @@
-// src/content/home.es.ts
 import { getLatestPostTileEs } from "./home.helpers"
 
 export const homeEs = {
@@ -7,15 +6,14 @@ export const homeEs = {
       eyebrow: "",
       headline: "Curiosidad, diseñada.",
       subheadline:
-        "Exploraciones cortas y cinematográficas de ciencia, tecnología y futuro—pensadas para encender mejores preguntas, no más ruido.",
-      // ✅ 2 botones, mismo criterio que EN
+        "Exploraciones cortas y cinematográficas\npara descubrir lo extraordinario del mundo que nos rodea.",
       primaryCta: { label: "Empieza aquí", href: "/es/start-here" },
       secondaryCta: { label: "Explorar posts", href: "/es/posts" },
     },
     meet: {
       title: "Tres anfitriones. Un universo.",
       subtitle:
-        "Iris, Atom y Core no son personas reales: son interfaces narrativas diseñadas para explorar ciencia, tecnología y futuro con claridad.",
+        "Iris, Atom y Core no son personas reales: son interfaces narrativas diseñadas para explorar el mundo con claridad, curiosidad y una estética tecnológica.",
       items: [
         { name: "Iris", role: "Ranked" },
         { name: "Atom", role: "Curiosity" },
@@ -25,7 +23,6 @@ export const homeEs = {
     },
   },
   tiles: {
-    // ✅ ahora viene automáticamente desde posts.es.ts
     latest: getLatestPostTileEs(),
 
     download: {
@@ -36,7 +33,7 @@ export const homeEs = {
       description:
         "Oficial. Visual. Provocador. Un calendario premium para alimentar tu curiosidad todo el año.",
       ctaLabel: "Descargar gratis",
-      footnote: "Sin spam. Solo curiosidad.",
+      footnote: "Diseñado para mentes curiosas.",
       mockTitle: "Calendario de Ciencia · 2026",
     },
   },

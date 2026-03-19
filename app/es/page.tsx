@@ -3,9 +3,9 @@ import HomeLanding from "@/components/pages/HomeLanding"
 import { homeEs } from "@/content/home.es"
 
 export const metadata: Metadata = {
-  title: "AtomicCurious — Ciencia, tecnología y futuro",
+  title: "AtomicCurious — Curiosidad, diseñada.",
   description:
-    "Exploraciones cinematográficas de ciencia, tecnología y futuro. Posts, videos y recursos diseñados para despertar la curiosidad y la claridad.",
+    "Exploraciones cortas y cinematográficas para descubrir lo extraordinario del mundo que nos rodea. Posts, videos y recursos diseñados para despertar la curiosidad.",
   alternates: {
     canonical: "/es",
     languages: {
@@ -14,18 +14,18 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "AtomicCurious — Ciencia, tecnología y futuro",
+    title: "AtomicCurious — Curiosidad, diseñada.",
     description:
-      "Exploraciones cinematográficas de ciencia, tecnología y futuro. Posts, videos y recursos diseñados para despertar la curiosidad y la claridad.",
+      "Exploraciones cortas y cinematográficas para descubrir lo extraordinario del mundo que nos rodea. Posts, videos y recursos diseñados para despertar la curiosidad.",
     url: "/es",
     siteName: "AtomicCurious",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AtomicCurious — Ciencia, tecnología y futuro",
+    title: "AtomicCurious — Curiosidad, diseñada.",
     description:
-      "Exploraciones cinematográficas de ciencia, tecnología y futuro. Posts, videos y recursos diseñados para despertar la curiosidad y la claridad.",
+      "Exploraciones cortas y cinematográficas para descubrir lo extraordinario del mundo que nos rodea. Posts, videos y recursos diseñados para despertar la curiosidad.",
   },
   robots: {
     index: true,
