@@ -1,8 +1,9 @@
 // app/(en)/posts/page.tsx
 import type { Metadata } from "next"
 import Link from "next/link"
-import { postsEn, PostFormat } from "@/content/posts.en"
 import Image from "next/image"
+
+import { postsEn, PostFormat } from "@/content/posts.en"
 
 export const metadata: Metadata = {
   title: "Posts | AtomicCurious",
@@ -30,6 +31,12 @@ export const metadata: Metadata = {
       "Explore science, technology, and the future through questions, rankings, and interactive experiences.",
   },
   robots: { index: true, follow: true },
+}
+
+type PageProps = {
+  searchParams: Promise<{
+    format?: string
+  }>
 }
 
 type PostFilter = "all" | PostFormat
@@ -92,9 +99,7 @@ function HostVisual() {
         bg-surface-1 shadow-soft
       "
     >
-      {/* Ratio controlado (banner) */}
       <div className="relative aspect-[16/7] w-full">
-        {/* ATOM */}
         <Image
           src="/images/sections/posts/atom_posts.webp"
           alt="Atom — Curiosity"
@@ -104,7 +109,6 @@ function HostVisual() {
           priority
         />
 
-        {/* IRIS */}
         <Image
           src="/images/sections/posts/iris_posts.webp"
           alt="Iris — Ranked"
@@ -114,7 +118,6 @@ function HostVisual() {
           priority
         />
 
-        {/* CORE */}
         <Image
           src="/images/sections/posts/core_posts.webp"
           alt="Core — Quiz"
@@ -124,7 +127,6 @@ function HostVisual() {
           priority
         />
 
-        {/* Overlay sutil para integración premium */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -138,17 +140,14 @@ function HostVisual() {
   )
 }
 
+export default async function Page({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { format?: string }
-}) {
   const activeFormat: PostFilter =
-    searchParams.format === "curiosity" ||
-    searchParams.format === "ranked" ||
-    searchParams.format === "quiz"
-      ? searchParams.format
+    resolvedSearchParams.format === "curiosity" ||
+    resolvedSearchParams.format === "ranked" ||
+    resolvedSearchParams.format === "quiz"
+      ? resolvedSearchParams.format
       : "all"
 
   const filteredPosts =
@@ -158,9 +157,7 @@ export default function Page({
 
   return (
     <main className="w-full" data-chmode="host">
-      {/* Character display rules (SSR safe) */}
       <style>{`
-  /* Default hidden */
   .ac-host,
   .ac-title,
   .ac-sub,
@@ -168,7 +165,6 @@ export default function Page({
     display: none;
   }
 
-  /* ✅ Default Atom when no data-character yet */
   body:not([data-character]) .ac-host-atom,
   body:not([data-character]) .ac-title-atom,
   body:not([data-character]) .ac-sub-atom,
@@ -190,7 +186,6 @@ export default function Page({
     display: block;
   }
 
-  /* Visible per mode (body OR html) */
   body[data-character="atom"] .ac-host-atom,
   body[data-character="atom"] .ac-title-atom,
   body[data-character="atom"] .ac-sub-atom,
@@ -255,7 +250,6 @@ export default function Page({
   }
 `}</style>
 
-
       <div className="mx-auto w-full max-w-6xl px-6 py-14 sm:px-10 sm:py-20">
         <header className="max-w-3xl">
           <HostVisual />
@@ -275,7 +269,6 @@ export default function Page({
           <HostCopy />
         </header>
 
-        {/* Filters */}
         <div className="mt-10 flex flex-wrap gap-2">
           {(["all", "curiosity", "ranked", "quiz"] as const).map((key) => (
             <Link
@@ -295,7 +288,6 @@ export default function Page({
           ))}
         </div>
 
-        {/* Grid */}
         {filteredPosts.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-border bg-surface-1 p-6">
             <p className="text-sm text-muted">No posts yet in this category.</p>
@@ -335,7 +327,6 @@ export default function Page({
           </div>
         )}
 
-        {/* Newsletter */}
         <section className="mt-16 rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-xl">

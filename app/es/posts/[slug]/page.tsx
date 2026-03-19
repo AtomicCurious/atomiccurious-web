@@ -12,6 +12,10 @@ import MakeItRealCard from "@/components/posts/MakeItRealCard"
 import CharacterCallout from "@/components/posts/CharacterCallout"
 import PostHeroHost from "@/components/posts/PostHeroHost"
 
+type PageProps = {
+  params: Promise<{ slug: string }>
+}
+
 // ---------------------------
 // Helpers
 // ---------------------------
@@ -29,7 +33,7 @@ const formatLabels: Record<PostFormat, string> = {
   quiz: "Quiz · Core",
 }
 
-// Mapea format -> host (tu regla CRÍTICA)
+// Mapea format -> host
 const formatToHost = (format: PostFormat) => {
   if (format === "curiosity") return "atom" as const
   if (format === "ranked") return "iris" as const
@@ -69,11 +73,9 @@ function readingTimeLabel(words: number) {
 // ---------------------------
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }> | { slug: string }
-}): Promise<Metadata> {
-  const resolvedParams = await Promise.resolve(params)
-  const slug = normalizeSlug(resolvedParams?.slug)
+}: PageProps): Promise<Metadata> {
+  const { slug: rawSlug } = await params
+  const slug = normalizeSlug(rawSlug)
   const metaPost = postsEs.find((p) => p.slug === slug)
 
   if (!slug || !metaPost) {
@@ -101,23 +103,17 @@ type Frontmatter = {
   youtubeId?: string
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }> | { slug: string }
-}) {
-  const resolvedParams = await Promise.resolve(params)
-  const slug = normalizeSlug(resolvedParams?.slug)
+export default async function Page({ params }: PageProps) {
+  const { slug: rawSlug } = await params
+  const slug = normalizeSlug(rawSlug)
 
   const metaPost = postsEs.find((p) => p.slug === slug)
   if (!slug || !metaPost) return notFound()
 
-  // "Más de este formato"
   const moreFromFormat = postsEs
     .filter((p) => p.format === metaPost.format && p.slug !== slug)
     .slice(0, 4)
 
-  // Lee + compila MDX
   let mdxSource = ""
   try {
     mdxSource = await readMdxEs(slug)
@@ -133,7 +129,6 @@ export default async function Page({
   const { content, frontmatter } = await compileMDX<Frontmatter>({
     source: mdxSource,
     components: {
-      // ✅ disponibles dentro del MDX
       MakeItRealCard: (props: any) => <MakeItRealCard host={host} {...props} />,
       CharacterCallout: (props: any) => (
         <CharacterCallout host={host} {...props} />
@@ -146,18 +141,9 @@ export default async function Page({
 
   return (
     <main className="w-full">
-      {/* ✅ Layout “divulgación moderna” (como EN):
-          - Contenedor exterior más ancho
-          - Header en 2 columnas (desktop)
-          - Módulos (video, cards) a max-w-5xl
-          - Body más ancho para lectura visual-first */}
       <article className="mx-auto w-full max-w-6xl px-6 py-8 sm:px-10 sm:py-12">
-        {/* ✅ Breadcrumb eliminado */}
-
-        {/* ✅ Header en grid para lg+ */}
         <header className="mx-auto w-full max-w-6xl">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-            {/* LEFT */}
             <div className="min-w-0">
               <p className="text-xs font-medium tracking-wide text-muted">
                 ATOMICCURIOUS · POST
@@ -183,7 +169,6 @@ export default async function Page({
                 ) : null}
               </div>
 
-              {/* PostHeroHost (OPCIONAL, solo si es largo) */}
               <div className="mt-7">
                 <PostHeroHost
                   host={host}
@@ -195,7 +180,6 @@ export default async function Page({
               </div>
             </div>
 
-            {/* RIGHT */}
             <aside className="lg:sticky lg:top-24">
               <div className="rounded-2xl border border-border bg-surface-1 p-5 shadow-soft">
                 <p className="text-xs font-medium tracking-wide text-muted">
@@ -243,7 +227,6 @@ export default async function Page({
           </div>
         </header>
 
-        {/* YouTube via frontmatter (opcional) */}
         {youtubeId ? (
           <section className="mx-auto mt-10 w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-bg/30 shadow-soft">
             <div className="aspect-video w-full">
@@ -258,21 +241,18 @@ export default async function Page({
           </section>
         ) : null}
 
-        {/* ✅ Lead: más ancho, sin justificar, y sin meter texto inventado */}
         <section className="mx-auto mt-10 w-full max-w-5xl lg:px-6">
           <p className="mx-auto max-w-5xl text-pretty text-base leading-relaxed text-text/85 sm:text-lg">
             {metaPost.description}
           </p>
         </section>
 
-        {/* ✅ CUERPO MDX: más ancho (max-w-5xl) para “divulgación moderna” */}
         <section className="mx-auto mt-8 w-full max-w-5xl lg:px-6">
           <div className="space-y-6 text-sm leading-relaxed text-muted sm:text-base sm:leading-relaxed">
             {content}
           </div>
         </section>
 
-        {/* Más de este formato */}
         <section className="mx-auto mt-12 w-full max-w-5xl border-t border-border/60 pt-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -345,7 +325,6 @@ export default async function Page({
           )}
         </section>
 
-        {/* Newsletter */}
         <section className="mx-auto mt-12 w-full max-w-5xl rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>

@@ -2,6 +2,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
+
 import { postsEs, PostFormat } from "@/content/posts.es"
 
 export const metadata: Metadata = {
@@ -30,6 +31,12 @@ export const metadata: Metadata = {
       "Explora ciencia, tecnología y futuro a través de preguntas, rankings y experiencias interactivas.",
   },
   robots: { index: true, follow: true },
+}
+
+type PageProps = {
+  searchParams: Promise<{
+    format?: string
+  }>
 }
 
 type PostFilter = "all" | PostFormat
@@ -93,7 +100,6 @@ function HostVisualEs() {
       "
     >
       <div className="relative aspect-[16/7] w-full">
-        {/* ATOM */}
         <Image
           src="/images/sections/posts/atom_posts.webp"
           alt="Atom — Curiosidad"
@@ -103,7 +109,6 @@ function HostVisualEs() {
           priority
         />
 
-        {/* IRIS */}
         <Image
           src="/images/sections/posts/iris_posts.webp"
           alt="Iris — Rankings"
@@ -113,7 +118,6 @@ function HostVisualEs() {
           priority
         />
 
-        {/* CORE */}
         <Image
           src="/images/sections/posts/core_posts.webp"
           alt="Core — Quiz"
@@ -123,7 +127,6 @@ function HostVisualEs() {
           priority
         />
 
-        {/* Overlay sutil */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -137,16 +140,14 @@ function HostVisualEs() {
   )
 }
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { format?: string }
-}) {
+export default async function Page({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams
+
   const activeFormat: PostFilter =
-    searchParams.format === "curiosity" ||
-    searchParams.format === "ranked" ||
-    searchParams.format === "quiz"
-      ? searchParams.format
+    resolvedSearchParams.format === "curiosity" ||
+    resolvedSearchParams.format === "ranked" ||
+    resolvedSearchParams.format === "quiz"
+      ? resolvedSearchParams.format
       : "all"
 
   const filteredPosts =
@@ -156,9 +157,7 @@ export default function Page({
 
   return (
     <main className="w-full" data-chmode="host">
-      {/* Character display rules (SSR safe) */}
       <style>{`
-        /* Default hidden */
         .ac-host,
         .ac-title,
         .ac-sub,
@@ -166,7 +165,6 @@ export default function Page({
           display: none;
         }
 
-        /* ✅ Default Atom when no data-character yet */
         body:not([data-character]) .ac-host-atom,
         body:not([data-character]) .ac-title-atom,
         body:not([data-character]) .ac-sub-atom,
@@ -188,7 +186,6 @@ export default function Page({
           display: block;
         }
 
-        /* Visible per mode (body OR html) */
         body[data-character="atom"] .ac-host-atom,
         body[data-character="atom"] .ac-title-atom,
         body[data-character="atom"] .ac-sub-atom,
@@ -271,10 +268,8 @@ export default function Page({
           <HostCopyEs />
         </header>
 
-        {/* ✅ Visual que cambia por personaje */}
         <HostVisualEs />
 
-        {/* Filters */}
         <div className="mt-10 flex flex-wrap gap-2">
           {(["all", "curiosity", "ranked", "quiz"] as const).map((key) => (
             <Link
@@ -294,7 +289,6 @@ export default function Page({
           ))}
         </div>
 
-        {/* Grid */}
         {filteredPosts.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-border bg-surface-1 p-6">
             <p className="text-sm text-muted">
@@ -336,7 +330,6 @@ export default function Page({
           </div>
         )}
 
-        {/* Newsletter */}
         <section className="mt-16 rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-xl">
