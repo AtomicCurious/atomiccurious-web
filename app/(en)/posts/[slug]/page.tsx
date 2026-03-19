@@ -12,6 +12,10 @@ import MakeItRealCard from "@/components/posts/MakeItRealCard"
 import CharacterCallout from "@/components/posts/CharacterCallout"
 import PostHeroHost from "@/components/posts/PostHeroHost"
 
+type PageProps = {
+  params: Promise<{ slug: string }>
+}
+
 // ---------------------------
 // Helpers
 // ---------------------------
@@ -69,11 +73,9 @@ function readingTimeLabel(words: number) {
 // ---------------------------
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }> | { slug: string }
-}): Promise<Metadata> {
-  const resolvedParams = await Promise.resolve(params)
-  const slug = normalizeSlug(resolvedParams?.slug)
+}: PageProps): Promise<Metadata> {
+  const { slug: rawSlug } = await params
+  const slug = normalizeSlug(rawSlug)
 
   const metaPost = postsEn.find((p) => p.slug === slug)
 
@@ -98,13 +100,9 @@ export async function generateStaticParams() {
 // ---------------------------
 // Page
 // ---------------------------
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }> | { slug: string }
-}) {
-  const resolvedParams = await Promise.resolve(params)
-  const slug = normalizeSlug(resolvedParams?.slug)
+export default async function Page({ params }: PageProps) {
+  const { slug: rawSlug } = await params
+  const slug = normalizeSlug(rawSlug)
 
   const metaPost = postsEn.find((p) => p.slug === slug)
   if (!slug || !metaPost) return notFound()
@@ -257,7 +255,7 @@ export default async function Page({
           </p>
         </section>
 
-        {/* ✅ Intro block: primer tramo del contenido a ancho max-w-5xl (se siente menos “estrecho”) */}
+        {/* ✅ Intro block: primer tramo del contenido a ancho max-w-5xl */}
         <section className="mx-auto mt-6 w-full max-w-5xl lg:px-6">
           <div className="space-y-6 text-sm leading-relaxed text-muted sm:text-base sm:leading-relaxed">
             {content}
