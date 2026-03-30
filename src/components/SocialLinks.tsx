@@ -1,4 +1,3 @@
-//src\components\SocialLinks.tsx
 "use client"
 
 import Link from "next/link"
@@ -102,8 +101,8 @@ export default function SocialLinks({
     const displayTitle = title?.trim() ? title.trim() : t.defaultTitle
 
     return (
-      <div className="flex min-w-0 items-center gap-3 -ml-35">
-        {/* Title (siempre 1 sola vez) */}
+      <div className="flex min-w-0 items-center justify-center gap-3">
+        {/* Title */}
         <span className="shrink-0 text-[11px] font-semibold tracking-wide text-muted">
           {displayTitle}
         </span>
@@ -133,16 +132,17 @@ export default function SocialLinks({
           ))}
         </div>
 
-        {/* Mobile trigger: NO repite title */}
+        {/* Mobile trigger: premium con iconos */}
         <button
           type="button"
           onClick={() => setOpen(true)}
           className={[
             "md:hidden",
             "shrink-0 inline-flex items-center gap-2 rounded-full",
-            "border border-border/80 bg-surface-1/40",
-            "px-3 py-1.5 text-[11px] font-semibold text-text/90",
-            "shadow-soft transition hover:bg-surface-2/60",
+            "border border-accent/30 bg-surface-1/60",
+            "px-3 py-1.5",
+            "shadow-[0_0_12px_rgba(var(--accent),0.10)]",
+            "transition hover:border-accent/50 hover:bg-surface-2/70 hover:shadow-[0_0_18px_rgba(var(--accent),0.18)]",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55",
             "focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
           ].join(" ")}
@@ -150,8 +150,15 @@ export default function SocialLinks({
           aria-expanded={open}
           aria-label={t.open}
         >
-          <span className="text-text">{t.socials}</span>
-          <span className="ml-1 text-muted">▾</span>
+          {/* Mini iconos */}
+          <span className="flex items-center gap-1">
+            {items.map((s) => (
+              <SocialIcon key={s.label} name={s.label} className="h-3 w-3 text-muted/80" />
+            ))}
+          </span>
+          <span className="h-3 w-px bg-border/70" />
+          <span className="text-[11px] font-semibold text-text/90">{t.socials}</span>
+          <span className="text-[10px] text-muted">▾</span>
         </button>
 
         {/* Drawer */}
@@ -237,7 +244,7 @@ export default function SocialLinks({
     )
   }
 
-  // ✅ DEFAULT MODE (sin cambios visuales fuertes)
+  // ✅ DEFAULT MODE
   return (
     <div className="flex flex-col gap-3">
       {title ? (

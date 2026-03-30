@@ -59,20 +59,23 @@ export default function CharacterToggle({
   forceCharacter?: CharacterMode
 }) {
   const locked = Boolean(forceCharacter)
-  const [mode, setMode] = useState<CharacterMode>("atom")
+
+  // FIX: inicializar desde localStorage directamente para evitar flash a "atom"
+  // cuando el drawer se desmonta/remonta en mobile al abrir/cerrar el menú
+  const [mode, setMode] = useState<CharacterMode>(() => {
+    if (forceCharacter) return forceCharacter
+    return normalize(safeGet(STORAGE_KEY)) ?? normalize(safeGet(LEGACY_KEY)) ?? "atom"
+  })
 
   const next = useMemo(() => nextCharacter(mode), [mode])
 
-  // init + migrate legacy
+  // init + migrate legacy (solo para aplicar al DOM, el estado ya está correcto)
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    let initial =
-      normalize(safeGet(STORAGE_KEY)) ??
-      normalize(safeGet(LEGACY_KEY)) ??
-      "atom"
-
-    if (forceCharacter) initial = forceCharacter
+    const initial = forceCharacter
+      ? forceCharacter
+      : normalize(safeGet(STORAGE_KEY)) ?? normalize(safeGet(LEGACY_KEY)) ?? "atom"
 
     setMode(initial)
     applyCharacter(initial)

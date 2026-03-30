@@ -2,375 +2,267 @@
 @import "tailwindcss";
 
 /* =========================================================
-   AtomicCurious — Luxury Editorial System (DEFINITIVE)
+   AtomicCurious — Luxury Editorial System
    THEMES (section-scoped via <body data-theme="...">):
-     dark (default) | light | aurora | ocean | mocha
+     dark (default) | aurora
 
-   ✅ ACCENTS are THEME-DRIVEN (not character-driven)
-   - Primary:   --accent
-   - Secondary: --accent-alt   (back-compat)
-   Toggle via:
-     <body data-theme="...">
-
-   Characters (data-character) are separate:
-     - logo object (DNA / Rubik / Galaxy)
-     - microcopy / guide voice
+   THEME = atmosphere / background / material tone
+   CHARACTER = accent color
    ========================================================= */
 
-/* -----------------------------
-   DEFAULT (dark) — LUX TECH BLACK (Apple x LV)
------------------------------ */
+/* =========================================================
+   DEFAULT (dark) — graphite editorial
+   ========================================================= */
 :root {
   color-scheme: dark;
 
-  /* Backgrounds (slightly warm “ink” black) */
-  --bg: 10 11 13; /* ink */
-  --surface-1: 18 19 22; /* graphite */
-  --surface-2: 28 29 33; /* smoked */
+  /* Core surfaces */
+  --bg: 6 8 11;
+  --surface-1: 13 16 21;
+  --surface-2: 18 22 29;
+  --surface-3: 24 29 38;
 
   /* Text */
-  --text: 236 238 242;
-  --muted: 162 168 178;
+  --text: 245 247 250;
+  --muted: 170 178 189;
+  --soft: 118 127 141;
 
-  /* Borders (quiet, premium) */
-  --border: 44 46 54;
+  /* Borders */
+  --border: 255 255 255;
+  --border-alpha: 0.09;
+  --border-strong-alpha: 0.14;
 
-  /* ✅ Theme accent roles */
-  --accent: 34 211 238; /* Action */
-  --accent-soft: 34 211 238;
+  /* Character fallback accents */
+  --accent: 120 201 255;
+  --accent-soft: 120 201 255;
+  --accent-2: 96 165 250;
+  --accent-2-soft: 96 165 250;
+  --accent-warm: 255 184 107;
 
-  /* Secondary / echo */
-  --accent-2: 255 77 157;
-  --accent-2-soft: 255 77 157;
+  /* Theme atmosphere */
+  --theme-glow-1: 255 255 255;
+  --theme-glow-2: 126 136 154;
+  --theme-glow-3: 82 94 118;
+  --theme-glow-1-alpha: 0.05;
+  --theme-glow-2-alpha: 0.035;
+  --theme-glow-3-alpha: 0.03;
 
-  /* Optional warm “human” moments */
-  --accent-warm: 255 179 71;
+  /* Ambient lines */
+  --line-rgb: 168 182 210;
+  --line-rgb-2: 128 143 171;
+  --lineA: 0.1;
 
   /* Derived */
-  --ring: rgb(var(--accent) / 0.55);
-  --selection: rgb(var(--accent-soft) / 0.22);
-
-  /* Back-compat (old naming used in some components) */
-  --accent-alt: var(--accent-2);
-  --accent-alt-soft: var(--accent-2-soft);
-
-  /* Shadows (lux) */
-  --shadow-ambient: 0 0 0;
-  --shadow-card: 0 18px 64px rgba(var(--shadow-ambient) / 0.62);
-  --shadow-soft:
-    0 1px 0 rgba(255, 255, 255, 0.05),
-    0 20px 60px rgba(0, 0, 0, 0.42);
-
-  /* Ship vars (SVG) */
-  --ship-panel: #202634;
-  --ship-core: #edf1fa;
-  --ship-edge: #d6ecff;
-  --ship-neon1: #b692ff;
-  --ship-neon2: #68f0ff;
-  --ship-jet: #bff8ff;
-  --ship-jet-hot: #fff3b8;
-
-  /* Premium “sheen” */
-  --bg-grad: linear-gradient(
-      140deg,
-      rgba(255, 255, 255, 0.035) 0%,
-      rgba(255, 255, 255, 0.012) 35%,
-      rgba(0, 0, 0, 0.10) 100%
-    ),
-    radial-gradient(
-      2200px 1400px at 50% 10%,
-      rgba(255, 255, 255, 0.035),
-      transparent 55%
-    ),
-    radial-gradient(
-      2600px 1800px at 50% 70%,
-      rgba(0, 0, 0, 0.55),
-      transparent 70%
-    );
-
-  /* Ambient lines opacity (default). Override per-theme below */
-  --lineA: 0.14;
-}
-
-/* -----------------------------
-   LIGHT — LUX PAPER (editorial perfume)
-   Applied only when: <body data-theme="light">
------------------------------ */
-body[data-theme="light"] {
-  color-scheme: light;
-
-  /* Warm “paper” (cream, not white) */
-  --bg: 247 242 234;
-  --surface-1: 253 250 244;
-  --surface-2: 238 232 223;
-
-  /* Ink text */
-  --text: 18 20 24;
-  --muted: 86 92 102;
-
-  /* Soft edges */
-  --border: 214 205 192;
-
-  /* ✅ Theme accents (blue action + violet echo) */
-  --accent: 43 107 230;
-  --accent-soft: 43 107 230;
-
-  --accent-2: 124 58 237;
-  --accent-2-soft: 124 58 237;
-
-  --accent-warm: 244 162 97;
-
-  --ring: rgb(var(--accent) / 0.50);
+  --ring: rgb(var(--accent) / 0.42);
   --selection: rgb(var(--accent-soft) / 0.18);
 
   /* Back-compat */
   --accent-alt: var(--accent-2);
   --accent-alt-soft: var(--accent-2-soft);
 
-  --shadow-ambient: 18 20 24;
-  --shadow-card: 0 18px 56px rgba(var(--shadow-ambient) / 0.10);
-  --shadow-soft:
-    0 1px 0 rgba(0, 0, 0, 0.03),
-    0 18px 44px rgba(var(--shadow-ambient) / 0.08);
-
-  /* Clean editorial wash */
-  --bg-grad: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.20) 42%,
-      rgba(0, 0, 0, 0.03) 100%
-    ),
-    radial-gradient(
-      2400px 1600px at 50% 12%,
-      rgba(255, 255, 255, 0.42),
-      transparent 58%
-    );
-
-  /* Ambient lines on light: almost invisible */
-  --lineA: 0.06;
-}
-
-/* -----------------------------
-   AURORA — CINEMATIC (low saturation, long-read)
-   Replaces: cosmic
------------------------------ */
-body[data-theme="aurora"] {
-  color-scheme: dark;
-
-  /* Base: near-black (readable) */
-  --bg: 6 8 12;
-  --surface-1: 10 14 20;
-  --surface-2: 16 22 32;
-
-  --text: 236 240 246;
-  --muted: 160 172 188;
-
-  --border: 34 46 66;
-
-  /* Accents: muted (not neon) */
-  --accent: 56 184 137; /* muted green action */
-  --accent-soft: 56 184 137;
-
-  --accent-2: 58 134 201; /* muted cyan/blue echo */
-  --accent-2-soft: 58 134 201;
-
-  --accent-warm: 255 179 71;
-
-  --ring: rgb(var(--accent) / 0.55);
-  --selection: rgb(var(--accent-soft) / 0.20);
-
-  /* Back-compat */
-  --accent-alt: var(--accent-2);
-  --accent-alt-soft: var(--accent-2-soft);
-
+  /* Shadows */
   --shadow-ambient: 0 0 0;
-  --shadow-card: 0 22px 78px rgba(var(--shadow-ambient) / 0.68);
+  --shadow-card: 0 20px 56px rgba(0, 0, 0, 0.38);
   --shadow-soft:
-    0 1px 0 rgba(255, 255, 255, 0.05),
-    0 24px 70px rgba(0, 0, 0, 0.48);
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 48px rgba(0, 0, 0, 0.34);
 
-  /* Optional ship colors (keep consistent) */
-  --ship-panel: #1d2431;
-  --ship-core: #f3f6ff;
-  --ship-edge: #d9eeff;
+  /* Ship vars (SVG) */
+  --ship-panel: #1f2631;
+  --ship-core: #f0f4fb;
+  --ship-edge: #deecff;
+  --ship-neon1: #9da9ff;
+  --ship-neon2: #82deff;
+  --ship-jet: #d2f8ff;
+  --ship-jet-hot: #fff0b8;
 
-  /* Background: vignette + muted lights + subtle diagonal ribbons */
+  /* Background atmosphere */
   --bg-grad:
-    /* VIGNETTE (key for long-read) */
     radial-gradient(
-      1200px 900px at 50% 34%,
-      rgba(0, 0, 0, 0.10),
-      rgba(0, 0, 0, 0.66) 72%,
-      rgba(0, 0, 0, 0.92) 100%
+      1000px 640px at 14% 12%,
+      rgba(var(--theme-glow-1) / var(--theme-glow-1-alpha)),
+      transparent 58%
     ),
-
-    /* AMBIENT LIGHTS (muted) */
     radial-gradient(
-      1100px 760px at 66% 34%,
-      rgba(56, 184, 137, 0.13),
+      1200px 760px at 82% 16%,
+      rgba(var(--theme-glow-2) / var(--theme-glow-2-alpha)),
       transparent 62%
     ),
     radial-gradient(
-      1100px 760px at 84% 56%,
-      rgba(58, 134, 201, 0.11),
-      transparent 64%
-    ),
-    radial-gradient(
-      1200px 820px at 24% 84%,
-      rgba(107, 90, 166, 0.10),
-      transparent 66%
-    ),
-
-    /* DIAGONAL RIBBONS (very subtle) */
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.020) 0px,
-      rgba(255, 255, 255, 0.020) 1px,
-      transparent 1px,
-      transparent 46px
-    ),
-
-    /* TOP SHEEN (lux) */
-    radial-gradient(
-      2000px 1400px at 50% 14%,
-      rgba(255, 255, 255, 0.030),
-      transparent 62%
-    );
-
-  /* Ambient lines: present, but calmer than neon themes */
-  --lineA: 0.10;
-}
-
-/* -----------------------------
-   OCEAN — LUX MARINE (turquoise action + deep-blue echo)
------------------------------ */
-body[data-theme="ocean"] {
-  color-scheme: dark;
-
-  --bg: 4 14 24;
-  --surface-1: 8 22 36;
-  --surface-2: 12 32 52;
-
-  --text: 232 242 248;
-  --muted: 154 176 192;
-
-  --border: 26 70 96;
-
-  --accent: 28 227 230; /* turquoise action */
-  --accent-soft: 28 227 230;
-
-  --accent-2: 70 140 255; /* deep blue echo */
-  --accent-2-soft: 70 140 255;
-
-  --accent-warm: 255 122 89;
-
-  --ring: rgb(var(--accent) / 0.55);
-  --selection: rgb(var(--accent-soft) / 0.22);
-
-  --accent-alt: var(--accent-2);
-  --accent-alt-soft: var(--accent-2-soft);
-
-  --shadow-ambient: 0 0 0;
-  --shadow-card: 0 20px 70px rgba(var(--shadow-ambient) / 0.64);
-  --shadow-soft:
-    0 1px 0 rgba(255, 255, 255, 0.05),
-    0 22px 66px rgba(0, 0, 0, 0.46);
-
-  --bg-grad: linear-gradient(
-      120deg,
-      rgba(34, 211, 238, 0.085) 0%,
-      rgba(70, 140, 255, 0.10) 55%,
-      rgba(0, 180, 210, 0.075) 100%
+      1300px 900px at 50% 100%,
+      rgba(var(--theme-glow-3) / var(--theme-glow-3-alpha)),
+      transparent 72%
     ),
     linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.08) 0%,
-      rgba(0, 0, 0, 0.38) 66%,
-      rgba(0, 0, 0, 0.58) 100%
+      rgb(10 12 16) 0%,
+      rgb(6 8 11) 40%,
+      rgb(4 5 8) 100%
     ),
-    conic-gradient(
-      from 200deg at 50% 44%,
-      rgba(0, 180, 210, 0.028),
-      rgba(70, 140, 255, 0.026),
-      rgba(34, 211, 238, 0.024),
-      rgba(0, 180, 210, 0.028)
-    ),
-    radial-gradient(
-      2000px 1400px at 50% 18%,
-      rgba(255, 255, 255, 0.024),
-      transparent 62%
-    ),
-    radial-gradient(
-      2800px 1900px at 50% 70%,
-      rgba(0, 0, 0, 0.60),
-      transparent 74%
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.010) 0px,
+      rgba(255,255,255,0.010) 1px,
+      transparent 1px,
+      transparent 52px
     );
-
-  /* Ambient lines: slightly calmer to reduce edge color bleed */
-  --lineA: 0.11;
 }
 
-/* -----------------------------
-   MOCHA — MOCHA LATTE (terracotta action + warm gold echo)
------------------------------ */
-body[data-theme="mocha"] {
-  color-scheme: light;
+/* =========================================================
+   AURORA — cosmic indigo / teal nocturne
+   ========================================================= */
+body[data-theme="aurora"] {
+  color-scheme: dark;
 
-  --bg: 210 178 148;
-  --surface-1: 250 238 224;
-  --surface-2: 236 218 198;
+  --bg: 6 9 20;
+  --surface-1: 13 18 34;
+  --surface-2: 19 27 48;
+  --surface-3: 27 37 62;
 
-  --text: 46 30 22;
-  --muted: 108 82 66;
+  --text: 242 246 252;
+  --muted: 169 179 201;
+  --soft: 118 131 157;
 
-  --border: 216 195 172;
+  --border: 215 228 255;
+  --border-alpha: 0.12;
+  --border-strong-alpha: 0.18;
 
-  --accent: 214 104 83; /* terracotta action */
-  --accent-soft: 214 104 83;
+  /* Fallback accents if no character is set */
+  --accent: 128 226 214;
+  --accent-soft: 128 226 214;
+  --accent-2: 138 164 255;
+  --accent-2-soft: 138 164 255;
+  --accent-warm: 255 193 120;
 
-  --accent-2: 244 162 97; /* warm gold echo */
-  --accent-2-soft: 244 162 97;
-
-  --accent-warm: 244 162 97;
-
-  --ring: rgb(var(--accent) / 0.45);
-  --selection: rgb(var(--accent-soft) / 0.18);
+  --ring: rgb(var(--accent) / 0.42);
+  --selection: rgb(var(--accent-soft) / 0.16);
 
   --accent-alt: var(--accent-2);
   --accent-alt-soft: var(--accent-2-soft);
 
-  --shadow-ambient: 46 30 22;
-  --shadow-card: 0 18px 58px rgba(var(--shadow-ambient) / 0.14);
+  --shadow-card: 0 22px 62px rgba(2, 5, 18, 0.48);
   --shadow-soft:
-    0 1px 0 rgba(255, 255, 255, 0.44),
-    0 16px 46px rgba(var(--shadow-ambient) / 0.10);
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 54px rgba(2, 5, 18, 0.42);
 
-  --bg-grad: linear-gradient(
+  --ship-panel: #222b3e;
+  --ship-core: #f4f7ff;
+  --ship-edge: #dff0ff;
+
+  --theme-glow-1: 101 116 255;
+  --theme-glow-2: 97 225 196;
+  --theme-glow-3: 52 69 132;
+  --theme-glow-1-alpha: 0.13;
+  --theme-glow-2-alpha: 0.1;
+  --theme-glow-3-alpha: 0.1;
+
+  --line-rgb: 135 164 255;
+  --line-rgb-2: 113 220 194;
+  --lineA: 0.12;
+
+  --bg-grad:
+    radial-gradient(
+      900px 620px at 14% 12%,
+      rgba(var(--theme-glow-2) / var(--theme-glow-2-alpha)),
+      transparent 55%
+    ),
+    radial-gradient(
+      1000px 700px at 84% 14%,
+      rgba(var(--theme-glow-1) / var(--theme-glow-1-alpha)),
+      transparent 58%
+    ),
+    radial-gradient(
+      1250px 860px at 50% 100%,
+      rgba(var(--theme-glow-3) / var(--theme-glow-3-alpha)),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(14 18 40) 0%,
+      rgb(8 12 28) 38%,
+      rgb(6 9 20) 68%,
+      rgb(4 7 16) 100%
+    ),
+    repeating-linear-gradient(
       135deg,
-      rgba(255, 250, 244, 0.46) 0%,
-      rgba(250, 233, 214, 0.22) 45%,
-      rgba(198, 156, 120, 0.12) 100%
-    ),
-    conic-gradient(
-      from 225deg at 50% 40%,
-      rgba(255, 250, 244, 0.040),
-      rgba(250, 233, 214, 0.032),
-      rgba(198, 156, 120, 0.026),
-      rgba(255, 250, 244, 0.040)
-    ),
-    radial-gradient(
-      2200px 1500px at 50% 18%,
-      rgba(255, 255, 255, 0.14),
-      transparent 64%
-    ),
-    radial-gradient(
-      2800px 2000px at 50% 72%,
-      rgba(46, 30, 22, 0.16),
-      transparent 76%
+      rgba(255,255,255,0.011) 0px,
+      rgba(255,255,255,0.011) 1px,
+      transparent 1px,
+      transparent 54px
     );
+}
 
-  /* Ambient lines: very subtle in warm editorial theme */
-  --lineA: 0.08;
+/* =========================================================
+   Character accents — dark base
+   Refined to feel more editorial and balanced
+   ========================================================= */
+
+body[data-character="iris"] {
+  --accent: 122 214 255;
+  --accent-soft: 122 214 255;
+  --accent-2: 146 186 255;
+  --accent-2-soft: 146 186 255;
+  --ring: rgb(var(--accent) / 0.42);
+  --selection: rgb(var(--accent-soft) / 0.16);
+}
+
+body[data-character="atom"] {
+  --accent: 118 220 178;
+  --accent-soft: 118 220 178;
+  --accent-2: 78 194 152;
+  --accent-2-soft: 78 194 152;
+  --ring: rgb(var(--accent) / 0.42);
+  --selection: rgb(var(--accent-soft) / 0.16);
+}
+
+body[data-character="core"] {
+  --accent: 255 170 92;
+  --accent-soft: 255 170 92;
+  --accent-2: 255 200 124;
+  --accent-2-soft: 255 200 124;
+  --ring: rgb(var(--accent) / 0.42);
+  --selection: rgb(var(--accent-soft) / 0.16);
+}
+
+/* =========================================================
+   Character accents — aurora overrides
+   Prevent Iris from blending into the theme
+   Make Atom more mineral
+   Make Core warm amber/orange instead of red
+   ========================================================= */
+
+body[data-theme="aurora"][data-character="iris"] {
+  --accent: 176 194 255;
+  --accent-soft: 176 194 255;
+  --accent-2: 132 227 255;
+  --accent-2-soft: 132 227 255;
+  --ring: rgb(var(--accent) / 0.44);
+  --selection: rgb(var(--accent-soft) / 0.15);
+}
+
+body[data-theme="aurora"][data-character="atom"] {
+  --accent: 145 224 188;
+  --accent-soft: 145 224 188;
+  --accent-2: 104 194 162;
+  --accent-2-soft: 104 194 162;
+  --ring: rgb(var(--accent) / 0.44);
+  --selection: rgb(var(--accent-soft) / 0.15);
+}
+
+body[data-theme="aurora"][data-character="core"] {
+  --accent: 255 182 110;
+  --accent-soft: 255 182 110;
+  --accent-2: 255 214 144;
+  --accent-2-soft: 255 214 144;
+  --ring: rgb(var(--accent) / 0.44);
+  --selection: rgb(var(--accent-soft) / 0.15);
+}
+
+/* Keep old alias names synced */
+body[data-character],
+body[data-theme] {
+  --accent-alt: var(--accent-2);
+  --accent-alt-soft: var(--accent-2-soft);
 }
 
 /* =========================================================
@@ -388,10 +280,7 @@ body {
 
   background-color: rgb(var(--bg));
   background-image: var(--bg-grad);
-
-  /* ✅ FIX: avoid mobile/Android fixed-attachment scroll artifacts */
   background-attachment: scroll;
-
   background-repeat: no-repeat;
   background-size: cover;
 
@@ -400,7 +289,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ✅ Desktop only: allow fixed attachment for premium parallax feel */
 @media (min-width: 1024px) {
   body {
     background-attachment: fixed;
@@ -425,8 +313,6 @@ a {
 
 /* =========================================================
    Anti-banding / Luxury grain
-   ✅ FIX: use absolute (not fixed) to keep layout/flow sane
-   ✅ Still sits behind content
    ========================================================= */
 body::after {
   content: "";
@@ -437,44 +323,32 @@ body::after {
 
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.012), transparent 28%),
-    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.010), transparent 30%);
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.013), transparent 30%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.010), transparent 32%);
 
   background-repeat: repeat, no-repeat, no-repeat;
   background-size: 220px 220px, 1200px 900px, 1400px 1000px;
   background-position: 0 0, 0 0, 0 0;
 
-  opacity: 0.032;
+  opacity: 0.02;
   mix-blend-mode: soft-light;
-  filter: contrast(110%) brightness(110%);
+  filter: contrast(108%) brightness(108%);
 }
 
-/* Theme tuning */
 body[data-theme="aurora"]::after {
-  opacity: 0.033;
-  filter: contrast(112%) brightness(112%);
-}
-body[data-theme="ocean"]::after {
-  opacity: 0.034;
-  filter: contrast(112%) brightness(110%);
-}
-/* Mocha latte: lighter grain */
-body[data-theme="mocha"]::after {
-  opacity: 0.020;
-  filter: contrast(106%) brightness(112%);
-}
-/* Light: keep super-clean */
-body[data-theme="light"]::after {
-  content: none !important;
+  opacity: 0.024;
+  filter: contrast(108%) brightness(109%);
 }
 
-/* Ensure app content is above grain without touching components */
+/* Ensure app content is above grain */
 body > * {
   position: relative;
   z-index: 1;
 }
 
-/* Utility shadows */
+/* =========================================================
+   Utility shadows
+   ========================================================= */
 .shadow-soft {
   box-shadow: var(--shadow-soft);
 }
@@ -486,8 +360,6 @@ body > * {
 /* =========================================================
    Signature helpers
    ========================================================= */
-
-/* Keep existing classnames, but bind them to AURORA now */
 .ac-cosmic-only {
   display: none;
 }
@@ -499,20 +371,19 @@ body[data-theme="aurora"] .ac-noncosmic-only {
 }
 
 /* =========================================================
-   Sigil shell (optional)
+   Sigil shell
    ========================================================= */
 .ac-sigilShell {
   background: rgb(var(--surface-1) / 0.72);
-  border: 1px solid rgb(var(--border) / 0.85);
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
-}
-body[data-theme="light"] .ac-sigilShell,
-body[data-theme="mocha"] .ac-sigilShell {
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgb(var(--border) / 0.10);
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(14px);
 }
 
 /* =========================================================
-   Iris Rubik Sigil (DOM 3D) — SINGLE VERSION (no duplicates)
+   Iris Rubik Sigil (DOM 3D)
    ========================================================= */
 
 .ac-rubikAnchor {
@@ -532,13 +403,12 @@ body[data-theme="mocha"] .ac-sigilShell {
   --sticker-radius: 1.5px;
   --epsilon: 0.05px;
 
-  /* Rubik standard palette */
-  --U: #ffffff; /* White */
-  --D: #ffd700; /* Yellow */
-  --F: #00cc66; /* Green */
-  --B: #0066ff; /* Blue */
-  --R: #ff3333; /* Red */
-  --L: #ff6600; /* Orange */
+  --U: #ffffff;
+  --D: #ffd700;
+  --F: #00cc66;
+  --B: #0066ff;
+  --R: #ff3333;
+  --L: #ff6600;
 
   position: relative;
   width: var(--rubik-size);
@@ -583,7 +453,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   overflow: hidden;
 }
 
-/* Sticker always has a color */
 .ac-face::after {
   content: "";
   position: absolute;
@@ -617,7 +486,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   opacity: calc(var(--rim, 0) * 0.8);
 }
 
-/* Face transforms + per-face color */
 .fU {
   transform: rotateX(90deg) translateZ(calc(var(--thickness) / 2));
   --c: var(--U);
@@ -643,7 +511,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   --c: var(--L);
 }
 
-/* Only show faces that exist on that cubie */
 .ac-cubie:not(.sU) .fU,
 .ac-cubie:not(.sD) .fD,
 .ac-cubie:not(.sF) .fF,
@@ -653,7 +520,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   display: none !important;
 }
 
-/* Responsive sizes */
 @media (min-width: 640px) {
   .ac-rubik {
     --rubik-size: 28px;
@@ -669,7 +535,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   }
 }
 
-/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .ac-rubik,
   .ac-cubie,
@@ -694,101 +559,76 @@ body[data-theme="mocha"] .ac-sigilShell {
 }
 
 /* =========================================================
-   Ambient Motion — ultra subtle, editorial-grade
-   Used by: src/components/visual/AmbientMotion.tsx
-   Philosophy:
-   - Felt, not seen
-   - Breath, not animation
+   Ambient Motion
+   Theme-driven, not character-driven
    ========================================================= */
-
-/* ===============================
-   MICRO DATA LINES
-================================ */
 
 .ac-ambient-line {
   position: absolute;
-  height: 2px;
+  height: 1px;
   width: 320px;
-
-  opacity: var(--lineA, 0.14);
-  filter: blur(0.15px);
-
+  opacity: var(--lineA, 0.10);
+  filter: blur(0.2px);
   will-change: opacity;
   pointer-events: none;
 }
 
-/* Left line — teal */
 .ac-ambient-line--left {
   left: 0;
   top: 18%;
-
   background: linear-gradient(
     to right,
     transparent,
-    rgb(var(--accent) / 0.95),
+    rgb(var(--line-rgb) / 0.78),
     transparent
   );
-
   animation: ac-ambient-breathe-left 14s ease-in-out infinite;
 }
 
-/* Right line — pink */
 .ac-ambient-line--right {
   right: 0;
   top: 56%;
-
   background: linear-gradient(
     to left,
     transparent,
-    rgb(var(--accent-alt) / 0.95),
+    rgb(var(--line-rgb-2) / 0.72),
     transparent
   );
-
   animation: ac-ambient-breathe-right 18s ease-in-out infinite;
   animation-delay: 2.4s;
 }
 
-/* ===============================
-   KEYFRAMES — BREATH, NOT PULSE
-================================ */
-
 @keyframes ac-ambient-breathe-left {
-  0%, 100% {
-    opacity: var(--lineA, 0.14);
+  0%,
+  100% {
+    opacity: var(--lineA, 0.10);
   }
   50% {
-    opacity: calc(var(--lineA, 0.14) * 1.28);
+    opacity: calc(var(--lineA, 0.10) * 1.2);
   }
 }
 
 @keyframes ac-ambient-breathe-right {
-  0%, 100% {
-    opacity: var(--lineA, 0.14);
+  0%,
+  100% {
+    opacity: var(--lineA, 0.10);
   }
   50% {
-    opacity: calc(var(--lineA, 0.14) * 1.22);
+    opacity: calc(var(--lineA, 0.10) * 1.16);
   }
 }
-
-/* ===============================
-   ACCESSIBILITY / PERFORMANCE
-================================ */
 
 @media (prefers-reduced-motion: reduce) {
   .ac-ambient-line {
     animation: none !important;
-    opacity: var(--lineA, 0.14);
+    opacity: var(--lineA, 0.10);
   }
 }
 
 /* =========================================================
-   Characters — show rules (host | trio | none)
-   Driven by:
-     body[data-character="atom|iris|core"]
-     body[data-chmode="host|trio|none"]  (mirrored from <main>)
+   Characters — show rules
    ========================================================= */
 
-/* Default hidden */
 .ac-ch,
 .ac-guide,
 .ac-welcome,
@@ -799,7 +639,6 @@ body[data-theme="mocha"] .ac-sigilShell {
   pointer-events: none;
 }
 
-/* ---------- MODE: host (default) ---------- */
 body[data-chmode="host"][data-character="atom"] .ac-ch-atom,
 body[data-chmode="host"][data-character="atom"] .ac-guide-atom,
 body[data-chmode="host"][data-character="atom"] .ac-welcome-atom,
@@ -827,7 +666,6 @@ body[data-chmode="host"][data-character="core"] .ac-tip-core {
   pointer-events: auto;
 }
 
-/* ---------- MODE: trio (show all) ---------- */
 body[data-chmode="trio"] .ac-ch,
 body[data-chmode="trio"] .ac-guide,
 body[data-chmode="trio"] .ac-welcome,
@@ -837,7 +675,6 @@ body[data-chmode="trio"] .ac-tip {
   pointer-events: auto;
 }
 
-/* ---------- MODE: none (keep hidden) ---------- */
 body[data-chmode="none"] .ac-ch,
 body[data-chmode="none"] .ac-guide,
 body[data-chmode="none"] .ac-welcome,
@@ -856,9 +693,9 @@ body[data-chmode="none"] .ac-tip {
     transform: none !important;
   }
 }
+
 /* =========================================================
-   Hero card border energy — fluid + no crossing center
-   Solo contorno energético (sin chispas)
+   Hero card border energy
    ========================================================= */
 
 .hero-card-rise {
@@ -882,22 +719,14 @@ body[data-chmode="none"] .ac-tip {
   transform: translateZ(0);
 }
 
-/* ---------------------------------------------------------
-   glow exterior
---------------------------------------------------------- */
 .hero-card-rise::before {
   will-change: opacity, transform, filter;
   animation: ac-card-border-glow 10.8s ease-out infinite;
 }
 
-/* ---------------------------------------------------------
-   ring del borde
-   - solo pinta el contorno
-   - no toca el centro
---------------------------------------------------------- */
 .hero-card-rise::after {
   inset: 0;
-  padding: 1.5px;
+  padding: 1.25px;
   border-radius: inherit;
   will-change: opacity, clip-path, filter;
   animation: ac-card-border-ring-reveal 10.8s linear infinite;
@@ -913,24 +742,17 @@ body[data-chmode="none"] .ac-tip {
   mask-composite: exclude;
 }
 
-/* ---------------------------------------------------------
-   TEAL
---------------------------------------------------------- */
 .hero-card-rise--teal::after {
   background-image: linear-gradient(
     to bottom,
-    rgba(34, 211, 238, 0.92),
-    rgba(34, 211, 238, 0.92)
+    rgba(34, 211, 238, 0.74),
+    rgba(34, 211, 238, 0.74)
   );
   filter:
-    drop-shadow(0 0 6px rgba(34, 211, 238, 0.18))
-    drop-shadow(0 0 14px rgba(34, 211, 238, 0.12))
-    drop-shadow(0 0 22px rgba(34, 211, 238, 0.08));
+    drop-shadow(0 0 5px rgba(34, 211, 238, 0.14))
+    drop-shadow(0 0 12px rgba(34, 211, 238, 0.09));
 }
 
-/* ---------------------------------------------------------
-   PINK
---------------------------------------------------------- */
 .hero-card-rise--pink::before {
   animation-delay: 5.4s;
 }
@@ -939,18 +761,14 @@ body[data-chmode="none"] .ac-tip {
   animation-delay: 5.4s;
   background-image: linear-gradient(
     to bottom,
-    rgba(255, 77, 157, 0.9),
-    rgba(255, 77, 157, 0.9)
+    rgba(255, 77, 157, 0.72),
+    rgba(255, 77, 157, 0.72)
   );
   filter:
-    drop-shadow(0 0 6px rgba(255, 77, 157, 0.16))
-    drop-shadow(0 0 14px rgba(255, 77, 157, 0.12))
-    drop-shadow(0 0 22px rgba(255, 77, 157, 0.08));
+    drop-shadow(0 0 5px rgba(255, 77, 157, 0.13))
+    drop-shadow(0 0 12px rgba(255, 77, 157, 0.08));
 }
 
-/* ---------------------------------------------------------
-   glow exterior
---------------------------------------------------------- */
 @keyframes ac-card-border-glow {
   0%,
   34%,
@@ -961,27 +779,27 @@ body[data-chmode="none"] .ac-tip {
   }
 
   45% {
-    opacity: 0.14;
-    transform: scale(1.002);
-    filter: blur(0.35px);
+    opacity: 0.10;
+    transform: scale(1.0015);
+    filter: blur(0.2px);
   }
 
   55% {
-    opacity: 0.34;
+    opacity: 0.20;
+    transform: scale(1.003);
+    filter: blur(0.45px);
+  }
+
+  63% {
+    opacity: 0.30;
     transform: scale(1.004);
     filter: blur(0.7px);
   }
 
-  63% {
-    opacity: 0.5;
-    transform: scale(1.006);
-    filter: blur(0.95px);
-  }
-
   72% {
-    opacity: 0.18;
-    transform: scale(1.003);
-    filter: blur(0.45px);
+    opacity: 0.12;
+    transform: scale(1.002);
+    filter: blur(0.3px);
   }
 
   82% {
@@ -991,11 +809,6 @@ body[data-chmode="none"] .ac-tip {
   }
 }
 
-/* ---------------------------------------------------------
-   reveal del ring desde abajo
-   - fluido
-   - sin cruzar el centro
---------------------------------------------------------- */
 @keyframes ac-card-border-ring-reveal {
   0%,
   38%,
@@ -1006,51 +819,51 @@ body[data-chmode="none"] .ac-tip {
   }
 
   42% {
-    opacity: 0.16;
+    opacity: 0.12;
     clip-path: inset(86% 0 0 0 round 28px);
     filter: brightness(1.01);
   }
 
   46% {
-    opacity: 0.3;
+    opacity: 0.22;
     clip-path: inset(72% 0 0 0 round 28px);
-    filter: brightness(1.02);
+    filter: brightness(1.015);
   }
 
   50% {
-    opacity: 0.46;
+    opacity: 0.34;
     clip-path: inset(56% 0 0 0 round 28px);
-    filter: brightness(1.03);
+    filter: brightness(1.02);
   }
 
   54% {
-    opacity: 0.62;
+    opacity: 0.48;
     clip-path: inset(40% 0 0 0 round 28px);
-    filter: brightness(1.05);
+    filter: brightness(1.03);
   }
 
   58% {
-    opacity: 0.78;
+    opacity: 0.62;
     clip-path: inset(24% 0 0 0 round 28px);
-    filter: brightness(1.07);
+    filter: brightness(1.045);
   }
 
   62% {
-    opacity: 0.92;
+    opacity: 0.76;
     clip-path: inset(10% 0 0 0 round 28px);
-    filter: brightness(1.09);
+    filter: brightness(1.06);
   }
 
   66% {
-    opacity: 1;
+    opacity: 0.84;
     clip-path: inset(0 0 0 0 round 28px);
-    filter: brightness(1.1);
+    filter: brightness(1.07);
   }
 
   74% {
-    opacity: 0.5;
+    opacity: 0.36;
     clip-path: inset(0 0 0 0 round 28px);
-    filter: brightness(1.03);
+    filter: brightness(1.02);
   }
 
   82% {
@@ -1060,9 +873,6 @@ body[data-chmode="none"] .ac-tip {
   }
 }
 
-/* ---------------------------------------------------------
-   reduced motion
---------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .hero-card-rise::before,
   .hero-card-rise::after {

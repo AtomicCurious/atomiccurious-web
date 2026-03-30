@@ -12,7 +12,7 @@ export function getLatestPostTileEn() {
     href: "/en/newsletter",
     badge: "NEWSLETTER",
     badgeDot: "teal" as const,
-    title: "Enter the AtomicCurious newsletter",
+    title: "Enter AtomicCurious",
     description:
       "Exclusive content, early access to new releases, and curated explorations for minds that never stop asking.",
     image: {
@@ -45,7 +45,7 @@ export function getLatestPostTileEs() {
       { text: "Nuevos posts y lanzamientos seleccionados", dot: "teal" as const },
       { text: "Actualizaciones ocasionales, sin spam", dot: "pink" as const },
     ],
-    ctaLabel: "Designed for curious minds",
+    ctaLabel: "Diseñado para mentes curiosas",
   }
 }
 

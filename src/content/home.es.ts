@@ -33,7 +33,7 @@ export const homeEs = {
       description:
         "Oficial. Visual. Provocador. Un calendario premium para alimentar tu curiosidad todo el año.",
       ctaLabel: "Descargar gratis",
-      footnote: "Diseñado para mentes curiosas.",
+      footnote: "Hecho para mentes curiosas.",
       mockTitle: "Calendario de Ciencia · 2026",
     },
   },

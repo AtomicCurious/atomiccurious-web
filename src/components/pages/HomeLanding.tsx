@@ -70,31 +70,49 @@ function CharacterOverlay({ mode }: { mode: CharacterMode }) {
   const alt = mode === "iris" ? "Iris" : mode === "core" ? "Core" : "Atom"
 
   return (
-    <div className="pointer-events-none mx-auto w-full max-w-[420px] lg:max-w-[480px]">
-      <div className="relative lg:translate-y-[10px]">
-        <div className="absolute inset-0 -z-10 blur-[40px] opacity-70">
-          <div className="absolute left-1/2 top-14 h-56 w-56 -translate-x-1/2 rounded-full bg-accent/20" />
-          <div className="absolute left-1/2 top-28 h-56 w-56 -translate-x-1/2 rounded-full bg-accent-alt/15" />
+    <div className="pointer-events-none mx-auto w-full max-w-[580px] lg:max-w-[700px]">
+      <div className="relative -translate-y-[10px] sm:-translate-y-[16px] lg:-translate-y-[34px]">
+        <div className="absolute inset-0 -z-10 blur-[56px] opacity-85">
+          <div className="absolute left-1/2 top-12 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/25" />
+          <div className="absolute left-1/2 top-32 h-72 w-72 -translate-x-1/2 rounded-full bg-accent-alt/20" />
         </div>
 
-        <div className="relative mx-auto aspect-[1/1] w-[280px] sm:w-[320px] md:w-[360px] lg:w-[380px]">
-          <Image
-            src={img}
-            alt={alt}
-            fill
-            priority
-            className={[
-              "object-contain",
-              "drop-shadow-[0_28px_60px_rgba(0,0,0,0.45)]",
-            ].join(" ")}
-          />
+        <div
+          className="relative mx-auto overflow-hidden
+            h-[370px] w-[300px]
+            sm:h-[460px] sm:w-[360px]
+            md:h-[840px] md:w-[540px]
+            lg:h-[980px] lg:w-[620px]"
+        >
+          <div
+            className="absolute top-[10px] left-1/2 -translate-x-1/2
+              w-[560px] h-[760px]
+              sm:top-[8px] sm:w-[660px] sm:h-[900px]
+              md:top-0 md:w-full md:h-full
+              lg:top-0 lg:w-full lg:h-full"
+          >
+            <Image
+              src={img}
+              alt={alt}
+              fill
+              priority
+              sizes="(max-width: 640px) 560px, (max-width: 768px) 660px, (max-width: 1024px) 540px, 620px"
+              className="select-none object-cover object-top drop-shadow-[0_48px_110px_rgba(0,0,0,0.65)]"
+            />
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default function HomeLanding({ copy, tiles }: { copy: HomeCopy; tiles: HomeTiles }) {
+export default function HomeLanding({
+  copy,
+  tiles,
+}: {
+  copy: HomeCopy
+  tiles: HomeTiles
+}) {
   useVoice({ disable: true })
 
   const [lockedHero, setLockedHero] = useState<CharacterMode | null>(null)
@@ -102,7 +120,11 @@ export default function HomeLanding({ copy, tiles }: { copy: HomeCopy; tiles: Ho
   useEffect(() => {
     const read = () => {
       const v = document?.body?.getAttribute("data-home-hero")
-      setLockedHero(v === "iris" || v === "atom" || v === "core" ? (v as CharacterMode) : null)
+      setLockedHero(
+        v === "iris" || v === "atom" || v === "core"
+          ? (v as CharacterMode)
+          : null
+      )
     }
 
     read()

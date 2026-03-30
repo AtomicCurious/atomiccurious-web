@@ -9,36 +9,25 @@ import AtomNoteBubble from "@/components/visual/AtomNoteBubble"
 import ThemeToggle from "@/components/ThemeToggle"
 import CharacterToggle from "@/components/CharacterToggle"
 import CharacterSigilMark from "@/components/CharacterSigilMark"
-import QuillFeatherIcon from "@/components/QuillFeatherIcon" // ✅ quill icon (same as EN)
+import QuillFeatherIcon from "@/components/QuillFeatherIcon"
 
 /* =========================================================
-   HOME HEADER POSITION CONTROLS (UNCHANGED BEHAVIOR)
-   Negative = move left, Positive = move right
+   HOME HEADER POSITION CONTROLS (desktop/tablet)
 ========================================================= */
-const BRAND_NUDGE_X = -121 // Cohete/Sigil + AtomicCurious
-const NAV_NUDGE_X = 0 // Secciones + divisor + toggles
-
-// ✅ Controles separados (como EN)
-const LANG_SWITCH_NUDGE_X = -18 // EN button
-const EDITOR_NOTE_NUDGE_X = 130 // Nota del editor + libreta (juntos)
-
-/* Optional: whole header nudge */
-const HEADER_NUDGE_X = 0 // px
+const BRAND_NUDGE_X = -121
+const NAV_NUDGE_X = 0
+const LANG_SWITCH_NUDGE_X = -18
+const EDITOR_NOTE_NUDGE_X = 130
+const HEADER_NUDGE_X = 0
 
 /* =========================================================
-   ✅ SECTIONS HEADER POSITION CONTROLS (same layout as EN)
-   These apply ONLY when NOT home.
-   Negative = move left, Positive = move right
+   SECTIONS HEADER POSITION CONTROLS (desktop/tablet)
 ========================================================= */
-const SECTION_BRAND_NUDGE_X = -180 // Sigil + AtomicCurious juntos
-const SECTION_NAV_NUDGE_X = -100 // Todos los links de secciones juntos
-
-// ✅ NEW: ThemeToggle + CharacterToggle together (one knob)
-const SECTION_TOGGLES_NUDGE_X = 70 // Negative = left, Positive = right
-
-const SECTION_LANG_NUDGE_X = 80 // EN only
-const SECTION_EDITOR_NOTE_NUDGE_X = 120 // Slogan + pluma juntos
-
+const SECTION_BRAND_NUDGE_X = -180
+const SECTION_NAV_NUDGE_X = -100
+const SECTION_TOGGLES_NUDGE_X = 100
+const SECTION_LANG_NUDGE_X = 110
+const SECTION_EDITOR_NOTE_NUDGE_X = 140
 
 function isActive(pathname: string, href: string) {
   if (href === "/es") return pathname === "/es" || pathname === "/es/"
@@ -47,7 +36,7 @@ function isActive(pathname: string, href: string) {
 
 function toEn(pathname: string) {
   const map: Record<string, string> = {
-    "/es/calendario": "/calendar", // ✅ FIX
+    "/es/calendario": "/calendar",
     "/es/recursos": "/resources",
     "/es/comunidad": "/community",
     "/es/contacto": "/contact",
@@ -79,7 +68,7 @@ function toEn(pathname: string) {
    Core beacon persistence
 ----------------------------- */
 const CORE_SEEN_KEY = "ac_core_seen_v1"
-const CORE_SEEN_TTL_MS = 1000 * 60 * 60 * 12 // 12h
+const CORE_SEEN_TTL_MS = 1000 * 60 * 60 * 12
 
 function safeNow() {
   return Date.now()
@@ -126,12 +115,20 @@ function StarshipMark() {
         transformOrigin: "70% 60%",
         transform: "rotate(-18deg)",
         animation: "shipIdle 3.6s ease-in-out .15s infinite alternate",
-        filter: "drop-shadow(0 0 12px rgba(160,200,255,0.25)) drop-shadow(0 0 26px rgba(110,140,200,0.16))",
+        filter:
+          "drop-shadow(0 0 12px rgba(160,200,255,0.25)) drop-shadow(0 0 26px rgba(110,140,200,0.16))",
       }}
     >
       <svg viewBox="0 0 210 100" className="h-full w-full block">
         <defs>
-          <linearGradient id="shipSkinMini" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(6)">
+          <linearGradient
+            id="shipSkinMini"
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="0"
+            gradientTransform="rotate(6)"
+          >
             <stop offset="0" stopColor="#141923" />
             <stop offset=".18" stopColor="#1b2130" />
             <stop offset=".46" stopColor="var(--ship-panel, #202634)" />
@@ -165,9 +162,27 @@ function StarshipMark() {
         </defs>
 
         <g className="trail" opacity=".92">
-          <path d="M40 62 C 10 70, -40 72, -120 66" fill="none" stroke="rgba(104,240,255,.36)" strokeWidth="5" strokeLinecap="round" />
-          <path d="M42 50 C 0 55, -50 58, -130 52" fill="none" stroke="url(#trailA)" strokeWidth="4" strokeLinecap="round" />
-          <path d="M44 56 C 6 62, -46 64, -126 58" fill="none" stroke="url(#trailB)" strokeWidth="2" strokeLinecap="round" />
+          <path
+            d="M40 62 C 10 70, -40 72, -120 66"
+            fill="none"
+            stroke="rgba(104,240,255,.36)"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M42 50 C 0 55, -50 58, -130 52"
+            fill="none"
+            stroke="url(#trailA)"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M44 56 C 6 62, -46 64, -126 58"
+            fill="none"
+            stroke="url(#trailB)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </g>
 
         <g className="jetGlow" style={{ mixBlendMode: "screen" as any }}>
@@ -182,14 +197,43 @@ function StarshipMark() {
             stroke="var(--ship-edge, #d6ecff)"
             strokeWidth="1.2"
           />
-          <path d="M108 42 Q126 38 140 40 Q136 50 120 52 Q108 50 108 42 Z" fill="rgba(120,200,255,.18)" stroke="rgba(170,150,255,.32)" strokeWidth="1" />
-          <path d="M140 30 Q170 34 190 50" fill="none" stroke="url(#edgeGlowMini)" strokeWidth="2.4" strokeLinecap="round" opacity=".95" />
-          <path d="M140 70 Q170 66 190 50" fill="none" stroke="url(#edgeGlowMini)" strokeWidth="2.4" strokeLinecap="round" opacity=".95" />
+          <path
+            d="M108 42 Q126 38 140 40 Q136 50 120 52 Q108 50 108 42 Z"
+            fill="rgba(120,200,255,.18)"
+            stroke="rgba(170,150,255,.32)"
+            strokeWidth="1"
+          />
+          <path
+            d="M140 30 Q170 34 190 50"
+            fill="none"
+            stroke="url(#edgeGlowMini)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            opacity=".95"
+          />
+          <path
+            d="M140 70 Q170 66 190 50"
+            fill="none"
+            stroke="url(#edgeGlowMini)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            opacity=".95"
+          />
         </g>
 
         <g opacity=".98">
-          <path d="M70 34 L52 26 Q46 30 46 36 L64 42 Z" fill="var(--ship-panel, #202634)" stroke="var(--ship-edge, #d6ecff)" strokeWidth="1" />
-          <path d="M70 66 L52 74 Q46 70 46 64 L64 58 Z" fill="var(--ship-panel, #202634)" stroke="var(--ship-edge, #d6ecff)" strokeWidth="1" />
+          <path
+            d="M70 34 L52 26 Q46 30 46 36 L64 42 Z"
+            fill="var(--ship-panel, #202634)"
+            stroke="var(--ship-edge, #d6ecff)"
+            strokeWidth="1"
+          />
+          <path
+            d="M70 66 L52 74 Q46 70 46 64 L64 58 Z"
+            fill="var(--ship-panel, #202634)"
+            stroke="var(--ship-edge, #d6ecff)"
+            strokeWidth="1"
+          />
         </g>
       </svg>
 
@@ -250,7 +294,7 @@ function StarshipMark() {
 }
 
 /* =========================================================
-   ✅ NotebookMark — same as EN (premium pinned note)
+   NotebookMark
 ========================================================= */
 function NotebookMark() {
   return (
@@ -266,7 +310,8 @@ function NotebookMark() {
         transformOrigin: "55% 60%",
         transform: "rotate(-8deg)",
         animation: "noteIdle 4.2s ease-in-out .1s infinite alternate",
-        filter: "drop-shadow(0 0 16px rgba(104,240,255,0.28)) drop-shadow(0 0 34px rgba(182,146,255,0.22))",
+        filter:
+          "drop-shadow(0 0 16px rgba(104,240,255,0.28)) drop-shadow(0 0 34px rgba(182,146,255,0.22))",
       }}
     >
       <svg viewBox="0 0 140 140" className="h-full w-full block">
@@ -336,19 +381,58 @@ function NotebookMark() {
           opacity="0.26"
         />
 
-        <path d="M32 26 H100 Q112 26 112 38" fill="none" stroke="url(#noteEdgeGlow)" strokeWidth="2.2" strokeLinecap="round" opacity="0.9" />
+        <path
+          d="M32 26 H100 Q112 26 112 38"
+          fill="none"
+          stroke="url(#noteEdgeGlow)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          opacity="0.9"
+        />
 
-        <path d="M112 52 L94 52 Q88 52 88 46 V26" fill="none" stroke="url(#noteEdgeGlow)" strokeWidth="2.2" strokeLinecap="round" opacity="0.92" />
+        <path
+          d="M112 52 L94 52 Q88 52 88 46 V26"
+          fill="none"
+          stroke="url(#noteEdgeGlow)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          opacity="0.92"
+        />
         <path d="M112 52 L88 52 L112 26 Z" fill="url(#noteFold)" opacity="0.52" />
 
-        <path d="M42 62 H92 M42 76 H92 M42 90 H84" stroke="rgba(255,255,255,0.16)" strokeWidth="2" strokeLinecap="round" />
+        <path
+          d="M42 62 H92 M42 76 H92 M42 90 H84"
+          stroke="rgba(255,255,255,0.16)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
 
-        <path d="M70 34 L74 58" stroke="rgba(0,0,0,0.35)" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
-        <path d="M69 34 L73 58" stroke="rgba(214,236,255,0.40)" strokeWidth="2" strokeLinecap="round" opacity="0.65" />
+        <path
+          d="M70 34 L74 58"
+          stroke="rgba(0,0,0,0.35)"
+          strokeWidth="3"
+          strokeLinecap="round"
+          opacity="0.35"
+        />
+        <path
+          d="M69 34 L73 58"
+          stroke="rgba(214,236,255,0.40)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          opacity="0.65"
+        />
 
         <g style={{ transformOrigin: "70px 32px" }}>
           <circle cx="70" cy="32" r="10.5" fill="url(#pinHead)" />
-          <circle cx="70" cy="32" r="10.5" fill="none" stroke="url(#pinRim)" strokeWidth="1.6" opacity="0.85" />
+          <circle
+            cx="70"
+            cy="32"
+            r="10.5"
+            fill="none"
+            stroke="url(#pinRim)"
+            strokeWidth="1.6"
+            opacity="0.85"
+          />
           <circle cx="66.5" cy="28.5" r="2.6" fill="rgba(255,255,255,0.42)" />
           <circle cx="70" cy="32" r="2.2" fill="rgba(182,146,255,0.55)" opacity="0.9" />
         </g>
@@ -375,17 +459,23 @@ function NotebookMark() {
 }
 
 /* =========================================================
-   ✅ “Curiosidad, por diseño.” (quill underline, theme-driven)
-   - No <defs> IDs (avoids collisions)
-   - Hover on .ac-editor-signature draws the line
+   CuriosityByDesignLabel
 ========================================================= */
 function CuriosityByDesignLabel({ compact = false }: { compact?: boolean }) {
   return (
-    <span className={["relative select-none text-muted", compact ? "px-2 py-1 text-[11px]" : "px-3 py-1.5"].join(" ")}>
+    <span
+      className={[
+        "relative select-none text-muted",
+        compact ? "px-2 py-1 text-[11px]" : "px-3 py-1.5",
+      ].join(" ")}
+    >
       Curiosidad, por diseño.
       <span
         aria-hidden="true"
-        className={["pointer-events-none absolute", compact ? "left-2 right-[-1px] -bottom-[1px] h-[9px]" : "left-3 right-[-2px] -bottom-[1px] h-[10px]"].join(" ")}
+        className={[
+          "pointer-events-none absolute",
+          compact ? "left-2 right-[-1px] -bottom-[1px] h-[9px]" : "left-3 right-[-2px] -bottom-[1px] h-[10px]",
+        ].join(" ")}
       >
         <svg viewBox="0 0 320 40" className="h-full w-full overflow-visible">
           <path
@@ -468,7 +558,6 @@ export default function NavBarEs() {
   const isHome = pathname === "/es" || pathname === "/es/"
   const showToggles = !isHome
 
-  // ✅ Breakpoint detection (matches Tailwind "sm" = 640px)
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -483,16 +572,13 @@ export default function NavBarEs() {
   const [coreOpen, setCoreOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // ✅ Refs separados (desktop vs mobile) para la nota
   const noteRefDesktop = useRef<HTMLButtonElement | null>(null)
   const noteRefMobile = useRef<HTMLButtonElement | null>(null)
   const [noteOpen, setNoteOpen] = useState(false)
 
-  // Core beacon
   const [coreHasNew, setCoreHasNew] = useState(false)
   const [rocketPing, setRocketPing] = useState(false)
 
-  // Notes beacon
   const [noteHasNew, setNoteHasNew] = useState(true)
   const [notePing, setNotePing] = useState(false)
 
@@ -500,14 +586,41 @@ export default function NavBarEs() {
     setMenuOpen(false)
   }, [pathname])
 
-  useEffect(() => {
-    if (!menuOpen) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    return () => {
-      document.body.style.overflow = prev
-    }
-  }, [menuOpen])
+ useEffect(() => {
+  const body = document.body
+  const html = document.documentElement
+
+  const prevBodyOverflow = body.style.overflow
+  const prevHtmlOverflow = html.style.overflow
+  const prevBodyTouchAction = body.style.touchAction
+  const prevHtmlTouchAction = html.style.touchAction
+
+  if (menuOpen) {
+    body.style.overflow = "hidden"
+    html.style.overflow = "hidden"
+    body.style.touchAction = "none"
+    html.style.touchAction = "none"
+  } else {
+    body.style.overflow = ""
+    html.style.overflow = ""
+    body.style.touchAction = ""
+    html.style.touchAction = ""
+  }
+
+  return () => {
+    body.style.overflow = prevBodyOverflow
+    html.style.overflow = prevHtmlOverflow
+    body.style.touchAction = prevBodyTouchAction
+    html.style.touchAction = prevHtmlTouchAction
+  }
+}, [menuOpen])
+
+useEffect(() => {
+  document.body.style.overflow = ""
+  document.documentElement.style.overflow = ""
+  document.body.style.touchAction = ""
+  document.documentElement.style.touchAction = ""
+}, [])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -517,14 +630,12 @@ export default function NavBarEs() {
     return () => window.removeEventListener("keydown", onKey)
   }, [menuOpen])
 
-  // Initialize Core beacon based on last seen time
   useEffect(() => {
     if (!isHome) return
     const seen = readSeen()
     setCoreHasNew(!isSeenFresh(seen))
   }, [isHome])
 
-  // Core micro ping
   useEffect(() => {
     if (!isHome) return
     if (!coreHasNew) return
@@ -538,7 +649,6 @@ export default function NavBarEs() {
     return () => window.clearInterval(interval)
   }, [isHome, coreHasNew, coreOpen])
 
-  // When Core opens, mark as seen and turn off beacon
   useEffect(() => {
     if (!isHome) return
     if (!coreOpen) return
@@ -546,7 +656,6 @@ export default function NavBarEs() {
     setCoreHasNew(false)
   }, [isHome, coreOpen])
 
-  // Notes micro ping
   useEffect(() => {
     if (!noteHasNew) return
     if (noteOpen) return
@@ -598,7 +707,19 @@ export default function NavBarEs() {
     []
   )
 
-  const editorNotes = useMemo(() => ["Nuevos posts cada semana.", "Los lanzamientos más recientes están en Recursos."], [])
+  const editorNotes = useMemo(
+    () => [
+      "Los lanzamientos más recientes están en Recursos.",
+      "Nuevos posts cada semana para mentes curiosas.",
+      "Si te gusta explorar, el newsletter es para ti.",
+      "¿Tienes una idea o propuesta? Escríbeme en Contacto.",
+      "Exploraciones cortas y cinematográficas para descubrir lo extraordinario.",
+      "AtomicCurious es un proyecto para quienes diseñan su propia curiosidad.",
+      "Cada idea puede abrir un universo.",
+      "Vuelve pronto: siempre hay algo nuevo por descubrir.",
+    ],
+    []
+  )
 
   const links = [
     { label: "Empieza aquí", href: "/es/start-here" },
@@ -612,9 +733,6 @@ export default function NavBarEs() {
 
   const noteAnchor = isMobile ? noteRefMobile.current : noteRefDesktop.current
 
-  /* =========================================================
-     ✅ HOME HEADER (ES) — matches EN home behavior
-  ========================================================= */
   if (isHome) {
     return (
       <header className="relative border-b border-border/70 bg-bg">
@@ -623,7 +741,10 @@ export default function NavBarEs() {
           style={{ transform: `translateX(${HEADER_NUDGE_X}px)` }}
         >
           {/* LEFT */}
-          <div className="inline-flex min-w-0 items-center gap-3 will-change-transform" style={{ transform: `translateX(${BRAND_NUDGE_X}px)` }}>
+          <div
+            className="inline-flex min-w-0 items-center gap-2 sm:gap-3"
+            style={{ transform: isMobile ? "none" : `translateX(${BRAND_NUDGE_X}px)` }}
+          >
             <button
               ref={rocketRef}
               type="button"
@@ -672,102 +793,132 @@ export default function NavBarEs() {
               `}</style>
             </button>
 
-            <Link href="/es" className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text" aria-label="Inicio AtomicCurious">
+            <Link
+              href="/es"
+              className="group inline-flex min-w-0 items-center text-base sm:text-lg font-semibold tracking-tight text-text"
+              aria-label="Inicio AtomicCurious"
+            >
               <span className="relative truncate">
                 <span className="ac-logo-dual">
-                  <span className="ac-atomic">Atomic</span>
-                  <span className="ac-curious">Curious</span>
+                  <span className="ac-atomic" data-text="Atomic">
+                    Atomic
+                  </span>
+                  <span className="ac-curious" data-text="Curious">
+                    Curious
+                  </span>
                 </span>
                 <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
               </span>
 
               <style jsx>{`
-                @keyframes acSheen {
+                @keyframes acLuxurySweep {
                   0% {
-                    background-position: 0% 50%;
+                    background-position: -220% 50%;
                     opacity: 0;
                   }
-                  10% {
-                    opacity: 1;
+                  8% {
+                    opacity: 0.95;
                   }
-                  90% {
-                    opacity: 1;
+                  70% {
+                    opacity: 0.95;
                   }
                   100% {
-                    background-position: 200% 50%;
+                    background-position: 220% 50%;
                     opacity: 0;
                   }
                 }
+
+                @keyframes acCornerGlow {
+                  0%,
+                  78%,
+                  100% {
+                    opacity: 0;
+                    transform: scale(0.7);
+                  }
+                  86% {
+                    opacity: 0.95;
+                    transform: scale(1);
+                  }
+                  92% {
+                    opacity: 0.55;
+                    transform: scale(1.18);
+                  }
+                }
+
                 .ac-logo-dual {
                   display: inline-flex;
                   font-weight: 600;
                   letter-spacing: -0.01em;
                   position: relative;
                 }
-                .ac-atomic {
-                  position: relative;
-                  display: inline-block;
-                  color: rgb(var(--accent));
-                  -webkit-text-fill-color: rgb(var(--accent));
-                }
+
+                .ac-atomic,
                 .ac-curious {
                   position: relative;
                   display: inline-block;
-                  color: rgb(var(--accent-alt));
-                  -webkit-text-fill-color: rgb(var(--accent-alt));
+                  color: rgba(255, 255, 255, 0.92);
+                  -webkit-text-fill-color: rgba(255, 255, 255, 0.92);
+                  text-shadow:
+                    0 0 10px rgba(255, 255, 255, 0.05),
+                    0 0 18px rgba(255, 255, 255, 0.03);
                 }
-                .ac-atomic::after {
-                  content: "Atomic";
-                  position: absolute;
-                  inset: 0;
-                  color: transparent;
-                  -webkit-text-fill-color: transparent;
-                  background-image: linear-gradient(
-                    90deg,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(255, 255, 255, 0) 34%,
-                    rgba(var(--accent), 0.18) 46%,
-                    rgba(255, 255, 255, 0.14) 50%,
-                    rgba(var(--accent), 0.18) 54%,
-                    rgba(255, 255, 255, 0) 66%,
-                    rgba(255, 255, 255, 0) 100%
-                  );
-                  background-size: 300% 100%;
-                  background-repeat: no-repeat;
-                  background-clip: text;
-                  -webkit-background-clip: text;
-                  animation: acSheen 7.4s ease-in-out infinite;
-                  filter: drop-shadow(0 0 10px rgba(var(--accent), 0.06));
-                  pointer-events: none;
-                }
+
+                .ac-atomic::after,
                 .ac-curious::after {
-                  content: "Curious";
+                  content: attr(data-text);
                   position: absolute;
                   inset: 0;
                   color: transparent;
                   -webkit-text-fill-color: transparent;
                   background-image: linear-gradient(
-                    90deg,
+                    115deg,
                     rgba(255, 255, 255, 0) 0%,
                     rgba(255, 255, 255, 0) 34%,
-                    rgba(var(--accent-alt), 0.18) 46%,
-                    rgba(255, 255, 255, 0.14) 50%,
-                    rgba(var(--accent-alt), 0.18) 54%,
-                    rgba(255, 255, 255, 0) 66%,
+                    rgba(214, 176, 92, 0) 42%,
+                    rgba(244, 226, 170, 0.9) 49%,
+                    rgba(255, 250, 235, 0.98) 50%,
+                    rgba(212, 170, 86, 0.82) 52%,
+                    rgba(255, 255, 255, 0) 60%,
                     rgba(255, 255, 255, 0) 100%
                   );
-                  background-size: 300% 100%;
+                  background-size: 240% 100%;
                   background-repeat: no-repeat;
                   background-clip: text;
                   -webkit-background-clip: text;
-                  animation: acSheen 7.4s ease-in-out infinite;
-                  animation-delay: 0.65s;
-                  filter: drop-shadow(0 0 10px rgba(var(--accent-alt), 0.06));
+                  animation: acLuxurySweep 6.8s ease-in-out infinite;
+                  pointer-events: none;
+                  filter: drop-shadow(0 0 10px rgba(232, 198, 116, 0.16));
+                }
+
+                .ac-curious::after {
+                  animation-delay: 0.5s;
+                }
+
+                .ac-curious::before {
+                  content: "";
+                  position: absolute;
+                  top: 2px;
+                  right: -4px;
+                  width: 6px;
+                  height: 6px;
+                  border-radius: 999px;
+                  background: radial-gradient(
+                    circle,
+                    rgba(255, 255, 255, 0.95) 0%,
+                    rgba(244, 226, 170, 0.88) 45%,
+                    rgba(255, 255, 255, 0) 75%
+                  );
+                  box-shadow:
+                    0 0 10px rgba(255, 245, 220, 0.55),
+                    0 0 18px rgba(212, 170, 86, 0.28);
+                  animation: acCornerGlow 6.8s ease-in-out infinite;
                   pointer-events: none;
                 }
+
                 @media (prefers-reduced-motion: reduce) {
                   .ac-atomic::after,
-                  .ac-curious::after {
+                  .ac-curious::after,
+                  .ac-curious::before {
                     animation: none !important;
                     opacity: 0 !important;
                   }
@@ -778,7 +929,10 @@ export default function NavBarEs() {
 
           {/* CENTER */}
           <nav className="hidden sm:flex items-center justify-center text-sm" aria-label="Primary">
-            <div className="flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${NAV_NUDGE_X}px)` }}>
+            <div
+              className="flex items-center gap-2 will-change-transform"
+              style={{ transform: `translateX(${NAV_NUDGE_X}px)` }}
+            >
               {links.map((l) => {
                 const active = isActive(pathname, l.href)
                 return (
@@ -792,7 +946,9 @@ export default function NavBarEs() {
                     ].join(" ")}
                   >
                     {l.label}
-                    {active ? <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" /> : null}
+                    {active ? (
+                      <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" />
+                    ) : null}
                   </Link>
                 )
               })}
@@ -810,7 +966,10 @@ export default function NavBarEs() {
 
           {/* RIGHT (desktop) */}
           <div className="hidden sm:flex items-center justify-end gap-2">
-            <div className="flex items-center will-change-transform" style={{ transform: `translateX(${LANG_SWITCH_NUDGE_X}px)` }}>
+            <div
+              className="flex items-center will-change-transform"
+              style={{ transform: `translateX(${LANG_SWITCH_NUDGE_X}px)` }}
+            >
               <Link
                 href={enHref}
                 className="
@@ -826,9 +985,13 @@ export default function NavBarEs() {
               </Link>
             </div>
 
-            <div className="flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${EDITOR_NOTE_NUDGE_X}px)` }}>
-              {/* ✅ MATCH EN: same accent as AtomicCurious, but lower intensity */}
-              <span className="select-none rounded-full px-3 py-1.5 text-[rgb(var(--accent))]/60">Nota del editor</span>
+            <div
+              className="flex items-center gap-2 will-change-transform"
+              style={{ transform: `translateX(${EDITOR_NOTE_NUDGE_X}px)` }}
+            >
+              <span className="select-none rounded-full px-3 py-1.5 text-[rgba(255,255,255,0.72)]">
+                Notas del editor
+              </span>
 
               <button
                 ref={noteRefDesktop}
@@ -849,8 +1012,8 @@ export default function NavBarEs() {
                       "pointer-events-none absolute",
                       "-top-1.5 -left-1.5",
                       "h-2.5 w-2.5 rounded-full",
-                      "bg-accent-alt",
-                      "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent-alt),0.45)]",
+                      "bg-[#E8C674]",
+                      "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(232,198,116,0.38)]",
                     ].join(" ")}
                   />
                 ) : null}
@@ -866,7 +1029,7 @@ export default function NavBarEs() {
                     }
                     45% {
                       transform: translateY(-1px) scale(1.02);
-                      filter: drop-shadow(0 0 14px rgba(var(--accent-alt), 0.18));
+                      filter: drop-shadow(0 0 14px rgba(232, 198, 116, 0.18));
                     }
                     100% {
                       transform: translateY(0) scale(1);
@@ -878,7 +1041,8 @@ export default function NavBarEs() {
                     outline: none;
                   }
                   button:focus-visible :global(svg) {
-                    filter: drop-shadow(0 0 18px rgba(var(--accent), 0.18)) drop-shadow(0 0 22px rgba(var(--accent-alt), 0.14));
+                    filter: drop-shadow(0 0 18px rgba(255, 245, 220, 0.14))
+                      drop-shadow(0 0 22px rgba(232, 198, 116, 0.12));
                   }
 
                   @media (prefers-reduced-motion: reduce) {
@@ -891,97 +1055,51 @@ export default function NavBarEs() {
             </div>
           </div>
 
-         {/* RIGHT (mobile) */}
-<div className="flex items-center justify-end gap-2 sm:hidden">
-  {showToggles ? (
-    /* ✅ Theme + Character toggles (single nudge control) */
-    <div
-      className="flex items-center gap-2 will-change-transform"
-      style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
-    >
-      <ThemeToggle />
-      <CharacterToggle />
-    </div>
-  ) : null}
+          {/* RIGHT (mobile) */}
+          <div className="flex items-center justify-end gap-2 sm:hidden">
+            <Link
+              href={enHref}
+              className="
+                inline-flex h-11 min-w-[52px] items-center justify-center rounded-full
+                border border-border/80 bg-surface-1
+                px-4 text-sm font-semibold text-text
+                shadow-soft transition
+                hover:border-accent/35 hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              "
+            >
+              EN
+            </Link>
 
-  <div
-    className="flex items-center will-change-transform"
-    style={{ transform: `translateX(${LANG_SWITCH_NUDGE_X}px)` }}
-  >
-    <Link
-      href={enHref}
-      className="
-        inline-flex items-center rounded-full
-        border border-border/80 bg-surface-1
-        px-3 py-1.5 text-xs font-semibold text-text
-        shadow-soft transition
-        hover:border-accent/35 hover:bg-surface-2
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-      "
-    >
-      EN
-    </Link>
-  </div>
-
-  <div
-    className="flex items-center gap-2 will-change-transform"
-    style={{ transform: `translateX(${EDITOR_NOTE_NUDGE_X}px)` }}
-  >
-    {/* ✅ MATCH EN mobile: same accent, slightly softer */}
-    <span className="select-none rounded-full px-2 py-1 text-[11px] text-[rgb(var(--accent))]/60">
-      Nota del editor
-    </span>
-
-    <button
-      ref={noteRefMobile}
-      type="button"
-      onClick={() => {
-        setNoteOpen((v) => !v)
-        setNoteHasNew(false)
-      }}
-      className={["group relative inline-flex items-center", notePing ? "ac-note-ping" : ""].join(" ")}
-      aria-label="Abrir nota del editor"
-    >
-      <NotebookMark />
-      {noteHasNew ? (
-        <span
-          aria-hidden="true"
-          className={[
-            "pointer-events-none absolute",
-            "-top-1.5 -left-1.5",
-            "h-2.5 w-2.5 rounded-full",
-            "bg-accent-alt",
-            "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent-alt),0.45)]",
-          ].join(" ")}
-        />
-      ) : null}
-    </button>
-  </div>
-
-  <button
-    type="button"
-    onClick={() => setMenuOpen(true)}
-    className="
-      inline-flex items-center justify-center rounded-full
-      border border-border/80 bg-surface-1
-      px-3 py-1.5 text-xs font-semibold text-text
-      shadow-soft transition
-      hover:border-accent/35 hover:bg-surface-2
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-    "
-    aria-label="Abrir menú"
-    aria-haspopup="dialog"
-    aria-expanded={menuOpen}
-  >
-    Menú <span className="ml-2 text-muted">≡</span>
-  </button>
-</div>
-</div>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="
+                inline-flex h-11 items-center justify-center rounded-full
+                border border-border/80 bg-surface-1
+                px-4 text-sm font-semibold text-text
+                shadow-soft transition
+                hover:border-accent/35 hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              "
+              aria-label="Abrir menú"
+              aria-haspopup="dialog"
+              aria-expanded={menuOpen}
+            >
+              Menú <span className="ml-2 text-muted">≡</span>
+            </button>
+          </div>
+        </div>
 
         {/* MOBILE DRAWER */}
         {menuOpen ? (
           <div className="fixed inset-0 z-[80] sm:hidden">
-            <button type="button" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)} className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" />
+            <button
+              type="button"
+              aria-label="Cerrar menú"
+              onClick={() => setMenuOpen(false)}
+              className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+            />
 
             <div
               role="dialog"
@@ -1026,11 +1144,15 @@ export default function NavBarEs() {
                           "group flex items-center justify-between rounded-2xl border px-4 py-3",
                           "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
                           "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                          active ? "border-accent/35 text-text" : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
+                          active
+                            ? "border-accent/35 text-text"
+                            : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
                         ].join(" ")}
                       >
                         <span className="text-sm font-semibold">{l.label}</span>
-                        <span className="text-muted transition-transform group-hover:translate-x-0.5">›</span>
+                        <span className="text-muted transition-transform group-hover:translate-x-0.5">
+                          ›
+                        </span>
                       </Link>
                     )
                   })}
@@ -1039,7 +1161,9 @@ export default function NavBarEs() {
                 <div className="mt-5 h-px w-full bg-border/70" />
 
                 <div className="mt-5">
-                  <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">AJUSTES</div>
+                  <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
+                    AJUSTES
+                  </div>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     {showToggles ? (
@@ -1049,7 +1173,29 @@ export default function NavBarEs() {
                       </>
                     ) : null}
 
-                    <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">ES</span>
+                    <button
+                      ref={noteRefMobile}
+                      type="button"
+                      onClick={() => {
+                        setNoteOpen(true)
+                        setNoteHasNew(false)
+                        setMenuOpen(false)
+                      }}
+                      className="
+                        inline-flex items-center rounded-full
+                        border border-border/80 bg-surface-1
+                        px-3 py-1.5 text-xs font-semibold text-text
+                        shadow-soft transition
+                        hover:border-accent/35 hover:bg-surface-2
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                      "
+                    >
+                      Notas del editor
+                    </button>
+
+                    <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
+                      ES
+                    </span>
 
                     <Link
                       href={enHref}
@@ -1073,7 +1219,6 @@ export default function NavBarEs() {
           </div>
         ) : null}
 
-        {/* CORE BUBBLE (cohete) */}
         <CoreFactBubble
           open={isHome && coreOpen}
           onClose={() => setCoreOpen(false)}
@@ -1085,7 +1230,6 @@ export default function NavBarEs() {
           ariaLabel="Curiosidad de Core"
         />
 
-        {/* Nota del editor (libreta) */}
         <AtomNoteBubble
           open={noteOpen}
           onClose={() => setNoteOpen(false)}
@@ -1100,19 +1244,23 @@ export default function NavBarEs() {
     )
   }
 
-  /* =========================================================
-     ✅ SECTIONS HEADER — matches EN sections behavior
-  ========================================================= */
   return (
     <header className="relative border-b border-border/70 bg-bg">
       <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center px-4 py-4 sm:px-6">
         {/* LEFT */}
-        <div className="inline-flex min-w-0 items-center gap-3 will-change-transform" style={{ transform: `translateX(${SECTION_BRAND_NUDGE_X}px)` }}>
+        <div
+          className="inline-flex min-w-0 items-center gap-2 sm:gap-3"
+          style={{ transform: isMobile ? "none" : `translateX(${SECTION_BRAND_NUDGE_X}px)` }}
+        >
           <Link href="/es" className="group inline-flex items-center justify-center" aria-label="Ir al inicio">
             <CharacterSigilMark className="h-9 w-9 sm:h-10 sm:w-10" />
           </Link>
 
-          <Link href="/es" className="group inline-flex min-w-0 items-center text-lg font-semibold tracking-tight text-text" aria-label="Inicio AtomicCurious">
+          <Link
+            href="/es"
+            className="group inline-flex min-w-0 items-center text-base sm:text-lg font-semibold tracking-tight text-text"
+            aria-label="Inicio AtomicCurious"
+          >
             <span className="relative truncate">
               <span className="ac-logo-dual">
                 <span className="ac-atomic">Atomic</span>
@@ -1148,7 +1296,10 @@ export default function NavBarEs() {
 
         {/* CENTER */}
         <nav className="hidden sm:flex items-center justify-center text-sm min-w-0" aria-label="Primary">
-          <div className="flex items-center gap-2 min-w-0 will-change-transform" style={{ transform: `translateX(${SECTION_NAV_NUDGE_X}px)` }}>
+          <div
+            className="flex items-center gap-2 min-w-0 will-change-transform"
+            style={{ transform: `translateX(${SECTION_NAV_NUDGE_X}px)` }}
+          >
             {links.map((l) => {
               const active = isActive(pathname, l.href)
               return (
@@ -1162,7 +1313,9 @@ export default function NavBarEs() {
                   ].join(" ")}
                 >
                   {l.label}
-                  {active ? <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" /> : null}
+                  {active ? (
+                    <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" />
+                  ) : null}
                 </Link>
               )
             })}
@@ -1170,152 +1323,114 @@ export default function NavBarEs() {
         </nav>
 
         {/* RIGHT (desktop) */}
-<div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
-  {/* ✅ Theme + Character toggles (single nudge control) */}
-  <div
-    className="flex items-center gap-2 will-change-transform"
-    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
-  >
-    <ThemeToggle />
-    <CharacterToggle />
-  </div>
+        <div className="hidden sm:flex items-center justify-end gap-2 min-w-[260px]">
+          <div
+            className="flex items-center gap-2 will-change-transform"
+            style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
+          >
+            <ThemeToggle />
+            <CharacterToggle />
+          </div>
 
-  <div
-    className="flex items-center will-change-transform"
-    style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}
-  >
-    <Link
-      href={enHref}
-      className="
-        inline-flex items-center rounded-full
-        border border-border/80 bg-surface-1
-        px-3 py-1.5 text-xs font-semibold text-text
-        shadow-soft transition
-        hover:border-accent/35 hover:bg-surface-2
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-      "
-    >
-      EN
-    </Link>
-  </div>
+          <div
+            className="flex items-center will-change-transform"
+            style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}
+          >
+            <Link
+              href={enHref}
+              className="
+                inline-flex items-center rounded-full
+                border border-border/80 bg-surface-1
+                px-3 py-1.5 text-xs font-semibold text-text
+                shadow-soft transition
+                hover:border-accent/35 hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              "
+            >
+              EN
+            </Link>
+          </div>
 
-  {/* ✅ slogan + quill (hover animates underline) */}
-  <div
-    className="ac-editor-signature flex items-center gap-2 will-change-transform"
-    style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}
-  >
-    <CuriosityByDesignLabel />
+          <div
+            className="ac-editor-signature flex items-center gap-2 will-change-transform"
+            style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}
+          >
+            <CuriosityByDesignLabel />
 
-    {/* ✅ quill -> ES Home */}
-    <Link
-      href="/es"
-      aria-label="Ir al inicio"
-      className="
-        group inline-flex items-center justify-center rounded-full
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-      "
-    >
-      <span
-        aria-hidden="true"
-        className={[
-          "relative inline-flex items-center justify-center",
-          "h-8 w-8 sm:h-9 sm:w-9",
-          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-        ].join(" ")}
-        style={{
-          transformOrigin: "55% 60%",
-          transform: "rotate(-14deg)",
-          filter:
-            "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-        }}
-      >
-        <QuillFeatherIcon className="h-full w-full" />
-      </span>
-    </Link>
-  </div>
-</div>
-{/* RIGHT (mobile) */}
-<div className="flex items-center justify-end gap-2 sm:hidden">
-  {/* ✅ Theme + Character toggles (single nudge control) */}
-  <div
-    className="flex items-center gap-2 will-change-transform"
-    style={{ transform: `translateX(${SECTION_TOGGLES_NUDGE_X}px)` }}
-  >
-    <ThemeToggle />
-    <CharacterToggle />
-  </div>
+            <Link
+              href="/es"
+              aria-label="Ir al inicio"
+              className="
+                group inline-flex items-center justify-center rounded-full
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
+                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              "
+            >
+              <span
+                aria-hidden="true"
+                className={[
+                  "relative inline-flex items-center justify-center",
+                  "h-8 w-8 sm:h-9 sm:w-9",
+                  "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
+                ].join(" ")}
+                style={{
+                  transformOrigin: "55% 60%",
+                  transform: "rotate(-14deg)",
+                  filter:
+                    "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
+                }}
+              >
+                <QuillFeatherIcon className="h-full w-full" />
+              </span>
+            </Link>
+          </div>
+        </div>
 
-  <div className="flex items-center will-change-transform" style={{ transform: `translateX(${SECTION_LANG_NUDGE_X}px)` }}>
-    <Link
-      href={enHref}
-      className="
-        inline-flex items-center rounded-full
-        border border-border/80 bg-surface-1
-        px-3 py-1.5 text-xs font-semibold text-text
-        shadow-soft transition
-        hover:border-accent/35 hover:bg-surface-2
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-      "
-    >
-      EN
-    </Link>
-  </div>
+        {/* RIGHT (mobile) */}
+        <div className="flex items-center justify-end gap-2 sm:hidden">
+          <Link
+            href={enHref}
+            className="
+              inline-flex h-11 min-w-[52px] items-center justify-center rounded-full
+              border border-border/80 bg-surface-1
+              px-4 text-sm font-semibold text-text
+              shadow-soft transition
+              hover:border-accent/35 hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+          >
+            EN
+          </Link>
 
-  <div className="ac-editor-signature flex items-center gap-2 will-change-transform" style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}>
-    <CuriosityByDesignLabel compact />
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="
+              inline-flex h-11 items-center justify-center rounded-full
+              border border-border/80 bg-surface-1
+              px-4 text-sm font-semibold text-text
+              shadow-soft transition
+              hover:border-accent/35 hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+            "
+            aria-label="Abrir menú"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+          >
+            Menú <span className="ml-2 text-muted">≡</span>
+          </button>
+        </div>
+      </div>
 
-    <Link
-      href="/es"
-      aria-label="Ir al inicio"
-      className="
-        group inline-flex items-center justify-center rounded-full
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-        focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-      "
-    >
-      <span
-        aria-hidden="true"
-        className={[
-          "relative inline-flex items-center justify-center",
-          "h-8 w-8",
-          "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-        ].join(" ")}
-        style={{
-          transformOrigin: "55% 60%",
-          transform: "rotate(-14deg)",
-          filter: "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-        }}
-      >
-        <QuillFeatherIcon className="h-full w-full" />
-      </span>
-    </Link>
-  </div>
-
-  <button
-    type="button"
-    onClick={() => setMenuOpen(true)}
-    className="
-      inline-flex items-center justify-center rounded-full
-      border border-border/80 bg-surface-1
-      px-3 py-1.5 text-xs font-semibold text-text
-      shadow-soft transition
-      hover:border-accent/35 hover:bg-surface-2
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-    "
-    aria-label="Abrir menú"
-    aria-haspopup="dialog"
-    aria-expanded={menuOpen}
-  >
-    Menú <span className="ml-2 text-muted">≡</span>
-  </button>
-</div>
-</div>
-
-      {/* MOBILE DRAWER (reused) */}
+      {/* MOBILE DRAWER */}
       {menuOpen ? (
         <div className="fixed inset-0 z-[80] sm:hidden">
-          <button type="button" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)} className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" />
+          <button
+            type="button"
+            aria-label="Cerrar menú"
+            onClick={() => setMenuOpen(false)}
+            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+          />
 
           <div
             role="dialog"
@@ -1360,11 +1475,15 @@ export default function NavBarEs() {
                         "group flex items-center justify-between rounded-2xl border px-4 py-3",
                         "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                        active ? "border-accent/35 text-text" : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
+                        active
+                          ? "border-accent/35 text-text"
+                          : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
                       ].join(" ")}
                     >
                       <span className="text-sm font-semibold">{l.label}</span>
-                      <span className="text-muted transition-transform group-hover:translate-x-0.5">›</span>
+                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
+                        ›
+                      </span>
                     </Link>
                   )
                 })}
@@ -1373,13 +1492,37 @@ export default function NavBarEs() {
               <div className="mt-5 h-px w-full bg-border/70" />
 
               <div className="mt-5">
-                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">AJUSTES</div>
+                <div className="text-[11px] font-semibold tracking-[0.18em] text-muted">
+                  AJUSTES
+                </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <ThemeToggle />
                   <CharacterToggle />
 
-                  <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">ES</span>
+                  <button
+                    ref={noteRefMobile}
+                    type="button"
+                    onClick={() => {
+                      setNoteOpen(true)
+                      setNoteHasNew(false)
+                      setMenuOpen(false)
+                    }}
+                    className="
+                      inline-flex items-center rounded-full
+                      border border-border/80 bg-surface-1
+                      px-3 py-1.5 text-xs font-semibold text-text
+                      shadow-soft transition
+                      hover:border-accent/35 hover:bg-surface-2
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                    "
+                  >
+                    Notas del editor
+                  </button>
+
+                  <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
+                    ES
+                  </span>
 
                   <Link
                     href={enHref}
@@ -1403,7 +1546,6 @@ export default function NavBarEs() {
         </div>
       ) : null}
 
-      {/* CORE BUBBLE (never opens on sections) */}
       <CoreFactBubble
         open={false}
         onClose={() => setCoreOpen(false)}
@@ -1413,6 +1555,17 @@ export default function NavBarEs() {
         nextLabel="Otro dato"
         closeLabel="Cerrar"
         ariaLabel="Curiosidad de Core"
+      />
+
+      <AtomNoteBubble
+        open={noteOpen}
+        onClose={() => setNoteOpen(false)}
+        anchorEl={noteAnchor}
+        notes={editorNotes}
+        title="Atom"
+        nextLabel="Otra nota"
+        closeLabel="Cerrar"
+        ariaLabel="Nota del editor"
       />
     </header>
   )
