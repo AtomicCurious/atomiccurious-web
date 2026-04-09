@@ -9,7 +9,6 @@ import AtomNoteBubble from "@/components/visual/AtomNoteBubble"
 import ThemeToggle from "@/components/ThemeToggle"
 import CharacterToggle from "@/components/CharacterToggle"
 import CharacterSigilMark from "@/components/CharacterSigilMark"
-import QuillFeatherIcon from "@/components/QuillFeatherIcon"
 
 /* =========================================================
    HOME HEADER POSITION CONTROLS (desktop/tablet)
@@ -23,11 +22,19 @@ const HEADER_NUDGE_X = -20
 /* =========================================================
    SECTIONS HEADER POSITION CONTROLS (desktop/tablet)
 ========================================================= */
-const SECTION_BRAND_NUDGE_X = -180
-const SECTION_NAV_NUDGE_X = -100
+const SECTION_BRAND_NUDGE_X = -170
+const SECTION_NAV_NUDGE_X = -150
 const SECTION_TOGGLES_NUDGE_X = 100
 const SECTION_LANG_NUDGE_X = 110
 const SECTION_EDITOR_NOTE_NUDGE_X = 145
+
+/* =========================================================
+   SECTION DIVIDER POSITION CONTROLS
+========================================================= */
+const SECTION_LEFT_DIVIDER_NUDGE_X = 35
+const SECTION_RIGHT_DIVIDER_NUDGE_X = 0
+
+const DONATE_HREF_EN = "/support"
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/"
@@ -450,93 +457,180 @@ function NotebookMark() {
   )
 }
 
-function CuriosityByDesignLabel({ compact = false }: { compact?: boolean }) {
+function HeaderDivider({
+  nudgeX = 0,
+  className = "",
+}: {
+  nudgeX?: number
+  className?: string
+}) {
   return (
     <span
+      aria-hidden="true"
+      className={["mx-4 h-5 w-px shrink-0 bg-white/12 transition-colors duration-300", className].join(" ")}
+      style={{ transform: `translateX(${nudgeX}px)` }}
+    />
+  )
+}
+
+function SupportButtonEn({ mobile = false }: { mobile?: boolean }) {
+  return (
+    <Link
+      href={DONATE_HREF_EN}
+      aria-label="Support this universe"
       className={[
-        "relative select-none text-muted",
-        compact ? "px-2 py-1 text-[11px]" : "px-3 py-1.5",
+        "ac-support-btn group relative inline-flex items-center justify-center overflow-hidden rounded-[999px]",
+        "border text-text transition-all duration-300",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+        "hover:-translate-y-[1px] hover:scale-[1.02] active:translate-y-0 active:scale-[0.985]",
+        mobile
+          ? "h-10 px-4 text-[13px] font-semibold"
+          : "h-11 px-5 text-[13px] font-semibold",
       ].join(" ")}
+      style={{
+        borderColor: "rgba(255, 210, 122, 0.55)",
+        background:
+          "linear-gradient(135deg, rgba(244,196,96,0.20) 0%, rgba(255,166,122,0.22) 42%, rgba(255,118,168,0.24) 100%)",
+        boxShadow:
+          "0 0 0 1px rgba(255,255,255,0.04), 0 12px 34px rgba(255,166,122,0.14), 0 0 28px rgba(255,118,168,0.12)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "rgba(255, 222, 148, 0.68)"
+        e.currentTarget.style.background =
+          "linear-gradient(135deg, rgba(244,196,96,0.26) 0%, rgba(255,166,122,0.29) 42%, rgba(255,118,168,0.32) 100%)"
+        e.currentTarget.style.boxShadow =
+          "0 0 0 1px rgba(255,255,255,0.06), 0 0 20px rgba(255,210,122,0.12), 0 16px 38px rgba(255,166,122,0.18), 0 0 30px rgba(255,118,168,0.16)"
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "rgba(255, 210, 122, 0.55)"
+        e.currentTarget.style.background =
+          "linear-gradient(135deg, rgba(244,196,96,0.20) 0%, rgba(255,166,122,0.22) 42%, rgba(255,118,168,0.24) 100%)"
+        e.currentTarget.style.boxShadow =
+          "0 0 0 1px rgba(255,255,255,0.04), 0 12px 34px rgba(255,166,122,0.14), 0 0 28px rgba(255,118,168,0.12)"
+      }}
     >
-      Curiosity, by design.
       <span
         aria-hidden="true"
-        className={[
-          "pointer-events-none absolute",
-          compact ? "left-2 right-[-1px] -bottom-[1px] h-[9px]" : "left-3 right-[-2px] -bottom-[1px] h-[10px]",
-        ].join(" ")}
-      >
-        <svg viewBox="0 0 320 40" className="h-full w-full overflow-visible">
-          <path
-            d="M8 27 C 44 33, 78 18, 114 24 C 150 30, 186 28, 214 22 C 244 16, 270 14, 304 16"
-            fill="none"
-            stroke="rgba(var(--accent),0.55)"
-            strokeWidth={compact ? 3.8 : 4.4}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            pathLength="1"
-            className="ac-ink"
-          />
-          <path
-            d="M8 27 C 44 33, 78 18, 114 24 C 150 30, 186 28, 214 22 C 244 16, 270 14, 304 16"
-            fill="none"
-            stroke="rgba(var(--accent-alt),0.55)"
-            strokeWidth={compact ? 3.8 : 4.4}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity="0.55"
-            vectorEffect="non-scaling-stroke"
-            pathLength="1"
-            className="ac-ink"
-          />
-          <path
-            d="M10 25 C 50 30, 82 16, 114 22 C 152 28, 188 26, 214 20 C 246 14, 272 13, 306 15"
-            fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth={compact ? 1.1 : 1.2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            pathLength="1"
-            className="ac-ink"
-          />
-        </svg>
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.07) 20%, rgba(255,244,214,0.20) 48%, rgba(255,255,255,0.06) 58%, transparent 76%)",
+          backgroundSize: "220% 100%",
+          animation: "acSupportSweep 5.8s ease-in-out .55s infinite",
+        }}
+      />
+
+      <span className="relative z-[1] inline-flex items-center gap-2 whitespace-nowrap">
+        <span className="text-[0.96em] tracking-[-0.01em] text-[rgba(255,248,235,0.98)]">
+          Support this universe
+        </span>
+
+        <span
+          aria-hidden="true"
+          className="translate-y-[-0.5px] text-[rgba(255,228,188,0.94)] transition-transform duration-300 group-hover:translate-x-[2px]"
+        >
+          →
+        </span>
+
+        <span
+          aria-hidden="true"
+          className="ac-support-heart inline-flex items-center justify-center text-[0.98em]"
+        >
+          ❤️
+        </span>
       </span>
 
       <style jsx>{`
-        .ac-ink {
-          stroke-dasharray: 1;
-          stroke-dashoffset: 0;
-          opacity: 0.95;
+        .ac-support-btn {
+          animation:
+            acSupportIntro 760ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both,
+            acSupportPulse 8.5s ease-in-out 1.05s infinite;
         }
 
-        @media (prefers-reduced-motion: no-preference) {
-          :global(.ac-editor-signature:hover) .ac-ink {
-            animation: acDraw 520ms ease-out both;
+        .ac-support-heart {
+          transform-origin: center;
+          filter:
+            drop-shadow(0 0 8px rgba(255, 122, 154, 0.20))
+            drop-shadow(0 0 14px rgba(255, 196, 122, 0.14));
+          animation: acHeartBeat 1.8s ease-in-out 1.35s infinite;
+        }
+
+        @keyframes acSupportIntro {
+          0% {
+            opacity: 0;
+            transform: translateY(3px) scale(0.985);
+            filter: saturate(0.96);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: saturate(1);
           }
         }
 
-        @keyframes acDraw {
-          from {
-            stroke-dashoffset: 1;
-            opacity: 0.35;
-            filter: blur(0.25px);
+        @keyframes acHeartBeat {
+          0%,
+          100% {
+            transform: scale(1);
           }
-          to {
-            stroke-dashoffset: 0;
-            opacity: 0.95;
-            filter: blur(0);
+          14% {
+            transform: scale(1.1);
+          }
+          28% {
+            transform: scale(0.985);
+          }
+          42% {
+            transform: scale(1.06);
+          }
+          56% {
+            transform: scale(1);
+          }
+        }
+
+        @keyframes acSupportPulse {
+          0%,
+          82%,
+          100% {
+            transform: scale(1);
+            box-shadow:
+              0 0 0 1px rgba(255,255,255,0.04),
+              0 12px 34px rgba(255,166,122,0.14),
+              0 0 28px rgba(255,118,168,0.12);
+          }
+          88% {
+            transform: scale(1.012);
+            box-shadow:
+              0 0 0 1px rgba(255,255,255,0.06),
+              0 0 20px rgba(255,210,122,0.12),
+              0 16px 38px rgba(255,166,122,0.18),
+              0 0 30px rgba(255,118,168,0.16);
+          }
+          94% {
+            transform: scale(1);
+            box-shadow:
+              0 0 0 1px rgba(255,255,255,0.04),
+              0 12px 34px rgba(255,166,122,0.14),
+              0 0 28px rgba(255,118,168,0.12);
+          }
+        }
+
+        @keyframes acSupportSweep {
+          0% {
+            background-position: 220% 50%;
+          }
+          100% {
+            background-position: -40% 50%;
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .ac-ink {
+          .ac-support-btn,
+          .ac-support-heart {
             animation: none !important;
           }
         }
       `}</style>
-    </span>
+    </Link>
   )
 }
 
@@ -575,41 +669,41 @@ export default function NavBarEn() {
     setMenuOpen(false)
   }, [pathname])
 
-useEffect(() => {
-  const body = document.body
-  const html = document.documentElement
+  useEffect(() => {
+    const body = document.body
+    const html = document.documentElement
 
-  const prevBodyOverflow = body.style.overflow
-  const prevHtmlOverflow = html.style.overflow
-  const prevBodyTouchAction = body.style.touchAction
-  const prevHtmlTouchAction = html.style.touchAction
+    const prevBodyOverflow = body.style.overflow
+    const prevHtmlOverflow = html.style.overflow
+    const prevBodyTouchAction = body.style.touchAction
+    const prevHtmlTouchAction = html.style.touchAction
 
-  if (menuOpen) {
-    body.style.overflow = "hidden"
-    html.style.overflow = "hidden"
-    body.style.touchAction = "none"
-    html.style.touchAction = "none"
-  } else {
-    body.style.overflow = ""
-    html.style.overflow = ""
-    body.style.touchAction = ""
-    html.style.touchAction = ""
-  }
+    if (menuOpen) {
+      body.style.overflow = "hidden"
+      html.style.overflow = "hidden"
+      body.style.touchAction = "none"
+      html.style.touchAction = "none"
+    } else {
+      body.style.overflow = ""
+      html.style.overflow = ""
+      body.style.touchAction = ""
+      html.style.touchAction = ""
+    }
 
-  return () => {
-    body.style.overflow = prevBodyOverflow
-    html.style.overflow = prevHtmlOverflow
-    body.style.touchAction = prevBodyTouchAction
-    html.style.touchAction = prevHtmlTouchAction
-  }
-}, [menuOpen])
+    return () => {
+      body.style.overflow = prevBodyOverflow
+      html.style.overflow = prevHtmlOverflow
+      body.style.touchAction = prevBodyTouchAction
+      html.style.touchAction = prevHtmlTouchAction
+    }
+  }, [menuOpen])
 
-useEffect(() => {
-  document.body.style.overflow = ""
-  document.documentElement.style.overflow = ""
-  document.body.style.touchAction = ""
-  document.documentElement.style.touchAction = ""
-}, [])
+  useEffect(() => {
+    document.body.style.overflow = ""
+    document.documentElement.style.overflow = ""
+    document.body.style.touchAction = ""
+    document.documentElement.style.touchAction = ""
+  }, [])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -724,11 +818,6 @@ useEffect(() => {
 
   if (isHome) {
     return (
-      // FIX: overflow-hidden corta los elementos que se desbordan por translateX
-      // (EDITOR_NOTE_NUDGE_X=155 y HEADER_NUDGE_X=-20 son los culpables del scrollbar)
-      // Se usa overflow-hidden y NO overflow-clip porque el header es position:relative
-      // y sus popups (CoreFactBubble, AtomNoteBubble) usan position:fixed, por lo que
-      // no se verán afectados por este overflow-hidden.
       <header className="relative border-b border-border/70 bg-bg">
         <div
           className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center px-4 py-4 sm:px-6 will-change-transform"
@@ -743,10 +832,7 @@ useEffect(() => {
               ref={rocketRef}
               type="button"
               onClick={() => setCoreOpen((v) => !v)}
-              className={[
-                  "group inline-flex items-center relative",
-                   rocketPing ? "ac-rocket-ping" : "",
-                   ].join(" ")}
+              className={["group inline-flex items-center relative", rocketPing ? "ac-rocket-ping" : ""].join(" ")}
               aria-label="Open a Core curiosity"
             >
               <StarshipMark />
@@ -791,10 +877,10 @@ useEffect(() => {
             </button>
 
             <Link
-  href="/"
-  className="group inline-flex min-w-0 items-center text-base sm:text-lg font-semibold tracking-tight text-text"
-  aria-label="AtomicCurious Home"
->
+              href="/"
+              className="group inline-flex min-w-0 items-center text-base sm:text-lg font-semibold tracking-tight text-text"
+              aria-label="AtomicCurious Home"
+            >
               <span className="relative truncate">
                 <span className="ac-logo-dual">
                   <span className="ac-atomic" data-text="Atomic">
@@ -997,10 +1083,7 @@ useEffect(() => {
                   setNoteOpen((v) => !v)
                   setNoteHasNew(false)
                 }}
-                className={[
-                  "group relative inline-flex items-center",
-                  notePing ? "ac-note-ping" : "",
-                ].join(" ")}
+                className={["group relative inline-flex items-center", notePing ? "ac-note-ping" : ""].join(" ")}
                 aria-label="Open Editor's note"
               >
                 <NotebookMark />
@@ -1173,6 +1256,8 @@ useEffect(() => {
                       </>
                     ) : null}
 
+                    <SupportButtonEn mobile />
+
                     <button
                       ref={noteRefMobile}
                       type="button"
@@ -1245,8 +1330,6 @@ useEffect(() => {
   }
 
   return (
-    // FIX: mismo fix para el header de secciones — SECTION_EDITOR_NOTE_NUDGE_X=145,
-    // SECTION_TOGGLES_NUDGE_X=100 y SECTION_LANG_NUDGE_X=110 también desbordan.
     <header className="relative border-b border-border/70 bg-bg">
       <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center px-4 py-4 sm:px-6">
         {/* LEFT */}
@@ -1294,6 +1377,10 @@ useEffect(() => {
               }
             `}</style>
           </Link>
+
+          <div className="hidden sm:flex items-center">
+            <HeaderDivider nudgeX={SECTION_LEFT_DIVIDER_NUDGE_X} />
+          </div>
         </div>
 
         {/* CENTER */}
@@ -1351,40 +1438,17 @@ useEffect(() => {
             >
               ES
             </Link>
+
+            <HeaderDivider nudgeX={SECTION_RIGHT_DIVIDER_NUDGE_X} />
           </div>
 
           <div
-            className="ac-editor-signature flex items-center gap-2 will-change-transform"
+            className="flex items-center will-change-transform"
             style={{ transform: `translateX(${SECTION_EDITOR_NOTE_NUDGE_X}px)` }}
           >
-            <CuriosityByDesignLabel />
-
-            <Link
-              href="/"
-              aria-label="Go to Home"
-              className="
-                group inline-flex items-center justify-center rounded-full
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55
-                focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              <span
-                aria-hidden="true"
-                className={[
-                  "relative inline-flex items-center justify-center",
-                  "h-8 w-8 sm:h-9 sm:w-9",
-                  "opacity-90 group-hover:opacity-100 transition-opacity duration-300",
-                ].join(" ")}
-                style={{
-                  transformOrigin: "55% 60%",
-                  transform: "rotate(-14deg)",
-                  filter:
-                    "drop-shadow(0 0 14px rgba(var(--accent),0.22)) drop-shadow(0 0 22px rgba(var(--accent-alt),0.14))",
-                }}
-              >
-                <QuillFeatherIcon className="h-full w-full" />
-              </span>
-            </Link>
+            <div className="flex items-center">
+              <SupportButtonEn />
+            </div>
           </div>
         </div>
 
@@ -1501,6 +1565,7 @@ useEffect(() => {
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <ThemeToggle />
                   <CharacterToggle />
+                  <SupportButtonEn mobile />
 
                   <button
                     ref={noteRefMobile}
