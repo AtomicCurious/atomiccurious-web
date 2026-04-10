@@ -85,12 +85,14 @@ type ReceiptModalProps = {
   dateLabel?: string
 }
 
+type ThankYouSearchParams = {
+  amount?: string
+  sid?: string
+  date?: string
+}
+
 type PageProps = {
-  searchParams?: {
-    amount?: string
-    sid?: string
-    date?: string
-  }
+  searchParams?: Promise<ThankYouSearchParams>
 }
 
 function SupportReceiptCard({
@@ -461,17 +463,19 @@ function ThankYouUniverseVisual() {
   )
 }
 
-export default function ThankYouPage({ searchParams }: PageProps) {
-  const amount = searchParams?.amount
-    ? `$${searchParams.amount} USD`
+export default async function ThankYouPage({ searchParams }: PageProps) {
+  const params = await searchParams
+
+  const amount = params?.amount
+    ? `$${params.amount} USD`
     : "Your contribution"
 
-  const supportId = searchParams?.sid
-    ? `#${searchParams.sid}`
+  const supportId = params?.sid
+    ? `#${params.sid}`
     : "#AC-00421"
 
-  const dateLabel = searchParams?.date
-    ? searchParams.date
+  const dateLabel = params?.date
+    ? params.date
     : "Today"
 
   return (
