@@ -4,44 +4,83 @@ import Stripe from "stripe"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
+const SUPPORTED_CURRENCIES = {
+  usd: { min: 1, symbol: "$", label: "USD", zeroDecimal: false },
+  mxn: { min: 10, symbol: "$", label: "MXN", zeroDecimal: false },
+  eur: { min: 1, symbol: "€", label: "EUR", zeroDecimal: false },
+  gbp: { min: 1, symbol: "£", label: "GBP", zeroDecimal: false },
+} as const
+
+type SupportedCurrency = keyof typeof SUPPORTED_CURRENCIES
+
+const MAX_AMOUNT = 10000
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const rawAmount = body?.amount
     const rawLocale = body?.locale
+    const rawCurrency = body?.currency
 
     const locale = rawLocale === "es" ? "es" : "en"
+
+    const currency: SupportedCurrency =
+      rawCurrency === "mxn" ||
+      rawCurrency === "usd" ||
+      rawCurrency === "eur" ||
+      rawCurrency === "gbp"
+        ? rawCurrency
+        : locale === "es"
+          ? "mxn"
+          : "usd"
+
     const amount = Number(rawAmount)
+    const { min, label, zeroDecimal } = SUPPORTED_CURRENCIES[currency]
 
     if (!Number.isFinite(amount)) {
       return NextResponse.json(
-        { error: "Monto inválido" },
+        { error: locale === "es" ? "Monto inválido" : "Invalid amount" },
         { status: 400 }
       )
     }
 
-    if (amount < 1) {
+    if (amount < min) {
       return NextResponse.json(
-        { error: "El monto mínimo es 1" },
+        {
+          error:
+            locale === "es"
+              ? `El monto mínimo es ${min} ${label}`
+              : `The minimum amount is ${min} ${label}`,
+        },
         { status: 400 }
       )
     }
 
-    if (amount > 10000) {
+    if (amount > MAX_AMOUNT) {
       return NextResponse.json(
-        { error: "El monto excede el máximo permitido" },
+        {
+          error:
+            locale === "es"
+              ? "El monto excede el máximo permitido"
+              : "The amount exceeds the maximum allowed",
+        },
         { status: 400 }
       )
     }
 
-    const unitAmount = Math.round(amount * 100)
-
-    const currency = "usd"
+    const unitAmount = zeroDecimal
+      ? Math.round(amount)
+      : Math.round(amount * 100)
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
     if (!baseUrl) {
       return NextResponse.json(
-        { error: "Falta configurar NEXT_PUBLIC_BASE_URL" },
+        {
+          error:
+            locale === "es"
+              ? "Falta configurar NEXT_PUBLIC_BASE_URL"
+              : "NEXT_PUBLIC_BASE_URL is missing",
+        },
         { status: 500 }
       )
     }
@@ -54,7 +93,10 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency,
             product_data: {
-              name: locale === "es" ? "Apoyo a AtomicCurious" : "Support AtomicCurious",
+              name:
+                locale === "es"
+                  ? "Apoyo a AtomicCurious"
+                  : "Support AtomicCurious",
               description:
                 locale === "es"
                   ? "Gracias por apoyar este proyecto ✨"
@@ -70,6 +112,7 @@ export async function POST(req: NextRequest) {
       metadata: {
         type: "donation",
         locale,
+        currency,
         amount: amount.toString(),
       },
     })

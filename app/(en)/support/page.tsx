@@ -1,42 +1,54 @@
-// app/(en)/support/page.tsx
+"use client"
+
 import Image from "next/image"
+import { useMemo, useState } from "react"
+import CurrencySelector from "@/components/CurrencySelector"
 import SupportButtonStripe from "@/components/SupportButtonStripe"
 import SupportCharacter from "@/components/SupportCharacter"
 import SupportCustomAmount from "@/components/SupportCustomAmount"
 
-export const metadata = {
-  title: "Support | AtomicCurious",
-  description:
-    "Support AtomicCurious and help us keep building memorable ideas, better resources, and carefully designed explorations.",
-  alternates: {
-    canonical: "/support",
-    languages: {
-      en: "/support",
-      es: "/es/apoyar",
-    },
+const CURRENCY_CONFIG = {
+  usd: {
+    symbol: "$" as const,
+    minAmount: 1,
+    amounts: [3, 6, 12],
   },
-}
+  mxn: {
+    symbol: "$" as const,
+    minAmount: 10,
+    amounts: [50, 100, 200],
+  },
+  eur: {
+    symbol: "€" as const,
+    minAmount: 1,
+    amounts: [3, 6, 12],
+  },
+  gbp: {
+    symbol: "£" as const,
+    minAmount: 1,
+    amounts: [3, 6, 12],
+  },
+} as const
 
-const SUPPORT_OPTIONS = [
+type SupportedCurrency = keyof typeof CURRENCY_CONFIG
+
+const SUPPORT_OPTIONS_BASE = [
   {
-    amount: 3,
+    key: "small",
     title: "Small boost",
     description: "A simple gesture to say: this project is worth supporting.",
-    buttonLabel: "Support with $3",
     recommended: false,
   },
   {
-    amount: 6,
+    key: "mid",
     title: "Most chosen",
     description: "A strong point of support to help keep this universe alive.",
-    buttonLabel: "Support with $6",
     recommended: true,
   },
   {
-    amount: 12,
+    key: "large",
     title: "Generous support",
     description: "A bigger push to help accelerate what comes next.",
-    buttonLabel: "Support with $12",
     recommended: false,
   },
 ] as const
@@ -58,22 +70,6 @@ const IRIS_CHARACTER_Y = -40
 const CORE_CHARACTER_X = 70
 const CORE_CHARACTER_Y = 0
 
-/**
- * CSS-only character + logo switching.
- *
- * Characters: atom (default) | iris | core
- *
- * HOW IT WORKS
- * - .ac-support-char-*  → character image layers (right side, large)
- * - .ac-support-logo-*  → logo image layers    (left side, small)
- * - Default (no data-character attr) shows "atom" variants.
- * - JS (SupportCharacter) writes data-character="iris" / "core" on <body>.
- *
- * IMPORTANT
- * - Each character now has its own POSITION wrapper.
- * - The image itself keeps scale/opacity/transition control.
- * - This avoids transform conflicts between translate and scale.
- */
 const SUPPORT_CHARACTER_CSS = `
 /* ── base: hidden ───────────────────────────────────────── */
 .ac-support-char,
@@ -185,6 +181,19 @@ function MessageIcon() {
 }
 
 export default function SupportPage() {
+  const [currency, setCurrency] = useState<SupportedCurrency>("usd")
+
+  const currencyConfig = useMemo(() => {
+    return CURRENCY_CONFIG[currency]
+  }, [currency])
+
+  const supportOptions = useMemo(() => {
+    return SUPPORT_OPTIONS_BASE.map((option, index) => ({
+      ...option,
+      amount: currencyConfig.amounts[index],
+    }))
+  }, [currencyConfig])
+
   return (
     <main className="relative w-full overflow-x-hidden bg-bg text-text">
       <style>{SUPPORT_CHARACTER_CSS}</style>
@@ -342,13 +351,21 @@ export default function SupportPage() {
             </p>
           </div>
 
+          <div className="mb-8">
+            <CurrencySelector
+              value={currency}
+              onChange={(value) => setCurrency(value as SupportedCurrency)}
+              locale="en"
+            />
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {SUPPORT_OPTIONS.map((option) => {
+            {supportOptions.map((option) => {
               const isRecommended = option.recommended
 
               return (
                 <div
-                  key={option.amount}
+                  key={option.key}
                   className={[
                     "relative flex h-full flex-col items-center gap-4 rounded-[24px] border px-5 py-6 text-center transition-all",
                     isRecommended
@@ -375,7 +392,8 @@ export default function SupportPage() {
                     </p>
 
                     <p className="text-3xl font-semibold tracking-tight text-text">
-                      ${option.amount} USD
+                      {currencyConfig.symbol}
+                      {option.amount} {currency.toUpperCase()}
                     </p>
 
                     <p className="text-xs leading-6 text-muted">
@@ -387,7 +405,8 @@ export default function SupportPage() {
                     <SupportButtonStripe
                       amount={option.amount}
                       locale="en"
-                      label={option.buttonLabel}
+                      currency={currency}
+                      label={`Support with ${currencyConfig.symbol}${option.amount}`}
                     />
                   </div>
                 </div>
@@ -396,7 +415,9 @@ export default function SupportPage() {
 
             <SupportCustomAmount
               locale="en"
-              minAmount={1}
+              currency={currency}
+              symbol={currencyConfig.symbol}
+              minAmount={currencyConfig.minAmount}
               className="flex h-full flex-col justify-center text-center"
             />
           </div>
@@ -529,8 +550,8 @@ export default function SupportPage() {
 
           <div className="mt-5 mx-auto max-w-2xl px-2 pb-2 text-center">
             <p className="text-xs leading-6 text-muted">
-              Payments are securely processed with Stripe. This support is
-              charged as a one-time payment in USD. Your bank may apply currency
+              Payments are securely processed with Stripe. The charge currency
+              depends on the option you choose. Your bank may apply currency
               conversion or additional fees according to its policy.
             </p>
           </div>

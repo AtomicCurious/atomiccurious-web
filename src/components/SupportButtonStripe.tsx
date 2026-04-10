@@ -5,6 +5,7 @@ import { useState } from "react"
 type Props = {
   amount?: number
   locale?: "es" | "en"
+  currency?: "usd" | "mxn" | "eur" | "gbp"
   className?: string
   label?: string
 }
@@ -12,15 +13,17 @@ type Props = {
 export default function SupportButtonStripe({
   amount = 6,
   locale = "en",
+  currency = locale === "es" ? "mxn" : "usd",
   className = "",
   label,
 }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const safeAmount = Number.isFinite(Number(amount)) && Number(amount) > 0
-    ? Math.round(Number(amount) * 100) / 100
-    : null
+  const safeAmount =
+    Number.isFinite(Number(amount)) && Number(amount) > 0
+      ? Math.round(Number(amount) * 100) / 100
+      : null
 
   const ui = {
     buttonText: label ?? (locale === "es" ? "Apoyar" : "Support"),
@@ -53,6 +56,7 @@ export default function SupportButtonStripe({
         body: JSON.stringify({
           amount: safeAmount,
           locale,
+          currency,
         }),
       })
 

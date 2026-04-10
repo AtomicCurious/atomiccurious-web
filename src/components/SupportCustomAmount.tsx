@@ -4,6 +4,8 @@ import { KeyboardEvent, useMemo, useState } from "react"
 
 type Props = {
   locale?: "es" | "en"
+  currency?: "usd" | "mxn" | "eur" | "gbp"
+  symbol?: "$" | "€" | "£"
   className?: string
   minAmount?: number
 }
@@ -30,6 +32,8 @@ function CustomAmountIcon() {
 
 export default function SupportCustomAmount({
   locale = "en",
+  currency = locale === "es" ? "mxn" : "usd",
+  symbol = "$",
   className = "",
   minAmount = 1,
 }: Props) {
@@ -46,8 +50,8 @@ export default function SupportCustomAmount({
           placeholder: "Ej. 9",
           button: "Apoyar",
           loading: "Procesando...",
-          invalid: `Ingresa un monto válido de al menos $${minAmount} USD.`,
-          tooHigh: `El monto máximo permitido es $${MAX_AMOUNT} USD.`,
+          invalid: `Ingresa un monto válido de al menos ${symbol}${minAmount} ${currency.toUpperCase()}.`,
+          tooHigh: `El monto máximo permitido es ${symbol}${MAX_AMOUNT} ${currency.toUpperCase()}.`,
           genericError: "Algo salió mal. Intenta de nuevo.",
         }
       : {
@@ -57,11 +61,11 @@ export default function SupportCustomAmount({
           placeholder: "e.g. 9",
           button: "Support",
           loading: "Processing...",
-          invalid: `Enter a valid amount of at least $${minAmount} USD.`,
-          tooHigh: `The maximum allowed amount is $${MAX_AMOUNT} USD.`,
+          invalid: `Enter a valid amount of at least ${symbol}${minAmount} ${currency.toUpperCase()}.`,
+          tooHigh: `The maximum allowed amount is ${symbol}${MAX_AMOUNT} ${currency.toUpperCase()}.`,
           genericError: "Something went wrong. Try again.",
         }
-  }, [locale, minAmount])
+  }, [locale, minAmount, currency, symbol])
 
   const parsedAmount = useMemo(() => {
     const normalized = Number(amount)
@@ -103,6 +107,7 @@ export default function SupportCustomAmount({
         body: JSON.stringify({
           amount: parsedAmount,
           locale,
+          currency,
         }),
       })
 
@@ -173,7 +178,7 @@ export default function SupportCustomAmount({
 
         <div className="relative">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted">
-            $
+            {symbol}
           </span>
 
           <input
