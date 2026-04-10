@@ -12,6 +12,7 @@ const SUPPORTED_CURRENCIES = {
 } as const
 
 type SupportedCurrency = keyof typeof SUPPORTED_CURRENCIES
+type CheckoutLocale = "es" | "en"
 
 const MAX_AMOUNT = 10000
 
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     const rawLocale = body?.locale
     const rawCurrency = body?.currency
 
-    const locale = rawLocale === "es" ? "es" : "en"
+    const locale: CheckoutLocale = rawLocale === "es" ? "es" : "en"
 
     const currency: SupportedCurrency =
       rawCurrency === "mxn" ||
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      locale,
       payment_method_types: ["card"],
       line_items: [
         {
@@ -122,7 +124,10 @@ export async function POST(req: NextRequest) {
     console.error("Stripe session creation error:", error)
 
     return NextResponse.json(
-      { error: "No se pudo crear la sesión de pago" },
+      {
+        error:
+          "No se pudo crear la sesión de pago",
+      },
       { status: 500 }
     )
   }
