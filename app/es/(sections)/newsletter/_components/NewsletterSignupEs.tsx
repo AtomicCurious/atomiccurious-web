@@ -67,9 +67,14 @@ export default function NewsletterSignupEs() {
   const [message, setMessage] = React.useState("")
   const [company, setCompany] = React.useState("")
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (status === "loading") return
+
+    const trimmedEmail = email.trim()
+    const trimmedCompany = company.trim()
+
+    if (!trimmedEmail) return
 
     setStatus("loading")
     setMessage("")
@@ -78,7 +83,11 @@ export default function NewsletterSignupEs() {
       const res = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, company, locale: "es" }),
+        body: JSON.stringify({
+          email: trimmedEmail,
+          company: trimmedCompany,
+          locale: "es",
+        }),
       })
 
       const data = await res.json().catch(() => null)
@@ -109,7 +118,7 @@ export default function NewsletterSignupEs() {
     }
   }
 
-  const disabled = status === "loading"
+  const disabled = status === "loading" || !email.trim()
 
   return (
     <>
@@ -146,7 +155,6 @@ export default function NewsletterSignupEs() {
           </button>
         </div>
 
-        {/* Honeypot (oculto) */}
         <div className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden">
           <label htmlFor="company-es">Empresa</label>
           <input
@@ -160,7 +168,12 @@ export default function NewsletterSignupEs() {
         </div>
 
         {message ? (
-          <p className={["mt-3 text-sm", status === "error" ? "text-red-400" : "text-muted"].join(" ")}>
+          <p
+            className={[
+              "mt-3 text-sm",
+              status === "error" ? "text-red-400" : "text-muted",
+            ].join(" ")}
+          >
             {message}
           </p>
         ) : null}

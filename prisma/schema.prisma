@@ -33,7 +33,6 @@ model Download {
   leadId String
   lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
-  // Relación al link que generó la descarga (para medir email → descarga)
   linkId String?
   link   DownloadLink? @relation(fields: [linkId], references: [id], onDelete: SetNull)
 
@@ -56,14 +55,11 @@ model DownloadLink {
   leadId String
   lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
-  // Guardar SOLO el hash del token (seguridad)
   tokenHash String @unique
 
-  // Metadata opcional para analítica básica
   ip        String?
   userAgent String?
 
-  // Relación inversa requerida por Prisma
   downloads Download[]
 
   @@index([leadId])
@@ -74,29 +70,21 @@ model DownloadLink {
   @@map("DownloadLink")
 }
 
-// =====================================================
-// NEWSLETTER (Double opt-in + unsubscribe)
-// - status: pending | subscribed | unsubscribed
-// - confirmTokenHash: solo hash, nunca el token raw
-// - unsubscribeTokenHash: token separado para bajas seguras
-// =====================================================
-
 model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   status    String   @default("pending")
+  locale    String   @default("en")
 
-  // Confirmación (double opt-in)
-  confirmTokenHash String?
-  confirmExpiresAt DateTime?
+  confirmTokenHash     String?
+  confirmExpiresAt     DateTime?
 
-  // Baja (token separado)
+  unsubscribeToken     String? @unique
   unsubscribeTokenHash String?
 
   subscribedAt   DateTime?
   unsubscribedAt DateTime?
 
-  // Metadata (útil para analítica ligera)
   source      String?
   utmSource   String?
   utmMedium   String?
@@ -105,10 +93,58 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  sends NewsletterSend[]
+
   @@index([status])
+  @@index([locale])
   @@index([createdAt])
   @@index([subscribedAt])
   @@index([unsubscribedAt])
 
   @@map("NewsletterSubscriber")
+}
+
+model NewsletterCampaign {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  locale       String
+  subject      String
+  preheader    String?
+  status       String   @default("draft")
+  scheduledFor DateTime?
+  sentAt       DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sends NewsletterSend[]
+
+  @@index([slug])
+  @@index([locale])
+  @@index([status])
+  @@index([scheduledFor])
+
+  @@map("NewsletterCampaign")
+}
+
+model NewsletterSend {
+  id           String   @id @default(cuid())
+  campaignId   String
+  subscriberId String
+  email        String
+  resendId     String?
+  status       String   @default("queued")
+  error        String?
+  sentAt       DateTime?
+  createdAt    DateTime @default(now())
+
+  campaign   NewsletterCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriber NewsletterSubscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, subscriberId])
+  @@index([campaignId])
+  @@index([subscriberId])
+  @@index([status])
+  @@index([email])
+
+  @@map("NewsletterSend")
 }

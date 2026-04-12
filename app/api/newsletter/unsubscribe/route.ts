@@ -39,7 +39,10 @@ export async function GET(req: Request) {
 
   const subscriber = await prisma.newsletterSubscriber.findFirst({
     where: {
-      unsubscribeTokenHash: tokenHash,
+      OR: [
+        { unsubscribeToken: token },
+        { unsubscribeTokenHash: tokenHash },
+      ],
     },
     select: {
       id: true,

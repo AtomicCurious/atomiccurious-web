@@ -266,8 +266,12 @@ function emailCopy(
 
 export async function POST(req: Request) {
   const ct = req.headers.get("content-type") || ""
+
   if (!ct.includes("application/json")) {
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json(
+      { ok: false, error: "invalid_content_type" },
+      { status: 400 }
+    )
   }
 
   const body = await req.json().catch(() => null)
@@ -276,8 +280,15 @@ export async function POST(req: Request) {
   const honey = (body?.company ?? "").toString().trim()
   const locale = normalizeLocale(body?.locale)
 
-  if (honey || !email || !isValidEmail(email)) {
+  if (honey) {
     return NextResponse.json({ ok: true }, { status: 200 })
+  }
+
+  if (!email || !isValidEmail(email)) {
+    return NextResponse.json(
+      { ok: false, error: "invalid_email" },
+      { status: 400 }
+    )
   }
 
   const existing = await prisma.newsletterSubscriber.findUnique({
@@ -303,8 +314,10 @@ export async function POST(req: Request) {
       where: { email },
       update: {
         status: "pending",
+        locale,
         confirmTokenHash,
         confirmExpiresAt: addHours(new Date(), CONFIRM_TTL_HOURS),
+        unsubscribeToken: rawUnsubToken,
         unsubscribeTokenHash,
         source: "newsletter",
         utmSource: body?.utmSource ?? null,
@@ -314,8 +327,10 @@ export async function POST(req: Request) {
       create: {
         email,
         status: "pending",
+        locale,
         confirmTokenHash,
         confirmExpiresAt: addHours(new Date(), CONFIRM_TTL_HOURS),
+        unsubscribeToken: rawUnsubToken,
         unsubscribeTokenHash,
         source: "newsletter",
         utmSource: body?.utmSource ?? null,
@@ -325,13 +340,29 @@ export async function POST(req: Request) {
     })
   } catch (dbErr) {
     console.error("[newsletter/subscribe] db error:", dbErr)
-    return NextResponse.json({ ok: true }, { status: 200 })
+
+    const detail =
+      process.env.NODE_ENV === "development"
+        ? dbErr instanceof Error
+          ? dbErr.message
+          : String(dbErr)
+        : undefined
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "db_error",
+        detail,
+      },
+      { status: 500 }
+    )
   }
 
   const confirmUrl =
-  locale === "es"
-    ? `${APP_URL}/es/newsletter/confirm?token=${rawConfirmToken}`
-    : `${APP_URL}/newsletter/confirm?token=${rawConfirmToken}`
+    locale === "es"
+      ? `${APP_URL}/es/newsletter/confirm?token=${rawConfirmToken}`
+      : `${APP_URL}/newsletter/confirm?token=${rawConfirmToken}`
+
   const unsubscribeUrl = `${APP_URL}/api/newsletter/unsubscribe?token=${rawUnsubToken}&locale=${locale}`
 
   const { subject, text, html } = emailCopy(
@@ -352,11 +383,17 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("[newsletter/subscribe] resend error:", error)
+
+      const detail =
+        process.env.NODE_ENV === "development"
+          ? error.message ?? String(error)
+          : undefined
+
       return NextResponse.json(
         {
           ok: false,
           error: "resend_failed",
-          detail: error.message ?? String(error),
+          detail,
         },
         { status: 500 }
       )
@@ -364,8 +401,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, resendId: data?.id }, { status: 200 })
   } catch (err) {
-    const detail = getErrorMessage(err)
+    const detail =
+      process.env.NODE_ENV === "development"
+        ? getErrorMessage(err)
+        : undefined
+
     console.error("[newsletter/subscribe] resend exception:", err)
+
     return NextResponse.json(
       { ok: false, error: "resend_exception", detail },
       { status: 500 }
