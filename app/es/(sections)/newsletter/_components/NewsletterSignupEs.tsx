@@ -74,7 +74,11 @@ export default function NewsletterSignupEs() {
     const trimmedEmail = email.trim()
     const trimmedCompany = company.trim()
 
-    if (!trimmedEmail) return
+    if (!trimmedEmail) {
+      setStatus("error")
+      setMessage("Escribe un email válido para continuar.")
+      return
+    }
 
     setStatus("loading")
     setMessage("")
@@ -104,12 +108,16 @@ export default function NewsletterSignupEs() {
 
       if (data?.alreadySubscribed) {
         setStatus("already")
-        setMessage("Ya estás suscrito.")
+        setMessage(
+          "Ya estás suscrito. Si no encuentras nuestros correos, revisa spam o promociones."
+        )
         return
       }
 
       setStatus("success")
-      setMessage("Revisa tu bandeja para confirmar tu suscripción.")
+      setMessage(
+        "Te enviamos un correo de confirmación. Revisa tu bandeja de entrada. Si no lo ves en unos minutos, revisa spam o promociones y mueve el correo a tu bandeja principal."
+      )
       setEmail("")
       setCompany("")
     } catch {
@@ -170,7 +178,7 @@ export default function NewsletterSignupEs() {
         {message ? (
           <p
             className={[
-              "mt-3 text-sm",
+              "mt-3 text-sm leading-6",
               status === "error" ? "text-red-400" : "text-muted",
             ].join(" ")}
           >

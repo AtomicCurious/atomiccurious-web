@@ -161,6 +161,7 @@ export async function POST(req: Request) {
           headers: unsubscribeUrl
             ? {
                 "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
               }
             : undefined,
         })

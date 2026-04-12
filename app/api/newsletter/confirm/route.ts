@@ -18,63 +18,84 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const ct = req.headers.get("content-type") || ""
+  try {
+    const ct = req.headers.get("content-type") || ""
 
-  if (!ct.includes("application/json")) {
-    return NextResponse.json(
-      { ok: false, error: "invalid_content_type" },
-      { status: 400 }
-    )
-  }
+    if (!ct.includes("application/json")) {
+      return NextResponse.json(
+        { ok: false, error: "invalid_content_type" },
+        { status: 400 }
+      )
+    }
 
-  const body = await req.json().catch(() => null)
-  const token = (body?.token ?? "").toString().trim()
+    const body = await req.json().catch(() => null)
+    const token = (body?.token ?? "").toString().trim()
 
-  if (!token) {
-    return NextResponse.json(
-      { ok: false, error: "missing_token" },
-      { status: 400 }
-    )
-  }
+    if (!token) {
+      return NextResponse.json(
+        { ok: false, error: "missing_token" },
+        { status: 400 }
+      )
+    }
 
-  const tokenHash = hashToken(token)
+    const tokenHash = hashToken(token)
 
-  const subscriber = await prisma.newsletterSubscriber.findFirst({
-    where: {
-      confirmTokenHash: tokenHash,
-    },
-    select: {
-      id: true,
-      status: true,
-      confirmExpiresAt: true,
-    },
-  })
-
-  if (!subscriber) {
-    return NextResponse.json(
-      { ok: false, error: "invalid_token" },
-      { status: 404 }
-    )
-  }
-
-  if (subscriber.confirmExpiresAt && new Date() > subscriber.confirmExpiresAt) {
-    return NextResponse.json(
-      { ok: false, error: "token_expired" },
-      { status: 410 }
-    )
-  }
-
-  if (subscriber.status !== "subscribed") {
-    await prisma.newsletterSubscriber.update({
-      where: { id: subscriber.id },
-      data: {
-        status: "subscribed",
-        subscribedAt: new Date(),
-        confirmTokenHash: null,
-        confirmExpiresAt: null,
+    const subscriber = await prisma.newsletterSubscriber.findFirst({
+      where: {
+        confirmTokenHash: tokenHash,
+      },
+      select: {
+        id: true,
+        status: true,
+        confirmExpiresAt: true,
       },
     })
-  }
 
-  return NextResponse.json({ ok: true }, { status: 200 })
+    if (!subscriber) {
+      return NextResponse.json(
+        { ok: false, error: "invalid_token" },
+        { status: 404 }
+      )
+    }
+
+    // 🔧 Mejora: limpiar token si ya expiró
+    if (
+      subscriber.confirmExpiresAt &&
+      new Date() > subscriber.confirmExpiresAt
+    ) {
+      await prisma.newsletterSubscriber.update({
+        where: { id: subscriber.id },
+        data: {
+          confirmTokenHash: null,
+          confirmExpiresAt: null,
+        },
+      })
+
+      return NextResponse.json(
+        { ok: false, error: "token_expired" },
+        { status: 410 }
+      )
+    }
+
+    if (subscriber.status !== "subscribed") {
+      await prisma.newsletterSubscriber.update({
+        where: { id: subscriber.id },
+        data: {
+          status: "subscribed",
+          subscribedAt: new Date(),
+          confirmTokenHash: null,
+          confirmExpiresAt: null,
+        },
+      })
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 })
+  } catch (error) {
+    console.error("[newsletter/confirm] error:", error)
+
+    return NextResponse.json(
+      { ok: false, error: "internal_error" },
+      { status: 500 }
+    )
+  }
 }

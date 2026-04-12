@@ -9,12 +9,52 @@ export const dynamic = "force-dynamic"
 
 type Locale = "en" | "es"
 
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-}
-
 function normalizeLocale(v: unknown): Locale {
   return v === "es" ? "es" : "en"
+}
+
+function normalizeEmail(value: unknown) {
+  return (value ?? "").toString().trim().toLowerCase()
+}
+
+function isValidEmail(email: string) {
+  const normalized = email.trim().toLowerCase()
+
+  if (!normalized) return false
+  if (normalized.length > 254) return false
+  if (/\s/.test(normalized)) return false
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return false
+  if (normalized.includes("..")) return false
+
+  const parts = normalized.split("@")
+  if (parts.length !== 2) return false
+
+  const [local, domain] = parts
+
+  if (!local || !domain) return false
+  if (local.length > 64) return false
+  if (local.startsWith(".") || local.endsWith(".")) return false
+  if (domain.startsWith(".") || domain.endsWith(".")) return false
+  if (domain.startsWith("-") || domain.endsWith("-")) return false
+  if (!domain.includes(".")) return false
+
+  const domainLabels = domain.split(".")
+  if (domainLabels.some((label) => !label)) return false
+  if (
+    domainLabels.some(
+      (label) =>
+        label.startsWith("-") ||
+        label.endsWith("-") ||
+        !/^[a-z0-9-]+$/i.test(label)
+    )
+  ) {
+    return false
+  }
+
+  const tld = domainLabels[domainLabels.length - 1]
+  if (!tld || tld.length < 2) return false
+
+  return true
 }
 
 function generateToken() {
@@ -276,7 +316,7 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => null)
 
-  const email = (body?.email ?? "").toString().trim().toLowerCase()
+  const email = normalizeEmail(body?.email)
   const honey = (body?.company ?? "").toString().trim()
   const locale = normalizeLocale(body?.locale)
 
@@ -379,6 +419,10 @@ export async function POST(req: Request) {
       subject,
       text,
       html,
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     })
 
     if (error) {

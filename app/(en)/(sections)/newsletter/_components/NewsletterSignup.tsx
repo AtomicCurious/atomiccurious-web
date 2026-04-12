@@ -4,6 +4,68 @@ import React from "react"
 
 type Status = "idle" | "loading" | "success" | "already" | "error"
 
+const SIGNUP_CSS = `
+html:not([data-character]) .ac-signup-input:focus,
+body:not([data-character]) .ac-signup-input:focus,
+html[data-character="atom"] .ac-signup-input:focus,
+body[data-character="atom"] .ac-signup-input:focus {
+  border-color: rgba(52, 211, 153, 0.50);
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.20);
+}
+html[data-character="iris"] .ac-signup-input:focus,
+body[data-character="iris"] .ac-signup-input:focus {
+  border-color: rgba(34, 211, 238, 0.50);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.20);
+}
+html[data-character="core"] .ac-signup-input:focus,
+body[data-character="core"] .ac-signup-input:focus {
+  border-color: rgba(251, 146, 60, 0.50);
+  box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.20);
+}
+
+html:not([data-character]) .ac-signup-btn,
+body:not([data-character]) .ac-signup-btn,
+html[data-character="atom"] .ac-signup-btn,
+body[data-character="atom"] .ac-signup-btn {
+  background-color: rgb(52, 211, 153);
+  color: rgb(2, 44, 26);
+  box-shadow: 0 8px 24px -12px rgba(52, 211, 153, 0.45);
+}
+html[data-character="iris"] .ac-signup-btn,
+body[data-character="iris"] .ac-signup-btn {
+  background-color: rgb(34, 211, 238);
+  color: rgb(2, 30, 44);
+  box-shadow: 0 8px 24px -12px rgba(34, 211, 238, 0.45);
+}
+html[data-character="core"] .ac-signup-btn,
+body[data-character="core"] .ac-signup-btn {
+  background-color: rgb(251, 146, 60);
+  color: rgb(44, 18, 2);
+  box-shadow: 0 8px 24px -12px rgba(251, 146, 60, 0.45);
+}
+
+.ac-signup-btn {
+  transition: filter 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+.ac-signup-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.ac-signup-btn:active:not(:disabled) {
+  transform: translateY(0px);
+  filter: brightness(0.97);
+}
+.ac-signup-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.70;
+}
+`
+
+function isLikelyValidEmail(email: string) {
+  const normalized = email.trim()
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(normalized)
+}
+
 export default function NewsletterSignup() {
   const [email, setEmail] = React.useState("")
   const [status, setStatus] = React.useState<Status>("idle")
@@ -17,7 +79,11 @@ export default function NewsletterSignup() {
     const trimmedEmail = email.trim()
     const trimmedCompany = company.trim()
 
-    if (!trimmedEmail) return
+    if (!trimmedEmail || !isLikelyValidEmail(trimmedEmail)) {
+      setStatus("error")
+      setMessage("Enter a valid email address to continue.")
+      return
+    }
 
     setStatus("loading")
     setMessage("")
@@ -47,12 +113,16 @@ export default function NewsletterSignup() {
 
       if (data?.alreadySubscribed) {
         setStatus("already")
-        setMessage("You’re already subscribed.")
+        setMessage(
+          "You’re already subscribed. If you can’t find our emails, check your spam or promotions folder."
+        )
         return
       }
 
       setStatus("success")
-      setMessage("Check your inbox to confirm your subscription.")
+      setMessage(
+        "We sent you a confirmation email. Check your inbox. If you don’t see it within a few minutes, check your spam or promotions folder and move the email to your primary inbox."
+      )
       setEmail("")
       setCompany("")
     } catch {
@@ -61,73 +131,67 @@ export default function NewsletterSignup() {
     }
   }
 
-  const disabled = status === "loading" || !email.trim()
+  const disabled =
+    status === "loading" || !email.trim() || !isLikelyValidEmail(email)
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="rounded-2xl border border-border/70 bg-bg/25 p-4 shadow-soft backdrop-blur"
-    >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <label className="sr-only" htmlFor="newsletter-email">
-            Email
-          </label>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: SIGNUP_CSS }} />
+
+      <form
+        onSubmit={onSubmit}
+        className="rounded-2xl border border-border/70 bg-bg/25 p-4 shadow-soft backdrop-blur"
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <label className="sr-only" htmlFor="newsletter-email">
+              Email
+            </label>
+            <input
+              id="newsletter-email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="Your email, your access"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="ac-signup-input w-full rounded-xl border border-border bg-bg/40 px-4 py-3 text-sm text-text outline-none placeholder:text-muted"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={disabled}
+            className="ac-signup-btn inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
+          >
+            {status === "loading" ? "Sending..." : "Join"}
+          </button>
+        </div>
+
+        <div className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden">
+          <label htmlFor="company">Company</label>
           <input
-            id="newsletter-email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            placeholder="Your email, your access"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="
-              w-full rounded-xl border border-border bg-bg/40 px-4 py-3
-              text-sm text-text outline-none
-              placeholder:text-muted
-              focus:border-accent/50 focus:ring-2 focus:ring-accent/40
-            "
-            required
+            id="company"
+            name="company"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={disabled}
-          className="
-            inline-flex items-center justify-center rounded-xl
-            bg-accent px-5 py-3 text-sm font-semibold text-bg
-            shadow-accent transition hover:brightness-110
-            disabled:cursor-not-allowed disabled:opacity-70
-          "
-        >
-          {status === "loading" ? "Sending..." : "Join"}
-        </button>
-      </div>
-
-      {/* Honeypot */}
-      <div className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden">
-        <label htmlFor="company">Company</label>
-        <input
-          id="company"
-          name="company"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          tabIndex={-1}
-          autoComplete="off"
-        />
-      </div>
-
-      {message ? (
-        <p
-          className={[
-            "mt-3 text-sm",
-            status === "error" ? "text-red-400" : "text-muted",
-          ].join(" ")}
-        >
-          {message}
-        </p>
-      ) : null}
-    </form>
+        {message ? (
+          <p
+            className={[
+              "mt-3 text-sm leading-6",
+              status === "error" ? "text-red-400" : "text-muted",
+            ].join(" ")}
+          >
+            {message}
+          </p>
+        ) : null}
+      </form>
+    </>
   )
 }
