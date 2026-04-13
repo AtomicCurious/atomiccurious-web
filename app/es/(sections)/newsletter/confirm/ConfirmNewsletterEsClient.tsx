@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -266,16 +266,16 @@ export default function ConfirmNewsletterEsClient({
   token: string
 }) {
   const router = useRouter()
-  const [state, setState] = useState<ConfirmState>("ready")
 
-  useEffect(() => {
-    if (!token) {
-      setState("missing")
-    }
-  }, [token])
+  const hasToken = useMemo(
+    () => typeof token === "string" && token.trim().length > 0,
+    [token]
+  )
+
+  const [state, setState] = useState<ConfirmState>(hasToken ? "ready" : "missing")
 
   async function handleConfirm() {
-    if (!token) {
+    if (!hasToken) {
       setState("missing")
       return
     }
@@ -350,12 +350,7 @@ export default function ConfirmNewsletterEsClient({
             ? "ERROR DE CONFIRMACIÓN"
             : "CONFIRMACIÓN DE EMAIL"
 
-  const showConfirmButton =
-    state === "ready" ||
-    state === "loading" ||
-    state === "invalid" ||
-    state === "expired" ||
-    state === "error"
+  const showConfirmButton = hasToken && state !== "success"
 
   const buttonLabel =
     state === "loading"
