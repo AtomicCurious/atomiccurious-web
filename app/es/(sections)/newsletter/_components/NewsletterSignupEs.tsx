@@ -1,3 +1,4 @@
+//app\es\(sections)\newsletter\_components\NewsletterSignupEs.tsx
 "use client"
 
 import React from "react"
