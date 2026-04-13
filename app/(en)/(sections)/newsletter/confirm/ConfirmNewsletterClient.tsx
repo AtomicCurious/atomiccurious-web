@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -29,18 +29,6 @@ const CONFIRM_CSS = `
   opacity: 0.9;
 }
 
-.ac-editorial-shell::after{
-  content: "";
-  position: absolute;
-  inset: 16% 10% 10% 10%;
-  pointer-events: none;
-  filter: blur(30px);
-  opacity: 0.9;
-  background:
-    radial-gradient(circle at 50% 24%, rgba(var(--accent), 0.08), transparent 26%),
-    radial-gradient(circle at 50% 72%, rgba(var(--accent), 0.05), transparent 22%);
-}
-
 html:not([data-character]) .ac-editorial-shell::before,
 body:not([data-character]) .ac-editorial-shell::before,
 html[data-character="atom"] .ac-editorial-shell::before,
@@ -61,7 +49,6 @@ body[data-character="core"] .ac-editorial-shell::before {
   height: 1px;
   margin: 0 auto;
   border-radius: 9999px;
-  opacity: 0.92;
 }
 
 html:not([data-character]) .ac-confirm-rule,
@@ -77,177 +64,6 @@ body[data-character="iris"] .ac-confirm-rule {
 html[data-character="core"] .ac-confirm-rule,
 body[data-character="core"] .ac-confirm-rule {
   background: linear-gradient(to right, transparent, rgba(251,146,60,0.72), rgba(251,146,60,0.18), transparent);
-}
-
-.ac-reveal{
-  opacity: 0;
-  transform: translateY(18px);
-  animation: acReveal 0.82s cubic-bezier(.22,1,.36,1) forwards;
-  will-change: opacity, transform;
-}
-
-.ac-delay-1{ animation-delay: 0.04s; }
-.ac-delay-2{ animation-delay: 0.12s; }
-.ac-delay-3{ animation-delay: 0.20s; }
-.ac-delay-4{ animation-delay: 0.28s; }
-.ac-delay-5{ animation-delay: 0.36s; }
-.ac-delay-6{ animation-delay: 0.44s; }
-.ac-delay-7{ animation-delay: 0.52s; }
-
-@keyframes acReveal{
-  to{
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.ac-confirm-media{
-  position: relative;
-  isolation: isolate;
-}
-
-.ac-confirm-media::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(to top, rgba(0,0,0,0.18), transparent 34%),
-    linear-gradient(to bottom, rgba(255,255,255,0.03), transparent 24%);
-  z-index: 2;
-}
-
-.ac-confirm-image{
-  transform: scale(1.02);
-  animation: acFloatImage 10s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes acFloatImage{
-  0%,100%{ transform: scale(1.02) translateY(0px); }
-  50%{ transform: scale(1.04) translateY(-6px); }
-}
-
-.ac-badge-dot{
-  box-shadow: 0 0 0 0 rgba(var(--accent), 0.40);
-  animation: acBadgePulse 2.4s ease-in-out infinite;
-}
-
-@keyframes acBadgePulse{
-  0%,100%{
-    box-shadow: 0 0 0 0 rgba(var(--accent), 0.00);
-    transform: scale(1);
-  }
-  50%{
-    box-shadow: 0 0 0 5px rgba(var(--accent), 0.10);
-    transform: scale(1.08);
-  }
-}
-
-.ac-confirm-cta{
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(var(--accent), 0.26);
-  background:
-    linear-gradient(180deg, rgba(var(--accent),0.96), rgba(var(--accent),0.82));
-  color: rgb(6, 10, 9);
-  box-shadow:
-    0 10px 30px rgba(var(--accent), 0.16),
-    inset 0 1px 0 rgba(255,255,255,0.24);
-  animation: acCtaPulse 3.6s ease-in-out infinite;
-}
-
-.ac-confirm-cta::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 18%,
-    rgba(255,255,255,0.22) 50%,
-    transparent 82%
-  );
-  transform: translateX(-130%);
-  transition: transform .9s ease;
-}
-
-.ac-confirm-cta:hover::before{
-  transform: translateX(130%);
-}
-
-.ac-confirm-cta:hover{
-  transform: translateY(-1px);
-  box-shadow:
-    0 14px 38px rgba(var(--accent), 0.22),
-    inset 0 1px 0 rgba(255,255,255,0.28);
-}
-
-.ac-confirm-cta:active{
-  transform: translateY(0);
-}
-
-@keyframes acCtaPulse{
-  0%,100%{
-    box-shadow:
-      0 10px 30px rgba(var(--accent), 0.14),
-      inset 0 1px 0 rgba(255,255,255,0.22);
-  }
-  50%{
-    box-shadow:
-      0 14px 40px rgba(var(--accent), 0.22),
-      inset 0 1px 0 rgba(255,255,255,0.22);
-  }
-}
-
-.ac-spinner{
-  width: 14px;
-  height: 14px;
-  border-radius: 9999px;
-  border: 2px solid rgba(0,0,0,0.22);
-  border-top-color: rgba(0,0,0,0.82);
-  animation: acSpin .82s linear infinite;
-}
-
-@keyframes acSpin{
-  to{ transform: rotate(360deg); }
-}
-
-.ac-secondary-link{
-  background: rgba(255,255,255,0.02);
-  transition:
-    border-color .22s ease,
-    background-color .22s ease,
-    transform .22s ease,
-    opacity .22s ease;
-}
-
-.ac-secondary-link:hover{
-  transform: translateY(-1px);
-}
-
-.ac-secondary-link--soft{
-  opacity: 0.88;
-}
-
-.ac-secondary-link--soft:hover{
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce){
-  .ac-reveal,
-  .ac-confirm-image,
-  .ac-badge-dot,
-  .ac-confirm-cta,
-  .ac-spinner{
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-  }
-
-  .ac-confirm-cta::before{
-    transition: none !important;
-    transform: translateX(-130%);
-  }
 }
 `
 
@@ -266,13 +82,16 @@ export default function ConfirmNewsletterClient({
   token: string
 }) {
   const router = useRouter()
+  const [state, setState] = useState<ConfirmState>("ready")
 
-  const hasToken = useMemo(() => typeof token === "string" && token.trim().length > 0, [token])
-
-  const [state, setState] = useState<ConfirmState>(hasToken ? "ready" : "missing")
+  useEffect(() => {
+    if (!token) {
+      setState("missing")
+    }
+  }, [token])
 
   async function handleConfirm() {
-    if (!hasToken) {
+    if (!token) {
       setState("missing")
       return
     }
@@ -334,7 +153,7 @@ export default function ConfirmNewsletterClient({
             ? "This confirmation link is incomplete."
             : state === "error"
               ? "Something went wrong while confirming your subscription."
-              : "One last step. Confirm your email to unlock your access to the AtomicCurious newsletter."
+              : "One last step. Confirm your email to activate your AtomicCurious newsletter subscription."
 
   const badge =
     state === "invalid"
@@ -346,15 +165,6 @@ export default function ConfirmNewsletterClient({
           : state === "error"
             ? "CONFIRMATION ISSUE"
             : "EMAIL CONFIRMATION"
-
-  const showConfirmButton = hasToken && state !== "success"
-
-  const buttonLabel =
-    state === "loading"
-      ? "Confirming..."
-      : state === "invalid" || state === "expired" || state === "error"
-        ? "Try confirming again"
-        : "Confirm subscription"
 
   return (
     <main className="w-full" data-chmode="none">
@@ -373,73 +183,70 @@ export default function ConfirmNewsletterClient({
               <div className="pointer-events-none absolute inset-0 ac-grain" />
 
               <div className="relative mx-auto max-w-3xl text-center">
-                <div className="ac-reveal ac-delay-1 inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/30 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-text shadow-soft backdrop-blur">
-                  <span className="ac-badge-dot h-1.5 w-1.5 rounded-full bg-accent/80" />
+                <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/30 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-text shadow-soft backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent/80" />
                   {badge}
                 </div>
 
-                <div className="ac-reveal ac-delay-2 mt-8 overflow-hidden rounded-2xl border border-border/70 bg-bg/20 shadow-soft">
-                  <div className="ac-confirm-media relative aspect-[16/10] w-full sm:aspect-[16/9]">
-                    <div className="absolute inset-0 z-[1] bg-[radial-gradient(ellipse_120%_80%_at_20%_20%,rgba(var(--accent),0.16),transparent_60%),radial-gradient(ellipse_120%_90%_at_80%_30%,rgba(var(--accent-alt),0.12),transparent_62%),linear-gradient(to_bottom,rgba(255,255,255,0.05),transparent_60%)]" />
+                <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 bg-bg/20 shadow-soft">
+                  <div className="relative aspect-[16/10] w-full sm:aspect-[16/9]">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_20%_20%,rgba(var(--accent),0.16),transparent_60%),radial-gradient(ellipse_120%_90%_at_80%_30%,rgba(var(--accent-alt),0.12),transparent_62%),linear-gradient(to_bottom,rgba(255,255,255,0.05),transparent_60%)]" />
 
                     <Image
                       src="/images/sections/newsletter/newsletter_confirm.webp"
                       alt="Confirmation illustration"
                       fill
                       sizes="(min-width: 1024px) 760px, 92vw"
-                      className="ac-confirm-image object-cover"
+                      className="object-cover"
                       priority
                     />
 
-                    <div className="pointer-events-none absolute inset-0 z-[3] [mask-image:radial-gradient(ellipse_78%_68%_at_50%_46%,black,transparent_88%)] bg-black/22" />
+                    <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_78%_68%_at_50%_46%,black,transparent_88%)] bg-black/22" />
                   </div>
                 </div>
 
-                <p className="ac-reveal ac-delay-3 mt-8 text-xs font-semibold tracking-[0.18em] text-muted">
+                <p className="mt-8 text-xs font-semibold tracking-[0.18em] text-muted">
                   ATOMICCURIOUS · NEWSLETTER
                 </p>
 
-                <h1 className="ac-reveal ac-delay-4 mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl">
+                <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl">
                   {title}
                 </h1>
 
-                <p className="ac-reveal ac-delay-5 mx-auto mt-5 max-w-2xl text-balance text-base text-muted sm:text-lg">
+                <p className="mx-auto mt-5 max-w-2xl text-balance text-base text-muted sm:text-lg">
                   {description}
                 </p>
 
-                <div className="ac-reveal ac-delay-5 mt-6">
+                <div className="mt-6">
                   <div className="ac-confirm-rule" aria-hidden="true" />
                 </div>
 
-                {showConfirmButton && (
-                  <div className="ac-reveal ac-delay-6 mt-8">
+                {(state === "ready" || state === "loading") && (
+                  <div className="mt-8">
                     <button
                       type="button"
                       onClick={handleConfirm}
                       disabled={state === "loading"}
-                      className="ac-confirm-cta inline-flex min-w-[240px] items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                      className="inline-flex items-center justify-center rounded-xl border border-border bg-bg/35 px-6 py-3 text-sm font-semibold text-text transition hover:border-accent/35 hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
-                      <span className="relative z-[1] inline-flex items-center gap-2">
-                        {state === "loading" && (
-                          <span className="ac-spinner" aria-hidden="true" />
-                        )}
-                        {buttonLabel}
-                      </span>
+                      {state === "loading"
+                        ? "Confirming..."
+                        : "Confirm subscription"}
                     </button>
                   </div>
                 )}
 
-                <div className="ac-reveal ac-delay-7 mt-7 flex flex-wrap justify-center gap-3">
+                <div className="mt-7 flex flex-wrap justify-center gap-3">
                   <Link
                     href="/newsletter"
-                    className="ac-secondary-link inline-flex items-center justify-center rounded-xl border border-border/90 px-5 py-2.5 text-sm font-semibold text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    className="inline-flex items-center justify-center rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-text transition hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     Back to newsletter
                   </Link>
 
                   <Link
                     href="/"
-                    className="ac-secondary-link ac-secondary-link--soft inline-flex items-center justify-center rounded-xl border border-border/80 px-5 py-2.5 text-sm font-semibold text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    className="inline-flex items-center justify-center rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-text transition hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     Back home
                   </Link>
