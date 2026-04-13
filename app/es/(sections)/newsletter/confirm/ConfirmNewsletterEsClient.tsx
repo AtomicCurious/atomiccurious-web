@@ -337,7 +337,7 @@ export default function ConfirmNewsletterEsClient({
             ? "Este enlace está incompleto."
             : state === "error"
               ? "Ocurrió un error al confirmar tu suscripción."
-              : "Un último paso. Confirma tu email para activar tu newsletter de AtomicCurious."
+              : "Un último paso. Confirma tu email para activar tu acceso al newsletter de AtomicCurious."
 
   const badge =
     state === "invalid"
@@ -349,6 +349,20 @@ export default function ConfirmNewsletterEsClient({
           : state === "error"
             ? "ERROR DE CONFIRMACIÓN"
             : "CONFIRMACIÓN DE EMAIL"
+
+  const showConfirmButton =
+    state === "ready" ||
+    state === "loading" ||
+    state === "invalid" ||
+    state === "expired" ||
+    state === "error"
+
+  const buttonLabel =
+    state === "loading"
+      ? "Confirmando..."
+      : state === "invalid" || state === "expired" || state === "error"
+        ? "Intentar confirmar de nuevo"
+        : "Confirmar suscripción"
 
   return (
     <main className="w-full" data-chmode="none">
@@ -405,21 +419,19 @@ export default function ConfirmNewsletterEsClient({
                   <div className="ac-confirm-rule" aria-hidden="true" />
                 </div>
 
-                {(state === "ready" || state === "loading") && (
+                {showConfirmButton && (
                   <div className="ac-reveal ac-delay-6 mt-8">
                     <button
                       type="button"
                       onClick={handleConfirm}
                       disabled={state === "loading"}
-                      className="ac-confirm-cta inline-flex min-w-[240px] items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                      className="ac-confirm-cta inline-flex min-w-[260px] items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <span className="relative z-[1] inline-flex items-center gap-2">
                         {state === "loading" && (
                           <span className="ac-spinner" aria-hidden="true" />
                         )}
-                        {state === "loading"
-                          ? "Confirmando..."
-                          : "Confirmar suscripción"}
+                        {buttonLabel}
                       </span>
                     </button>
                   </div>
