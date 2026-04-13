@@ -398,12 +398,17 @@ export async function POST(req: Request) {
     )
   }
 
-  const confirmUrl =
-    locale === "es"
-      ? `${APP_URL}/es/newsletter/confirm?token=${rawConfirmToken}`
-      : `${APP_URL}/newsletter/confirm?token=${rawConfirmToken}`
+  const confirmPath =
+    locale === "es" ? "/es/newsletter/confirm" : "/newsletter/confirm"
+
+  const confirmUrlObject = new URL(confirmPath, APP_URL)
+  confirmUrlObject.searchParams.set("token", rawConfirmToken)
+  const confirmUrl = confirmUrlObject.toString()
 
   const unsubscribeUrl = `${APP_URL}/api/newsletter/unsubscribe?token=${rawUnsubToken}&locale=${locale}`
+
+  console.log("[newsletter/subscribe] token:", rawConfirmToken)
+  console.log("[newsletter/subscribe] confirmUrl:", confirmUrl)
 
   const { subject, text, html } = emailCopy(
     locale,
