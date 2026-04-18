@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import NavBarEs from "@/components/NavBarEs"
 import SocialLinks from "@/components/SocialLinks"
 import Link from "next/link"
@@ -160,7 +160,9 @@ function FooterEditorialSignature() {
 export default function EsSectionsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-[100svh] flex-col overflow-x-hidden bg-bg text-text">
-      <NavBarEs />
+      <Suspense fallback={null}>
+        <NavBarEs />
+      </Suspense>
 
       <CharacterModeBoot />
 

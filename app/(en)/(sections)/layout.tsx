@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import NavBarEn from "@/components/NavBarEn"
 import SocialLinks from "@/components/SocialLinks"
 import Link from "next/link"
@@ -170,7 +170,9 @@ const FEATHER_NUDGE_PX = 0
 export default function EnSectionsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-[100svh] flex-col overflow-x-hidden bg-bg text-text">
-      <NavBarEn />
+      <Suspense fallback={null}>
+        <NavBarEn />
+      </Suspense>
 
       <CharacterModeBoot />
 
