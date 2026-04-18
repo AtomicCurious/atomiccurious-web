@@ -148,3 +148,17 @@ model NewsletterSend {
 
   @@map("NewsletterSend")
 }
+
+model Donation {
+  id              String   @id @default(cuid())
+  stripeSessionId String   @unique
+  amount          Int
+  currency        String
+  email           String?
+  createdAt       DateTime @default(now())
+  publicId        Int      @unique @default(autoincrement())
+
+  @@index([createdAt])
+
+  @@map("Donation")
+}

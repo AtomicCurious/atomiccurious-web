@@ -19,6 +19,7 @@ const MAX_AMOUNT = 10000
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
+
     const rawAmount = body?.amount
     const rawLocale = body?.locale
     const rawCurrency = body?.currency
@@ -73,7 +74,8 @@ export async function POST(req: NextRequest) {
       ? Math.round(amount)
       : Math.round(amount * 100)
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim()
+
     if (!baseUrl) {
       return NextResponse.json(
         {
@@ -85,6 +87,10 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       )
     }
+
+    const normalizedBaseUrl = baseUrl.replace(/\/+$/, "")
+    const successPath = locale === "es" ? "es/gracias" : "thank-you"
+    const cancelPath = locale === "es" ? "es/apoyar" : "support"
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -109,8 +115,8 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/${locale === "es" ? "es/gracias" : "thank-you"}`,
-      cancel_url: `${baseUrl}/${locale === "es" ? "es/apoyar" : "support"}`,
+      success_url: `${normalizedBaseUrl}/${successPath}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${normalizedBaseUrl}/${cancelPath}`,
       metadata: {
         type: "donation",
         locale,
@@ -119,7 +125,21 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json({ url: session.url })
+    if (!session.url) {
+      return NextResponse.json(
+        {
+          error:
+            locale === "es"
+              ? "No se pudo generar la URL de pago"
+              : "Could not generate the checkout URL",
+        },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      url: session.url,
+    })
   } catch (error) {
     console.error("Stripe session creation error:", error)
 

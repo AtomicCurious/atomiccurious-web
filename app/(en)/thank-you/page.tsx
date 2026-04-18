@@ -1,9 +1,19 @@
 // app/(en)/thank-you/page.tsx
 import Image from "next/image"
 import Link from "next/link"
+import type { Metadata } from "next"
+import Stripe from "stripe"
 import ShootingStars from "@/components/visual/ShootingStars"
 
-export const metadata = {
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("Missing STRIPE_SECRET_KEY")
+  }
+
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
+}
+
+export const metadata: Metadata = {
   title: "Thank You | AtomicCurious",
   description:
     "Thank you for supporting AtomicCurious. Your contribution helps this universe keep growing.",
@@ -74,31 +84,131 @@ const THANK_YOU_VISUAL_CSS = `
 `
 
 type SupportReceiptCardProps = {
-  amount?: string
-  supportId?: string
-  dateLabel?: string
+  amount: string
+  supportId: string
+  dateLabel: string
+  statusLabel: string
 }
 
 type ReceiptModalProps = {
-  amount?: string
-  supportId?: string
-  dateLabel?: string
+  amount: string
+  supportId: string
+  dateLabel: string
+  statusLabel: string
 }
 
 type ThankYouSearchParams = {
-  amount?: string
-  sid?: string
-  date?: string
+  session_id?: string
 }
 
 type PageProps = {
   searchParams?: Promise<ThankYouSearchParams>
 }
 
+type ReceiptData = {
+  amount: string
+  supportId: string
+  dateLabel: string
+  statusLabel: string
+}
+
+function formatAmountFromSession(session: Stripe.Checkout.Session) {
+  const amountTotal = session.amount_total
+  const currency = session.currency?.toUpperCase()
+
+  if (amountTotal == null || !currency) {
+    return "Contribution recorded"
+  }
+
+  const locale =
+    session.metadata?.locale === "es"
+      ? "es-MX"
+      : "en-US"
+
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(amountTotal / 100)
+}
+
+function formatDateFromSession(session: Stripe.Checkout.Session) {
+  if (!session.created) return "Date unavailable"
+
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(session.created * 1000))
+}
+
+function formatStatusFromSession(session: Stripe.Checkout.Session) {
+  switch (session.payment_status) {
+    case "paid":
+      return "Confirmed"
+    case "unpaid":
+      return "Pending"
+    case "no_payment_required":
+      return "Completed"
+    default:
+      return "Recorded"
+  }
+}
+
+function buildSupportId(session: Stripe.Checkout.Session) {
+  const created = session.created
+  const date = new Date(created * 1000)
+
+  const yyyy = String(date.getUTCFullYear())
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const dd = String(date.getUTCDate()).padStart(2, "0")
+
+  const sourceId =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.id
+
+  const suffix = sourceId.slice(-6).toUpperCase()
+
+  return `AC-${yyyy}${mm}${dd}-${suffix}`
+}
+
+async function getReceiptData(sessionId?: string): Promise<ReceiptData> {
+  const fallback: ReceiptData = {
+    amount: "Contribution recorded",
+    supportId: "AC-PENDING",
+    dateLabel: new Intl.DateTimeFormat("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date()),
+    statusLabel: "Recorded",
+  }
+
+  if (!sessionId || !process.env.STRIPE_SECRET_KEY) {
+    return fallback
+  }
+
+  try {
+    const stripe = getStripe()
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    return {
+      amount: formatAmountFromSession(session),
+      supportId: buildSupportId(session),
+      dateLabel: formatDateFromSession(session),
+      statusLabel: formatStatusFromSession(session),
+    }
+  } catch (error) {
+    console.error("Stripe thank-you session retrieval error:", error)
+    return fallback
+  }
+}
+
 function SupportReceiptCard({
-  amount = "Your contribution",
-  supportId = "#AC-00421",
-  dateLabel = "Today",
+  amount,
+  supportId,
+  dateLabel,
+  statusLabel,
 }: SupportReceiptCardProps) {
   return (
     <div
@@ -169,13 +279,14 @@ function SupportReceiptCard({
                 Contribution recorded
               </h2>
               <p className="text-sm leading-6 text-muted">
-                Your action is now part of this system of ideas,
-                explorations, and resources designed with intention.
+                Your contribution has been recorded successfully. Thank you for
+                helping sustain this universe of ideas, explorations, and
+                resources designed with intention.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-3 sm:min-w-[190px]">
+          <div className="grid gap-3 sm:min-w-[220px]">
             <div
               className="
                 rounded-2xl border border-white/10 bg-[rgba(255,255,255,0.04)]
@@ -223,7 +334,7 @@ function SupportReceiptCard({
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
               Status
             </p>
-            <p className="mt-2 text-sm font-medium text-text">Active</p>
+            <p className="mt-2 text-sm font-medium text-text">{statusLabel}</p>
           </div>
         </div>
 
@@ -234,9 +345,9 @@ function SupportReceiptCard({
           "
         >
           <p className="text-sm leading-7 text-muted">
-            Thank you for lighting up another part of this universe. Your support
-            helps sustain new pieces, better resources, and explorations made
-            with more intention and less noise.
+            Thank you for supporting this universe. Every contribution helps
+            turn curiosity into new pieces, better resources, and explorations
+            made with more intention and less noise.
           </p>
         </div>
       </div>
@@ -248,6 +359,7 @@ function ReceiptModal({
   amount,
   supportId,
   dateLabel,
+  statusLabel,
 }: ReceiptModalProps) {
   return (
     <div
@@ -279,6 +391,7 @@ function ReceiptModal({
           amount={amount}
           supportId={supportId}
           dateLabel={dateLabel}
+          statusLabel={statusLabel}
         />
       </div>
     </div>
@@ -396,9 +509,9 @@ function ThankYouUniverseVisual() {
       </div>
 
       <div className="mt-0 max-w-2xl text-sm leading-7 text-muted sm:text-[15px]">
-        Your support lit up another part of this universe. Thank you for helping
-        sustain ideas, explorations, and resources designed with more intention
-        and less noise.
+        Your support is now part of this universe. Thank you for helping sustain
+        ideas, explorations, and resources designed with more intention and less
+        noise.
       </div>
 
       <div
@@ -465,18 +578,13 @@ function ThankYouUniverseVisual() {
 
 export default async function ThankYouPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const sessionId =
+  typeof params?.session_id === "string" &&
+  params.session_id.startsWith("cs_")
+    ? params.session_id
+    : undefined
 
-  const amount = params?.amount
-    ? `$${params.amount} USD`
-    : "Your contribution"
-
-  const supportId = params?.sid
-    ? `#${params.sid}`
-    : "#AC-00421"
-
-  const dateLabel = params?.date
-    ? params.date
-    : "Today"
+  const receipt = await getReceiptData(sessionId)
 
   return (
     <main className="relative min-h-[100svh] overflow-x-hidden overflow-y-auto bg-bg text-text lg:h-[100svh] lg:overflow-hidden">
@@ -573,9 +681,10 @@ export default async function ThankYouPage({ searchParams }: PageProps) {
       </section>
 
       <ReceiptModal
-        amount={amount}
-        supportId={supportId}
-        dateLabel={dateLabel}
+        amount={receipt.amount}
+        supportId={receipt.supportId}
+        dateLabel={receipt.dateLabel}
+        statusLabel={receipt.statusLabel}
       />
     </main>
   )
