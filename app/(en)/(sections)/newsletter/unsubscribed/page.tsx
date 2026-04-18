@@ -72,14 +72,16 @@ export default function Page() {
                   UNSUBSCRIBED
                 </div>
 
-                <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 bg-bg/20 shadow-soft">
-                  <div className="relative aspect-[16/10] sm:aspect-[16/9]">
+                {/* ✅ Imagen corregida (sin recuadro) */}
+                <div className="mt-8 flex justify-center">
+                  <div className="overflow-hidden rounded-2xl border border-border/70 shadow-soft">
                     <Image
                       src="/images/sections/newsletter/newsletter_unsubscribed.webp"
                       alt="Unsubscribed from the AtomicCurious newsletter"
-                      fill
+                      width={1536}
+                      height={1024}
                       sizes="(min-width: 1024px) 720px, 92vw"
-                      className="object-cover"
+                      className="w-full h-auto object-cover"
                       priority
                     />
                   </div>
@@ -89,20 +91,23 @@ export default function Page() {
                   ATOMICCURIOUS · NEWSLETTER
                 </p>
 
-                <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl">
+                {/* 🔴 rojo editorial fuerte */}
+                <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-[#C62828] sm:text-5xl md:text-6xl">
                   You’re off the list
                 </h1>
 
-                <p className="mx-auto mt-5 max-w-2xl text-balance text-base text-muted sm:text-lg">
-                  You will no longer receive newsletter emails from AtomicCurious.
+                {/* 🌸 rojo suave */}
+                <p className="mx-auto mt-5 max-w-2xl text-balance text-base text-[#E07A7A] sm:text-lg">
+                  You will no longer receive emails from AtomicCurious.
                 </p>
 
                 <div className="mt-6">
                   <div className="ac-exit-rule" />
                 </div>
 
-                <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/25 px-4 py-2 text-xs font-semibold text-text shadow-soft backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent/70" />
+                {/* ✨ dorado premium */}
+                <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-bg/25 px-4 py-2 text-xs font-semibold text-[#D4AF37] shadow-soft backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
                   You can return anytime.
                 </div>
 
@@ -128,6 +133,7 @@ export default function Page() {
                     Back home
                   </Link>
                 </div>
+
               </div>
             </div>
           </div>

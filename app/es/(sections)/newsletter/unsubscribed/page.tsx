@@ -1,3 +1,4 @@
+//es\(sections)\newsletter\unsubscribed\page.tsx
 import Link from "next/link"
 import Image from "next/image"
 import type { Metadata } from "next"
@@ -69,14 +70,15 @@ export default function Page() {
                   BAJA COMPLETADA
                 </div>
 
-                <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 bg-bg/20 shadow-soft">
-                  <div className="relative aspect-[16/10] sm:aspect-[16/9]">
+                <div className="mt-8 flex justify-center">
+                  <div className="overflow-hidden rounded-2xl border border-border/70 shadow-soft">
                     <Image
-                      src="/images/sections/newsletter/newsletter_unsubscribed.webp"
+                      src="/images/sections/newsletter/newsletter_unsubscribed_v1.webp"
                       alt="Baja del boletín de AtomicCurious"
-                      fill
+                      width={1536}
+                      height={1024}
                       sizes="(min-width: 1024px) 720px, 92vw"
-                      className="object-cover"
+                      className="h-auto w-full object-cover"
                       priority
                     />
                   </div>
@@ -86,11 +88,11 @@ export default function Page() {
                   ATOMICCURIOUS · BOLETÍN
                 </p>
 
-                <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl">
+                <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-[#C62828] sm:text-5xl md:text-6xl">
                   Ya estás fuera de la lista
                 </h1>
 
-                <p className="mx-auto mt-5 max-w-2xl text-balance text-base text-muted sm:text-lg">
+                <p className="mx-auto mt-5 max-w-2xl text-balance text-base text-[#E07A7A] sm:text-lg">
                   Ya no recibirás correos del boletín de AtomicCurious.
                 </p>
 
@@ -98,8 +100,8 @@ export default function Page() {
                   <div className="ac-exit-rule" />
                 </div>
 
-                <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-bg/25 px-4 py-2 text-xs font-semibold text-text shadow-soft backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent/70" />
+                <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-bg/25 px-4 py-2 text-xs font-semibold text-[#D4AF37] shadow-soft backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
                   Puedes volver cuando quieras.
                 </div>
 

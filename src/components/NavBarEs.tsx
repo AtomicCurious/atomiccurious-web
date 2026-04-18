@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
 import AtomNoteBubble from "@/components/visual/AtomNoteBubble"
@@ -48,6 +48,11 @@ function toEn(pathname: string) {
     "/es/comunidad": "/community",
     "/es/contacto": "/contact",
     "/es/newsletter": "/newsletter",
+
+    "/es/newsletter/confirm": "/newsletter/confirm",
+    "/es/newsletter/confirmed": "/newsletter/confirmed",
+    "/es/newsletter/unsubscribed": "/newsletter/unsubscribed",
+
     "/es/start-here": "/start-here",
     "/es/about": "/about",
     "/es/posts": "/posts",
@@ -629,7 +634,13 @@ function SupportButtonEs({ mobile = false }: { mobile?: boolean }) {
 
 export default function NavBarEs() {
   const pathname = usePathname()
-  const enHref = useMemo(() => toEn(pathname), [pathname])
+  const searchParams = useSearchParams()
+
+  const enHref = useMemo(() => {
+    const base = toEn(pathname)
+    const qs = searchParams.toString()
+    return qs ? `${base}?${qs}` : base
+  }, [pathname, searchParams])
 
   const isHome = pathname === "/es" || pathname === "/es/"
   const showToggles = !isHome
@@ -787,7 +798,7 @@ export default function NavBarEs() {
     () => [
       "Los lanzamientos más recientes están en Recursos.",
       "Nuevos posts cada semana para mentes curiosas.",
-      "Si te gusta explorar, el newsletter es para ti.",
+      "Si te gusta explorar, el boletín es para ti.",
       "¿Tienes una idea o propuesta? Escríbeme en Contacto.",
       "Exploraciones cortas y cinematográficas para descubrir lo extraordinario.",
       "AtomicCurious es un proyecto para quienes diseñan su propia curiosidad.",

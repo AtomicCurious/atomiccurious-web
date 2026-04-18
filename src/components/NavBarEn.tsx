@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CoreFactBubble from "@/components/visual/CoreFactBubble"
 import AtomNoteBubble from "@/components/visual/AtomNoteBubble"
@@ -48,6 +48,11 @@ function toEs(pathname: string) {
     "/community": "/es/comunidad",
     "/contact": "/es/contacto",
     "/newsletter": "/es/newsletter",
+
+    "/newsletter/confirm": "/es/newsletter/confirm",
+    "/newsletter/confirmed": "/es/newsletter/confirmed",
+    "/newsletter/unsubscribed": "/es/newsletter/unsubscribed",
+
     "/start-here": "/es/start-here",
     "/about": "/es/about",
     "/posts": "/es/posts",
@@ -636,7 +641,13 @@ function SupportButtonEn({ mobile = false }: { mobile?: boolean }) {
 
 export default function NavBarEn() {
   const pathname = usePathname()
-  const esHref = useMemo(() => toEs(pathname), [pathname])
+  const searchParams = useSearchParams()
+
+  const esHref = useMemo(() => {
+    const base = toEs(pathname)
+    const qs = searchParams.toString()
+    return qs ? `${base}?${qs}` : base
+  }, [pathname, searchParams])
 
   const isHome = pathname === "/" || pathname === "/en"
   const showToggles = !isHome

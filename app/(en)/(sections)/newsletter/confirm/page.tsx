@@ -1,14 +1,13 @@
+// app/newsletter/confirm/page.tsx
+import { Suspense } from "react"
 import ConfirmNewsletterClient from "./ConfirmNewsletterClient"
 
 export const dynamic = "force-dynamic"
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string }>
-}) {
-  const params = await searchParams
-  const token = (params?.token || "").trim()
-
-  return <ConfirmNewsletterClient token={token} />
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <ConfirmNewsletterClient />
+    </Suspense>
+  )
 }
