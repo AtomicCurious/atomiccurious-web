@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import NavBarEs from "@/components/NavBarEs"
 import SocialLinks from "@/components/SocialLinks"
 import Link from "next/link"
@@ -103,7 +103,9 @@ function SupportInlineEs() {
 export default function EsHomeLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-[100svh] flex-col overflow-x-hidden overflow-y-auto bg-bg text-text md:h-[100svh] md:min-h-0 md:overflow-y-hidden">
-      <NavBarEs />
+      <Suspense fallback={null}>
+        <NavBarEs />
+      </Suspense>
 
       <CharacterModeBoot />
 
@@ -177,3 +179,4 @@ export default function EsHomeLayout({ children }: { children: ReactNode }) {
     </div>
   )
 }
+

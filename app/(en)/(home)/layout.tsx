@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import NavBarEn from "@/components/NavBarEn"
 import SocialLinks from "@/components/SocialLinks"
 import Link from "next/link"
@@ -109,7 +109,9 @@ const footerSocialItems: FooterSocialItem[] = [
 export default function EnHomeLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-[100svh] flex-col overflow-x-hidden overflow-y-auto bg-bg text-text md:h-[100svh] md:min-h-0 md:overflow-y-hidden">
-      <NavBarEn />
+      <Suspense fallback={null}>
+        <NavBarEn />
+      </Suspense>
 
       <CharacterModeBoot />
 
