@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
               day: "numeric",
               month: "long",
               year: "numeric",
+              timeZone: "America/Mexico_City",
             }).format(donation.createdAt)
 
             const subject = isSpanish

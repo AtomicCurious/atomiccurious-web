@@ -136,6 +136,7 @@ function formatDateFromSession(session: Stripe.Checkout.Session) {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "America/Mexico_City",
   }).format(new Date(session.created * 1000))
 }
 
