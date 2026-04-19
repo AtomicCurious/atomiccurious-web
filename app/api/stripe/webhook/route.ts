@@ -5,6 +5,20 @@ import { prisma } from "@/lib/prisma"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
+function buildSupportId(session: Stripe.Checkout.Session) {
+  const created = new Date(session.created * 1000)
+  const year = String(created.getUTCFullYear())
+
+  const sourceId =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.id
+
+  const suffix = sourceId.slice(-6).toUpperCase()
+
+  return `AC-${year}-${suffix}`
+}
+
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature")
 
@@ -49,12 +63,15 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ received: true, duplicate: true })
         }
 
+        const supportId = buildSupportId(session)
+
         await prisma.donation.create({
           data: {
             stripeSessionId: session.id,
             amount: session.amount_total ?? 0,
             currency: session.currency ?? "usd",
             email: session.customer_details?.email ?? null,
+            supportId,
           },
         })
 

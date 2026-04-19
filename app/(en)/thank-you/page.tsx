@@ -120,10 +120,7 @@ function formatAmountFromSession(session: Stripe.Checkout.Session) {
     return "Contribution recorded"
   }
 
-  const locale =
-    session.metadata?.locale === "es"
-      ? "es-MX"
-      : "en-US"
+  const locale = session.metadata?.locale === "es" ? "es-MX" : "en-US"
 
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -155,12 +152,8 @@ function formatStatusFromSession(session: Stripe.Checkout.Session) {
 }
 
 function buildSupportId(session: Stripe.Checkout.Session) {
-  const created = session.created
-  const date = new Date(created * 1000)
-
-  const yyyy = String(date.getUTCFullYear())
-  const mm = String(date.getUTCMonth() + 1).padStart(2, "0")
-  const dd = String(date.getUTCDate()).padStart(2, "0")
+  const created = new Date(session.created * 1000)
+  const year = String(created.getUTCFullYear())
 
   const sourceId =
     typeof session.payment_intent === "string"
@@ -169,20 +162,17 @@ function buildSupportId(session: Stripe.Checkout.Session) {
 
   const suffix = sourceId.slice(-6).toUpperCase()
 
-  return `AC-${yyyy}${mm}${dd}-${suffix}`
+  return `AC-${year}-${suffix}`
 }
 
 async function getReceiptData(sessionId?: string): Promise<ReceiptData> {
+  
   const fallback: ReceiptData = {
-    amount: "Contribution recorded",
-    supportId: "AC-PENDING",
-    dateLabel: new Intl.DateTimeFormat("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(new Date()),
-    statusLabel: "Recorded",
-  }
+  amount: "Contribution recorded",
+  supportId: "AC-PENDING",
+  dateLabel: "—",
+  statusLabel: "Recorded",
+}
 
   if (!sessionId || !process.env.STRIPE_SECRET_KEY) {
     return fallback
@@ -347,7 +337,7 @@ function SupportReceiptCard({
           <p className="text-sm leading-7 text-muted">
             Thank you for supporting this universe. Every contribution helps
             turn curiosity into new pieces, better resources, and explorations
-            made with more intention and less noise.
+            made with more intention and sharper focus.
           </p>
         </div>
       </div>
@@ -579,10 +569,10 @@ function ThankYouUniverseVisual() {
 export default async function ThankYouPage({ searchParams }: PageProps) {
   const params = await searchParams
   const sessionId =
-  typeof params?.session_id === "string" &&
-  params.session_id.startsWith("cs_")
-    ? params.session_id
-    : undefined
+    typeof params?.session_id === "string" &&
+    params.session_id.startsWith("cs_")
+      ? params.session_id
+      : undefined
 
   const receipt = await getReceiptData(sessionId)
 

@@ -157,6 +157,7 @@ model Donation {
   email           String?
   createdAt       DateTime @default(now())
   publicId        Int      @unique @default(autoincrement())
+  supportId String? @unique
 
   @@index([createdAt])
 
