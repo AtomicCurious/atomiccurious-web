@@ -167,13 +167,12 @@ function buildSupportId(session: Stripe.Checkout.Session) {
 }
 
 async function getReceiptData(sessionId?: string): Promise<ReceiptData> {
-  
   const fallback: ReceiptData = {
-  amount: "Contribution recorded",
-  supportId: "AC-PENDING",
-  dateLabel: "—",
-  statusLabel: "Recorded",
-}
+    amount: "Contribution recorded",
+    supportId: "AC-PENDING",
+    dateLabel: "—",
+    statusLabel: "Recorded",
+  }
 
   if (!sessionId || !process.env.STRIPE_SECRET_KEY) {
     return fallback
@@ -389,7 +388,11 @@ function ReceiptModal({
   )
 }
 
-function ThankYouUniverseVisual() {
+function ThankYouUniverseVisual({ sessionId }: { sessionId?: string }) {
+  const pdfHref = sessionId
+    ? `/api/stripe/receipt?session_id=${encodeURIComponent(sessionId)}`
+    : undefined
+
   return (
     <div className="relative mx-auto flex w-full max-w-[760px] flex-col items-center text-center">
       <div className="relative flex w-full justify-center -translate-y-0">
@@ -501,7 +504,7 @@ function ThankYouUniverseVisual() {
 
       <div className="mt-0 max-w-2xl text-sm leading-7 text-muted sm:text-[15px]">
         Your support is now part of this universe. Thank you for helping sustain
-        ideas, explorations, and resources made with more intention and sharper 
+        ideas, explorations, and resources made with more intention and sharper
         focus.
       </div>
 
@@ -562,6 +565,26 @@ function ThankYouUniverseVisual() {
         >
           View receipt
         </a>
+
+        {pdfHref ? (
+          <a
+            href={pdfHref}
+            className="
+              inline-flex items-center justify-center rounded-full
+              border px-5 py-2.5 text-[13px] font-medium transition
+              hover:scale-[1.04]
+            "
+            style={{
+              borderColor: "rgba(255,255,255,0.18)",
+              background: "rgba(255,255,255,0.06)",
+              color: "rgb(244,246,248)",
+              boxShadow:
+                "0 0 0 1px rgba(255,255,255,0.03), 0 10px 24px rgba(255,255,255,0.06)",
+            }}
+          >
+            Download PDF
+          </a>
+        ) : null}
       </div>
     </div>
   )
@@ -667,7 +690,7 @@ export default async function ThankYouPage({ searchParams }: PageProps) {
               bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]
             "
           />
-          <ThankYouUniverseVisual />
+          <ThankYouUniverseVisual sessionId={sessionId} />
         </div>
       </section>
 

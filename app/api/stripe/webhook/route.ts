@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { prisma } from "@/lib/prisma"
+import { resend, RESEND_FROM } from "@/lib/resend"
+import { renderDonationReceiptHtml } from "@/lib/donations/renderDonationReceiptHtml"
+import { renderDonationReceiptText } from "@/lib/donations/renderDonationReceiptText"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
@@ -65,7 +68,7 @@ export async function POST(req: NextRequest) {
 
         const supportId = buildSupportId(session)
 
-        await prisma.donation.create({
+        const donation = await prisma.donation.create({
           data: {
             stripeSessionId: session.id,
             amount: session.amount_total ?? 0,
@@ -74,6 +77,48 @@ export async function POST(req: NextRequest) {
             supportId,
           },
         })
+
+        if (donation.email) {
+          try {
+            const isSpanish = session.metadata?.locale === "es"
+            const locale = isSpanish ? "es-MX" : "en-US"
+
+            const amountFormatted = new Intl.NumberFormat(locale, {
+              style: "currency",
+              currency: donation.currency.toUpperCase(),
+              currencyDisplay: "code",
+            }).format(donation.amount / 100)
+
+            const dateFormatted = new Intl.DateTimeFormat(locale, {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(donation.createdAt)
+
+            const subject = isSpanish
+              ? "Tu comprobante – AtomicCurious"
+              : "Your receipt – AtomicCurious"
+
+            await resend.emails.send({
+              from: RESEND_FROM,
+              to: donation.email,
+              subject,
+              html: renderDonationReceiptHtml({
+                amount: amountFormatted,
+                supportId: donation.supportId!,
+                date: dateFormatted,
+              }),
+              text: renderDonationReceiptText({
+                amount: amountFormatted,
+                supportId: donation.supportId!,
+                date: dateFormatted,
+                locale: isSpanish ? "es" : "en",
+              }),
+            })
+          } catch (err) {
+            console.error("Resend email error:", err)
+          }
+        }
 
         break
       }
