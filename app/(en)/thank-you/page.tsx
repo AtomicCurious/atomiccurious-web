@@ -125,6 +125,7 @@ function formatAmountFromSession(session: Stripe.Checkout.Session) {
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
+    currencyDisplay: "code",
   }).format(amountTotal / 100)
 }
 
@@ -500,8 +501,8 @@ function ThankYouUniverseVisual() {
 
       <div className="mt-0 max-w-2xl text-sm leading-7 text-muted sm:text-[15px]">
         Your support is now part of this universe. Thank you for helping sustain
-        ideas, explorations, and resources designed with more intention and less
-        noise.
+        ideas, explorations, and resources made with more intention and sharper 
+        focus.
       </div>
 
       <div
