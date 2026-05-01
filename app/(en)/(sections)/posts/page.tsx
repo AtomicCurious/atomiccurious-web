@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 
 import { postsEn, PostFormat } from "@/content/posts.en"
+import { formatPostDate } from "@/lib/posts-utils"
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -61,10 +62,6 @@ const formatPillLabels: Record<PostFormat, string> = {
   quiz: "Core · Quiz",
 }
 
-/**
- * Per-format colour tokens + glow value.
- * These stay tied to the actual content type.
- */
 const formatStyles: Record<
   PostFormat,
   {
@@ -106,9 +103,6 @@ const formatStyles: Record<
   },
 }
 
-/**
- * Hero content per character/host.
- */
 const hostContent: Record<
   HostKey,
   {
@@ -149,9 +143,6 @@ const hostContent: Record<
   },
 }
 
-/**
- * Upcoming posts — edit this array as you prepare new content.
- */
 const upcomingPosts: Array<{
   number: number
   title: string
@@ -167,18 +158,21 @@ const upcomingPosts: Array<{
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getReadingTime(post: (typeof postsEn)[number]): string {
-  const value = (post as Record<string, unknown>).readingTime
-  if (typeof value === "string" && value.trim()) return value
-  if (typeof value === "number" && Number.isFinite(value)) return `${value} min`
+  if (typeof post.readingTime === "number" && Number.isFinite(post.readingTime)) {
+    return `${post.readingTime} min`
+  }
+
   const words = `${post.title} ${post.description}`.trim().split(/\s+/).length
+
   return `${Math.max(3, Math.ceil(words / 45))} min`
 }
 
 function getPostNumber(post: (typeof postsEn)[number]): string | null {
-  const value = (post as Record<string, unknown>).number
-  if (typeof value === "number" && Number.isFinite(value))
-    return `#${String(value).padStart(3, "0")}`
-  return null
+  const match = post.id.match(/(\d+)$/)
+
+  if (!match) return null
+
+  return `#${match[1].padStart(3, "0")}`
 }
 
 // ─── Character switcher CSS ───────────────────────────────────────────────────
@@ -411,18 +405,19 @@ function CharacterSwitcherCss() {
 function HostTag() {
   return (
     <>
-      {(Object.entries(hostContent) as [HostKey, (typeof hostContent)[HostKey]][]).map(
-        ([key, host]) => (
-          <span
-            key={key}
-            data-ac-host={key}
-            className="ac-host-chip inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold backdrop-blur-sm transition-colors"
-            style={{ ["--ac-display" as string]: "inline-flex" }}
-          >
-            {host.tag}
-          </span>
-        ),
-      )}
+      {(Object.entries(hostContent) as [
+        HostKey,
+        (typeof hostContent)[HostKey],
+      ][]).map(([key, host]) => (
+        <span
+          key={key}
+          data-ac-host={key}
+          className="ac-host-chip inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold backdrop-blur-sm transition-colors"
+          style={{ ["--ac-display" as string]: "inline-flex" }}
+        >
+          {host.tag}
+        </span>
+      ))}
     </>
   )
 }
@@ -430,42 +425,36 @@ function HostTag() {
 function HostCopy() {
   return (
     <>
-      {(Object.entries(hostContent) as [HostKey, (typeof hostContent)[HostKey]][]).map(
-        ([key, host]) => (
-          <div key={key} data-ac-host={key}>
-            <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
-              {host.eyebrow}
-            </p>
+      {(Object.entries(hostContent) as [
+        HostKey,
+        (typeof hostContent)[HostKey],
+      ][]).map(([key, host]) => (
+        <div key={key} data-ac-host={key}>
+          <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
+            {host.eyebrow}
+          </p>
 
-            <div
-              aria-hidden="true"
-              className="ac-host-accent-line mt-4 h-px w-24 rounded-full opacity-70"
-            />
+          <div
+            aria-hidden="true"
+            className="ac-host-accent-line mt-4 h-px w-24 rounded-full opacity-70"
+          />
 
-            <h1 className="mt-5 max-w-5xl whitespace-pre-line text-pretty text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl xl:whitespace-nowrap">
-              {host.title}
-            </h1>
+          <h1 className="mt-5 max-w-5xl whitespace-pre-line text-pretty text-4xl font-semibold tracking-tight text-text sm:text-5xl md:text-6xl xl:whitespace-nowrap">
+            {host.title}
+          </h1>
 
-            <p className="mt-6 max-w-5xl text-base leading-relaxed text-muted sm:text-lg xl:whitespace-nowrap">
-              {host.description}
-            </p>
-          </div>
-        ),
-      )}
+          <p className="mt-6 max-w-5xl text-base leading-relaxed text-muted sm:text-lg xl:whitespace-nowrap">
+            {host.description}
+          </p>
+        </div>
+      ))}
     </>
   )
 }
 
-/**
- * Hero image + editorial sidebar.
- *
- * Mobile:   image stacked above sidebar
- * Desktop:  image ~65% | sidebar ~35%
- */
 function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
   return (
     <div className="mt-10 grid gap-4 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]">
-      {/* Image */}
       <div className="relative overflow-hidden rounded-[28px] border border-border bg-surface-1 shadow-soft">
         <div
           aria-hidden="true"
@@ -473,20 +462,21 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
         />
 
         <div className="relative aspect-[4/3] w-full md:aspect-[16/9] lg:aspect-[4/3] xl:aspect-[16/9]">
-          {(Object.entries(hostContent) as [HostKey, (typeof hostContent)[HostKey]][]).map(
-            ([key, host]) => (
-              <Image
-                key={key}
-                data-ac-host={key}
-                src={host.image}
-                alt={host.alt}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 65vw, 740px"
-                className="object-cover object-[50%_0%]"
-              />
-            ),
-          )}
+          {(Object.entries(hostContent) as [
+            HostKey,
+            (typeof hostContent)[HostKey],
+          ][]).map(([key, host]) => (
+            <Image
+              key={key}
+              data-ac-host={key}
+              src={host.image}
+              alt={host.alt}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 65vw, 740px"
+              className="object-cover object-[50%_0%]"
+            />
+          ))}
 
           <div
             aria-hidden="true"
@@ -501,9 +491,7 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
         </div>
       </div>
 
-      {/* Editorial sidebar */}
       <aside className="flex flex-col gap-3">
-        {/* Collection description + format visual index */}
         <div className="flex flex-1 flex-col justify-between overflow-hidden rounded-[24px] border border-border bg-surface-1 p-5 shadow-soft">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
@@ -519,6 +507,7 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
           <div className="mt-5 flex flex-col gap-2">
             {(["curiosity", "ranked", "quiz"] as PostFormat[]).map((fmt) => {
               const s = formatStyles[fmt]
+
               return (
                 <div
                   key={fmt}
@@ -534,7 +523,6 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
           </div>
         </div>
 
-        {/* Publishing rhythm + post count */}
         <div className="overflow-hidden rounded-[24px] border border-border bg-surface-1 px-5 py-4 shadow-soft">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -564,11 +552,6 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
   )
 }
 
-/**
- * Published post card.
- * Tag colour stays tied to the real content format.
- * Hover + CTA follow the active character.
- */
 function PostCard({ post }: { post: (typeof postsEn)[number] }) {
   const s = formatStyles[post.format]
   const readingTime = getReadingTime(post)
@@ -576,7 +559,7 @@ function PostCard({ post }: { post: (typeof postsEn)[number] }) {
 
   return (
     <Link
-      href={`/posts/${post.slug}`}
+      href={`/en/posts/${post.slug}`}
       className="
         ac-host-card group relative overflow-hidden rounded-2xl border border-border
         bg-surface-1 p-6 shadow-soft transition duration-300
@@ -598,7 +581,10 @@ function PostCard({ post }: { post: (typeof postsEn)[number] }) {
               <span className="text-[10px] font-medium tracking-[0.1em] text-muted tabular-nums">
                 {postNumber}
               </span>
-              <span aria-hidden="true" className="size-1 rounded-full bg-border" />
+              <span
+                aria-hidden="true"
+                className="size-1 rounded-full bg-border"
+              />
             </>
           ) : null}
 
@@ -614,7 +600,7 @@ function PostCard({ post }: { post: (typeof postsEn)[number] }) {
         </div>
 
         <span className="shrink-0 text-[11px] font-medium tracking-wide text-muted">
-          {post.date}
+          {formatPostDate(post.date, "en")}
         </span>
       </div>
 
@@ -646,7 +632,13 @@ function PostCard({ post }: { post: (typeof postsEn)[number] }) {
             fill="none"
             className="opacity-50"
           >
-            <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+            <circle
+              cx="8"
+              cy="8"
+              r="6.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
             <path
               d="M8 5v3l1.5 1.5"
               stroke="currentColor"
@@ -661,11 +653,6 @@ function PostCard({ post }: { post: (typeof postsEn)[number] }) {
   )
 }
 
-/**
- * Upcoming post teaser.
- * Format label stays tied to the real content.
- * Hover frame + big number follow the active character.
- */
 function UpcomingCard({ item }: { item: (typeof upcomingPosts)[number] }) {
   const s = formatStyles[item.format]
 
@@ -727,7 +714,6 @@ export default async function Page({ searchParams }: PageProps) {
       <CharacterSwitcherCss />
 
       <div className="mx-auto w-full max-w-6xl px-6 py-14 sm:px-10 sm:py-20">
-        {/* ── Header ── */}
         <header className="max-w-4xl">
           <p className="text-xs font-medium tracking-[0.18em] text-muted">
             ATOMICCURIOUS · POSTS
@@ -746,19 +732,18 @@ export default async function Page({ searchParams }: PageProps) {
           <HostCopy />
         </header>
 
-        {/* ── Hero image + editorial sidebar ── */}
         <HostVisualWithSidebar totalPosts={postsEn.length} />
 
-        {/* ── Filter bar ── */}
         <section className="mt-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
               {filterKeys.map((key) => {
                 const isActive = activeFormat === key
+
                 return (
                   <Link
                     key={key}
-                    href={key === "all" ? "/posts" : `/posts?format=${key}`}
+                    href={key === "all" ? "/en/posts" : `/posts?format=${key}`}
                     className={
                       isActive
                         ? "ac-host-filter inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium transition-colors"
@@ -778,7 +763,6 @@ export default async function Page({ searchParams }: PageProps) {
           </div>
         </section>
 
-        {/* ── Posts grid ── */}
         <section className="mt-8">
           {!hasContent ? (
             <div className="rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
@@ -795,7 +779,7 @@ export default async function Page({ searchParams }: PageProps) {
                   }`}
                 >
                   {filteredPosts.map((post) => (
-                    <PostCard key={post.slug} post={post} />
+                    <PostCard key={post.id} post={post} />
                   ))}
                 </div>
               ) : null}
@@ -824,7 +808,6 @@ export default async function Page({ searchParams }: PageProps) {
           )}
         </section>
 
-        {/* ── Newsletter CTA ── */}
         <section className="ac-newsletter mt-14 overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-soft">
           <div className="relative p-6 sm:p-7">
             <div
@@ -838,8 +821,9 @@ export default async function Page({ searchParams }: PageProps) {
                   Get access to AtomicCurious
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">
-                  Exclusive content, early access to new explorations and selected tools — 
-                  every two weeks for minds that question everything.
+                  Exclusive content, early access to new explorations and
+                  selected tools — every two weeks for minds that question
+                  everything.
                 </p>
               </div>
 

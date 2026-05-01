@@ -20,7 +20,7 @@ const FEATHER_NUDGE_PX = 0
 
 const SOCIAL_ITEMS = [
   { label: "YouTube" as const, href: "https://www.youtube.com/@AtomicCurious" },
-  { label: "TikTok" as const, href: "https://tiktok.com/@atomic_curious" },
+  { label: "TikTok" as const, href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram" as const, href: "https://instagram.com/atomiccurious" },
   {
     label: "Facebook" as const,

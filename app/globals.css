@@ -915,3 +915,270 @@ body[data-chmode="none"] .ac-tip {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   POSTS — Editorial premium surface + soft reveal
+   ========================================================= */
+
+.ac-post-surface {
+  position: relative;
+}
+
+.ac-post-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.01) 28%,
+      rgba(255,255,255,0.00) 100%
+    );
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.75));
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.75));
+}
+
+.ac-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  animation: acReveal 0.8s cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay: 0.08s;
+  will-change: opacity, transform, filter;
+}
+
+@keyframes acReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* =========================================================
+   PROSE
+   ========================================================= */
+
+.prose h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prose h3 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.prose p {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes ac-drop-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes ac-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* =========================================================
+   PARTICLES — ORDERED 2X GRID SYSTEM
+   ========================================================= */
+
+.ac-post-particle-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  opacity: 0.9;
+  pointer-events: none;
+  background-repeat: repeat;
+  mix-blend-mode: screen;
+}
+
+/* LEFT */
+
+.ac-post-particle-panel-left {
+  left: 0;
+
+  background-image:
+    radial-gradient(circle, rgb(var(--accent) / 0.55) 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(225,238,248,0.38) 0.85px, transparent 1.9px),
+    radial-gradient(circle, rgba(255,255,255,0.52) 0.5px, transparent 1.7px),
+    linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%);
+
+  background-size:
+    32px 32px,
+    64px 64px,
+    128px 128px,
+    100% 100%;
+
+  background-position:
+    0 0,
+    16px 16px,
+    48px 48px,
+    0 0;
+
+  animation: ac-post-particles-left 42s linear infinite;
+}
+
+/* RIGHT */
+
+.ac-post-particle-panel-right {
+  right: 0;
+
+  background-image:
+    radial-gradient(circle, rgb(var(--accent) / 0.5) 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(225,238,248,0.44) 0.85px, transparent 1.9px),
+    radial-gradient(circle, rgba(255,255,255,0.64) 0.5px, transparent 1.7px),
+    linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%);
+
+  background-size:
+    32px 32px,
+    64px 64px,
+    128px 128px,
+    100% 100%;
+
+  background-position:
+    0 0,
+    16px 16px,
+    48px 48px,
+    0 0;
+
+  animation: ac-post-particles-right 50s linear infinite;
+}
+
+/* MOVEMENT — sincronizado */
+
+@keyframes ac-post-particles-left {
+  from {
+    background-position:
+      0 0,
+      16px 16px,
+      48px 48px,
+      0 0;
+  }
+
+  to {
+    background-position:
+      0 -256px,
+      16px -240px,
+      48px -208px,
+      0 0;
+  }
+}
+
+@keyframes ac-post-particles-right {
+  from {
+    background-position:
+      0 0,
+      16px 16px,
+      48px 48px,
+      0 0;
+  }
+
+  to {
+    background-position:
+      0 -256px,
+      16px -240px,
+      48px -208px,
+      0 0;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-post-particle-panel-left,
+  .ac-post-particle-panel-right {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .ac-post-particle-panel {
+    width: 120px;
+    opacity: 0.45;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — Mobile full atmospheric field (clean)
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .ac-post-particle-panel {
+    width: 100%;
+    opacity: 0.28;
+    pointer-events: none;
+
+    /* fade en el centro para no distraer lectura */
+    mask-image: radial-gradient(
+      ellipse 70% 60% at center,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.4) 40%,
+      rgba(0,0,0,1) 75%
+    );
+
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at center,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.4) 40%,
+      rgba(0,0,0,1) 75%
+    );
+  }
+
+  .ac-post-particle-panel-left {
+    left: 0;
+    right: 0;
+  }
+
+  .ac-post-particle-panel-right {
+    display: none;
+  }
+}
+
+@keyframes acCalloutFloat {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}

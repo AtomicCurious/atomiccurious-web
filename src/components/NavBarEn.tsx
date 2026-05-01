@@ -9,6 +9,7 @@ import AtomNoteBubble from "@/components/visual/AtomNoteBubble"
 import ThemeToggle from "@/components/ThemeToggle"
 import CharacterToggle from "@/components/CharacterToggle"
 import CharacterSigilMark from "@/components/CharacterSigilMark"
+import { getEsSlugFromEn } from "@/lib/post-slugs"
 
 /* =========================================================
    HOME HEADER POSITION CONTROLS (desktop/tablet)
@@ -59,17 +60,14 @@ function toEs(pathname: string) {
     "/": "/es",
   }
 
-  const postSlugMap: Record<string, string> = {
-    "why-we-dream": "por-que-sonamos",
-  }
-
   if (map[pathname]) return map[pathname]
 
-  if (pathname.startsWith("/posts/")) {
-    const slug = pathname.replace("/posts/", "")
-    const esSlug = postSlugMap[slug] ?? slug
-    return `/es/posts/${esSlug}`
-  }
+ if (pathname.startsWith("/posts/")) {
+  const slug = pathname.replace("/posts/", "")
+  const esSlug = getEsSlugFromEn(slug)
+
+  return esSlug ? `/es/posts/${esSlug}` : "/es/posts"
+}
 
   return pathname === "/" ? "/es" : `/es${pathname}`
 }

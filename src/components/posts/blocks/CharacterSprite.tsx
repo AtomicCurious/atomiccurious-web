@@ -5,7 +5,7 @@ export type SpriteVariant = "presenter" | "experiment" | "callout"
 
 type Props = {
   host: Host
-  variant: SpriteVariant
+  variant?: SpriteVariant
   alt?: string
   size?: number
   className?: string
@@ -32,13 +32,16 @@ const SPRITES: Record<Host, Record<SpriteVariant, string>> = {
 
 export default function CharacterSprite({
   host,
-  variant,
+  variant = "presenter",
   alt,
   size = 64,
   className,
   priority,
 }: Props) {
-  const src = SPRITES[host]?.[variant]
+  const src =
+    SPRITES[host]?.[variant] ??
+    "/images/hosts/atom-presenter.webp"
+
   const a11y = alt ?? `${host} ${variant}`
 
   return (

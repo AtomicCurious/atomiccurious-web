@@ -1,46 +1,50 @@
-// app/(en)/posts/[slug]/page.tsx
+// app/en/(sections)/posts/[slug]/page.tsx
 import Link from "next/link"
+import type { CSSProperties } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { compileMDX } from "next-mdx-remote/rsc"
 import fs from "node:fs/promises"
 import path from "node:path"
+import PostNote from "@/components/posts/blocks/PostNote"
+import { AffiliateBlock } from "@/components/posts/blocks/AffiliateBlock"
 
-import { postsEn, PostFormat } from "@/content/posts.en"
+import { postsEn } from "@/content/posts.en"
 
-import MakeItRealCard from "@/components/posts/MakeItRealCard"
-import CharacterCallout from "@/components/posts/CharacterCallout"
-import PostHeroHost from "@/components/posts/PostHeroHost"
+import {
+  estimateWords,
+  formatLabels,
+  formatPostDate,
+  formatToHost,
+  normalizeSlug,
+  readingTimeLabel,
+} from "@/lib/posts-utils"
+
+import MakeItRealCard from "@/components/posts/blocks/MakeItRealCard"
+import CharacterCallout from "@/components/posts/blocks/CharacterCallout"
+import { PostEndCTA } from "@/components/posts/layout/PostEndCTA"
+import { PostFaq } from "@/components/posts/layout/PostFaq"
+import { PostHeaderAnimated } from "@/components/posts/layout/PostHeaderAnimated"
+import { PostShell } from "@/components/posts/layout/PostShell"
+import { PostProse } from "@/components/posts/layout/PostProse"
 
 type PageProps = {
   params: Promise<{ slug: string }>
 }
 
-// ---------------------------
-// Helpers
-// ---------------------------
-function normalizeSlug(raw?: string) {
-  return (raw ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/_/g, "-")
-    .replace(/\s+/g, "-")
+type Frontmatter = {
+  youtubeId?: string
+  thesis?: string
 }
 
-const formatLabels: Record<PostFormat, string> = {
-  curiosity: "Curiosity · Atom",
-  ranked: "Ranked · Iris",
-  quiz: "Quiz · Core",
+type PostAccent = "atom" | "iris" | "core"
+
+const accentRgbByPost: Record<PostAccent, string> = {
+  atom: "29 196 151",
+  iris: "125 211 252",
+  core: "245 158 11",
 }
 
-// CRÍTICO: format -> host
-const formatToHost = (format: PostFormat) => {
-  if (format === "curiosity") return "atom" as const
-  if (format === "ranked") return "iris" as const
-  return "core" as const
-}
-
-// ✅ IMPORTANTE: tus MDX están en src/content/posts/en
 async function readMdxEn(slug: string) {
   const filePath = path.join(
     process.cwd(),
@@ -50,39 +54,21 @@ async function readMdxEn(slug: string) {
     "en",
     `${slug}.mdx`
   )
+
   return fs.readFile(filePath, "utf8")
 }
 
-// Header opcional si el artículo es largo
-function estimateWords(source: string) {
-  const text = source
-    .replace(/<[^>]+>/g, " ")
-    .replace(/[`*_#>\-\[\]\(\)]/g, " ")
-  const words = text.trim().split(/\s+/).filter(Boolean)
-  return words.length
-}
-
-function readingTimeLabel(words: number) {
-  if (!words) return undefined
-  const minutes = Math.max(3, Math.round(words / 220))
-  return `${minutes} min`
-}
-
-// ---------------------------
-// Next.js: metadata
-// ---------------------------
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug: rawSlug } = await params
   const slug = normalizeSlug(rawSlug)
-
   const metaPost = postsEn.find((p) => p.slug === slug)
 
   if (!slug || !metaPost) {
     return {
       title: "Post not found | AtomicCurious",
-      description: "This page doesn’t exist yet.",
+      description: "This page doesn't exist yet.",
     }
   }
 
@@ -92,28 +78,24 @@ export async function generateMetadata({
   }
 }
 
-// Opcional: SSG
 export async function generateStaticParams() {
   return postsEn.map((p) => ({ slug: p.slug }))
 }
 
-// ---------------------------
-// Page
-// ---------------------------
 export default async function Page({ params }: PageProps) {
   const { slug: rawSlug } = await params
   const slug = normalizeSlug(rawSlug)
 
   const metaPost = postsEn.find((p) => p.slug === slug)
+
   if (!slug || !metaPost) return notFound()
 
-  // More from this format
   const moreFromFormat = postsEn
     .filter((p) => p.format === metaPost.format && p.slug !== slug)
     .slice(0, 4)
 
-  // Read + compile MDX
   let mdxSource = ""
+
   try {
     mdxSource = await readMdxEn(slug)
   } catch {
@@ -121,213 +103,198 @@ export default async function Page({ params }: PageProps) {
   }
 
   const words = estimateWords(mdxSource)
-  const isLong = words >= 2000
-  const host = formatToHost(metaPost.format)
-  const readingTime = readingTimeLabel(words)
+  const host = formatToHost(metaPost.format) as PostAccent
 
-  // ✅ YouTube: se puede tomar del frontmatter del MDX
-  const { content, frontmatter } = await compileMDX<{
-    youtubeId?: string
-  }>({
+  const readingTime = metaPost.readingTime
+    ? `${metaPost.readingTime} min`
+    : readingTimeLabel(words)
+
+  const postDate = formatPostDate(metaPost.date, "en-US")
+
+  const { content, frontmatter } = await compileMDX<Frontmatter>({
     source: mdxSource,
     components: {
-      MakeItRealCard: (props: any) => <MakeItRealCard host={host} {...props} />,
+      MakeItRealCard: (props: any) => (
+        <MakeItRealCard host={host} {...props} />
+      ),
       CharacterCallout: (props: any) => (
         <CharacterCallout host={host} {...props} />
       ),
+      PostFaq,
+      PostShell,
+      PostProse,
+      PostEndCTA,
     },
     options: { parseFrontmatter: true },
   })
 
-  // ✅ fallback de prueba (si no pones youtubeId en el MDX)
-  const youtubeId = frontmatter?.youtubeId ?? "dQw4w9WgXcQ"
+  const youtubeId = frontmatter?.youtubeId
+  const thesis = frontmatter?.thesis
 
   return (
-    <main className="w-full">
-      <article className="mx-auto w-full max-w-6xl px-6 py-8 sm:px-10 sm:py-12">
-        {/* Header */}
-        <header className="mx-auto w-full max-w-6xl">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-            {/* LEFT */}
-            <div className="min-w-0">
-              <p className="text-xs font-medium tracking-wide text-muted">
-                ATOMICCURIOUS · POST
-              </p>
+    <main
+      style={
+        {
+          "--accent": accentRgbByPost[host],
+        } as CSSProperties
+      }
+      className="relative w-full overflow-hidden"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      >
+        <span className="ac-post-particle-panel ac-post-particle-panel-left" />
+        <span className="ac-post-particle-panel ac-post-particle-panel-right" />
+      </div>
 
-              <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-text sm:text-5xl">
-                {metaPost.title}
-              </h1>
+      <article className="relative z-10 mx-auto w-full max-w-6xl px-6 py-10 sm:px-10 sm:py-14">
+        <PostHeaderAnimated
+          title={metaPost.title}
+          description={metaPost.description}
+          format={metaPost.format}
+          tag={metaPost.tag}
+          postDate={postDate}
+          readingTime={readingTime}
+        />
 
-              <p className="mt-4 text-pretty text-base leading-relaxed text-muted sm:text-lg">
-                {metaPost.description}
-              </p>
+        {thesis ? (
+          <section
+            aria-label="Key idea of the post"
+            className="
+              mx-auto w-full max-w-4xl overflow-hidden rounded-2xl
+              border border-white/10
+              bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_8%,#0b1f14_92%)_0%,#0b1f14_65%,rgba(255,255,255,0.025)_100%)]
+              shadow-[0_18px_60px_rgba(0,0,0,0.32)]
+            "
+          >
+            <div className="relative px-6 py-5 sm:px-7 sm:py-6">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_20%,rgba(var(--accent),0.16),transparent_34%)]"
+              />
 
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-border bg-surface-1 px-3 py-1 text-xs text-muted">
-                  {formatLabels[metaPost.format]}
-                </span>
+              <div
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-full w-[5px] bg-[rgb(var(--accent))] shadow-[0_0_18px_rgba(var(--accent),0.55)]"
+              />
 
-                {metaPost.tag ? (
-                  <span className="rounded-full border border-border bg-bg/30 px-3 py-1 text-xs text-muted">
-                    {metaPost.tag}
-                  </span>
-                ) : null}
+              <div className="relative">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--accent))]">
+                  Key idea
+                </p>
+
+                <p className="max-w-3xl text-balance text-lg font-semibold leading-relaxed text-text sm:text-xl">
+                  {thesis}
+                </p>
               </div>
+            </div>
+          </section>
+        ) : null}
 
-              <div className="mt-7">
-                <PostHeroHost
-                  host={host}
+        <section className="mx-auto mt-14 w-full max-w-5xl">
+          {content}
+        </section>
+
+        {youtubeId ? (
+          <section className="mx-auto mt-0 w-full max-w-4xl">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+                Watch video
+              </p>
+
+              <span className="hidden h-px flex-1 bg-white/10 sm:block" />
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025] shadow-[0_18px_70px_rgba(0,0,0,0.35)]">
+              <div className="aspect-video w-full">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube.com/embed/${youtubeId}`}
                   title={metaPost.title}
-                  subheadline={metaPost.description}
-                  readingTime={readingTime}
-                  show={isLong}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
                 />
               </div>
             </div>
 
-            {/* RIGHT */}
-            <aside className="lg:sticky lg:top-24">
-              <div className="rounded-2xl border border-border bg-surface-1 p-5 shadow-soft">
-                <p className="text-xs font-medium tracking-wide text-muted">
-                  DETAILS
-                </p>
+            <PostNote variant="video">
+              We do not currently have videos in Spanish. You can enable
+              subtitles on YouTube — they have already been adapted for you.
+            </PostNote>
+          </section>
+        ) : null}
 
-                <div className="mt-3 space-y-3 text-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-muted">Date</span>
-                    <span className="text-text/90">{metaPost.date}</span>
-                  </div>
-
-                  {readingTime ? (
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-muted">Reading</span>
-                      <span className="text-text/90">{readingTime}</span>
-                    </div>
-                  ) : null}
-
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-muted">Format</span>
-                    <span className="text-text/90">
-                      {formatLabels[metaPost.format]}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-4 border-t border-border/60 pt-4">
-                  <Link
-                    href={`/posts?format=${metaPost.format}`}
-                    className="
-                      inline-flex w-full items-center justify-center rounded-xl
-                      border border-border bg-bg/30 px-4 py-2.5
-                      text-sm font-semibold text-text shadow-soft transition
-                      hover:bg-surface-2 hover:border-accent/30 hover:text-accent
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-                    "
-                  >
-                    More like this
-                    <span className="ml-2 text-muted">›</span>
-                  </Link>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </header>
-
-        {/* Video */}
-        <section className="mx-auto mt-10 w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-bg/30 shadow-soft">
-          <div className="aspect-video w-full">
-            <iframe
-              className="h-full w-full"
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title={metaPost.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </section>
-
-        {/* Lead: más ancho + mejor ritmo */}
-        <section className="mx-auto mt-10 w-full max-w-5xl lg:px-6">
-          <p className="mx-auto max-w-5xl text-pretty text-base leading-relaxed text-text/85 sm:text-lg">
-            {isLong
-              ? "Before you continue: you don’t need to remember a dream for it to have happened."
-              : "A calm, science-first look at what dreams might be doing while you sleep."}
-          </p>
-        </section>
-
-        {/* ✅ Intro block: primer tramo del contenido a ancho max-w-5xl */}
-        <section className="mx-auto mt-6 w-full max-w-5xl lg:px-6">
-          <div className="space-y-6 text-sm leading-relaxed text-muted sm:text-base sm:leading-relaxed">
-            {content}
-          </div>
-        </section>
-
-        {/* More from this format */}
-        <section className="mx-auto mt-12 w-full max-w-5xl border-t border-border/60 pt-12">
+        <section className="mx-auto mt-16 w-full max-w-5xl border-t border-white/10 pt-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-medium tracking-wide text-muted">
-                KEEP EXPLORING
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/45">
+                Keep exploring
               </p>
+
               <h3 className="mt-2 text-balance text-2xl font-semibold tracking-tight text-text">
                 More from {formatLabels[metaPost.format]}
               </h3>
-              <p className="mt-2 text-sm text-muted">
-                Browse more posts in the same format—then jump across routes
-                whenever you want.
+
+              <p className="mt-2 text-sm text-white/55">
+                More posts in this format — then jump across routes whenever
+                you want.
               </p>
             </div>
 
             <Link
-              href={`/posts?format=${metaPost.format}`}
+              href={`/en/posts?format=${metaPost.format}`}
               className="
                 inline-flex w-fit items-center justify-center rounded-xl
-                border border-border bg-surface-1 px-5 py-2.5
-                text-sm font-semibold text-text shadow-soft transition
-                hover:bg-surface-2 hover:border-accent/30 hover:text-accent
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                border border-white/10 bg-white/[0.025] px-5 py-2.5
+                text-sm font-semibold text-white/80 transition
+                hover:border-[rgba(var(--accent),0.35)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--accent),0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
               "
             >
               View all
-              <span className="ml-2 text-muted">›</span>
+              <span className="ml-2 text-white/45">›</span>
             </Link>
           </div>
 
           {moreFromFormat.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
-              <p className="text-sm text-muted">
-                More posts are coming soon for this format.
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+              <p className="text-sm text-white/55">
+                More posts in this format are coming soon.
               </p>
             </div>
           ) : (
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {moreFromFormat.map((p) => (
                 <Link
-                  key={p.slug}
-                  href={`/posts/${p.slug}`}
+                  key={p.id}
+                  href={`/en/posts/${p.slug}`}
                   className="
-                    group rounded-2xl border border-border bg-surface-1
-                    p-6 shadow-soft transition
-                    hover:bg-surface-2 hover:border-accent/30
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                    group rounded-2xl border border-white/10 bg-white/[0.025]
+                    p-6 transition
+                    hover:border-[rgba(var(--accent),0.35)] hover:bg-[rgba(var(--accent),0.06)]
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--accent),0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                   "
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-white/45">
                       {formatLabels[p.format]}
                     </span>
-                    <span className="text-xs text-muted">{p.date}</span>
+
+                    <span className="text-xs text-white/45">
+                      {formatPostDate(p.date, "en-US")}
+                    </span>
                   </div>
 
-                  <h4 className="mt-4 text-lg font-semibold text-text group-hover:text-accent">
+                  <h4 className="mt-4 text-lg font-semibold text-text group-hover:text-[rgb(var(--accent))]">
                     {p.title}
                   </h4>
 
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                  <p className="mt-2 text-sm leading-relaxed text-white/55">
                     {p.description}
                   </p>
 
-                  <div className="mt-5 text-sm font-semibold text-text">
+                  <div className="mt-5 text-sm font-semibold text-white/80">
                     Read post →
                   </div>
                 </Link>
@@ -336,46 +303,28 @@ export default async function Page({ params }: PageProps) {
           )}
         </section>
 
-        {/* Newsletter */}
-        <section className="mx-auto mt-12 w-full max-w-5xl rounded-2xl border border-border bg-surface-1 p-6 shadow-soft">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-text">
-                Join the AtomicCurious Newsletter
-              </h3>
-              <p className="mt-1 text-sm text-muted">
-                Weekly sparks of science, technology, and future-thinking—no
-                noise.
-              </p>
-            </div>
-            <Link
-              href="/newsletter"
-              className="
-                inline-flex items-center justify-center rounded-xl
-                bg-accent px-6 py-3 text-sm font-semibold text-bg
-                shadow-accent transition hover:brightness-110
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-              "
-            >
-              Subscribe
-            </Link>
-          </div>
+        <section className="mx-auto mt-14 w-full max-w-5xl">
+          <PostEndCTA locale="en" />
         </section>
 
-        <div className="mx-auto mt-12 w-full max-w-5xl">
+        {metaPost.affiliateItems && (
+          <AffiliateBlock items={metaPost.affiliateItems} locale="en" />
+       )}
+
+        <section className="mx-auto mt-12 w-full max-w-5xl">
           <Link
-            href="/posts"
+            href="/en/posts"
             className="
               inline-flex rounded-xl
-              border border-border bg-surface-1 px-5 py-2.5
-              text-sm font-semibold text-text shadow-soft transition
-              hover:bg-surface-2 hover:border-accent/30 hover:text-accent
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              border border-white/10 bg-white/[0.025] px-5 py-2.5
+              text-sm font-semibold text-white/80 transition
+              hover:border-[rgba(var(--accent),0.35)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--accent),0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
             "
           >
             ← Back to posts
           </Link>
-        </div>
+        </section>
       </article>
     </main>
   )

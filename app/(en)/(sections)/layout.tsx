@@ -145,7 +145,7 @@ function FooterEditorialSignature({
 
 const footerSocialItems: FooterSocialItem[] = [
   { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
-  { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
+  { label: "TikTok", href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram", href: "https://instagram.com/atomiccurious" },
   {
     label: "Facebook",

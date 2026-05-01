@@ -1,40 +1,73 @@
 export type PostFormat = "curiosity" | "ranked" | "quiz"
 
+export type AffiliateItem = {
+  name: string
+  href: string
+  tag?: string
+  cta?: string
+}
+
 export type PostListItem = {
   slug: string
-  number: number        // ← número de serie del post (#001, #002…)
   title: string
   description: string
-  date: string
+  date: Date
   format: PostFormat
   tag?: string
-  readingTime?: number  // ← minutos de lectura (opcional, se estima si no está)
+  readingTime?: number
 
-  // Used by Home tiles + future reuse
   bullets?: string[]
   featured?: boolean
+
+  affiliateItems?: AffiliateItem[]
+
+  id: string
 }
 
 export const postsEs: PostListItem[] = [
   {
-    slug: "por-que-sonamos",
-    number: 1,
-    title: "Por qué soñamos: el propósito oculto de las historias del sueño",
+    slug: "por-que-8-hrs",
+    id: "ac-001",
+    title: "Por qué trabajamos 8 horas al día",
     description:
-      "Una exploración cinematográfica de lo que dice la ciencia sobre los sueños—y por qué tu cerebro los genera.",
-    date: "2025-12-29",
+      "El origen real de la jornada laboral de 8 horas y por qué no fue diseñada para el tipo de trabajo que haces hoy.",
+    date: new Date("2026-04-26"),
     format: "curiosity",
-    tag: "Sueño / Mente",
-    readingTime: 6,
-
+    tag: "Trabajo / Productividad",
+    readingTime: 7,
     bullets: [
-      "Los sueños no son aleatorios",
-      "Memoria, emoción y construcción de patrones",
+      "El origen real de las 8 horas",
+      "Por qué tu cerebro no funciona así",
     ],
-
     featured: true,
+
+    affiliateItems: [
+      {
+        name: "Deep Work — Cal Newport",
+        href: "https://amzn.to/3OGP110",
+        tag: "Libro",
+      },
+      {
+        name: "Pomofocus",
+        href: "https://pomofocus.io",
+        tag: "Herramienta gratuita",
+        cta: "Abrir herramienta →",
+      },
+      {
+        name: "Four Thousand Weeks — Oliver Burkeman",
+        href: "https://amzn.to/48vWyq8",
+        tag: "Libro",
+      },
+    ],
   },
 ]
 
-// newest first (fallback)
-export const latestPostEs = postsEs[0]
+// Filtra solo posts ya publicados (permite programación automática por fecha)
+export const publishedPostsEs: PostListItem[] = postsEs.filter(
+  (post) => post.date <= new Date()
+)
+
+// Ordena por fecha descendente usando solo los publicados
+export const latestPostEs = [...publishedPostsEs].sort(
+  (a, b) => b.date.getTime() - a.date.getTime()
+)[0]

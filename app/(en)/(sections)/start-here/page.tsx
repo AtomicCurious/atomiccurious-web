@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { latestPostEn as LATEST_POST } from "@/content/posts.en"
 import SignatureBackdrop from "@/components/SignatureBackdrop"
+import { formatPostDate } from "@/lib/posts-utils"
 
 export const metadata: Metadata = {
   title: "Start Here | AtomicCurious",
@@ -601,7 +602,8 @@ export default function Page() {
               ) : (
                 <span />
               )}
-              <span className="text-xs text-[rgb(var(--text)/0.50)]">{LATEST_POST?.date ?? ""}</span>
+              <span className="text-xs text-[rgb(var(--text)/0.50)]">{LATEST_POST ? formatPostDate(LATEST_POST.date, "en-US") : ""}
+              </span>
             </div>
 
             <h3 className="mt-4 text-balance text-2xl font-semibold text-text sm:text-3xl">
