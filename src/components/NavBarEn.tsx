@@ -62,12 +62,12 @@ function toEs(pathname: string) {
 
   if (map[pathname]) return map[pathname]
 
- if (pathname.startsWith("/posts/")) {
-  const slug = pathname.replace("/posts/", "")
-  const esSlug = getEsSlugFromEn(slug)
+  if (pathname.startsWith("/posts/")) {
+    const slug = pathname.replace("/posts/", "")
+    const esSlug = getEsSlugFromEn(slug)
 
-  return esSlug ? `/es/posts/${esSlug}` : "/es/posts"
-}
+    return esSlug ? `/es/posts/${esSlug}` : "/es/posts"
+  }
 
   return pathname === "/" ? "/es" : `/es${pathname}`
 }
@@ -104,6 +104,97 @@ function writeSeen(ts: number) {
 function isSeenFresh(seenTs: number | null) {
   if (!seenTs) return false
   return safeNow() - seenTs < CORE_SEEN_TTL_MS
+}
+
+/* =========================================================
+   Premium nav link
+========================================================= */
+function NavLinkItem({
+  href,
+  label,
+  active,
+}: {
+  href: string
+  label: string
+  active: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className={[
+        "group relative rounded-full border px-3 py-1.5 whitespace-nowrap",
+        "transition-all duration-300 ease-out",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+        active
+          ? [
+              "text-white",
+              "border-[rgb(var(--accent)/0.20)]",
+              "bg-[rgb(var(--accent)/0.14)]",
+              "shadow-[0_0_18px_rgb(var(--accent)/0.18)]",
+            ].join(" ")
+          : [
+              "text-muted",
+              "border-transparent",
+              "hover:text-white",
+              "hover:border-[rgb(var(--accent)/0.16)]",
+              "hover:bg-[rgb(var(--accent)/0.09)]",
+              "hover:shadow-[0_0_16px_rgb(var(--accent)/0.13)]",
+            ].join(" "),
+      ].join(" ")}
+    >
+      {label}
+
+      <span
+        aria-hidden="true"
+        className={[
+          "pointer-events-none absolute inset-x-3 -bottom-[6px]",
+          "h-[2px] rounded-full",
+          "bg-[rgb(var(--accent)/0.92)]",
+          "shadow-[0_0_12px_rgb(var(--accent)/0.42)]",
+          "transition-all duration-300",
+          active ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-70 group-hover:scale-x-100",
+        ].join(" ")}
+      />
+    </Link>
+  )
+}
+
+function MobileNavLinkItem({
+  href,
+  label,
+  active,
+}: {
+  href: string
+  label: string
+  active: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className={[
+        "group flex items-center justify-between rounded-2xl border px-4 py-3",
+        "bg-surface-1/55 backdrop-blur-xl shadow-soft transition-all duration-300",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+        active
+          ? [
+              "border-[rgb(var(--accent)/0.28)]",
+              "text-white",
+              "bg-[rgb(var(--accent)/0.12)]",
+              "shadow-[0_0_18px_rgb(var(--accent)/0.14)]",
+            ].join(" ")
+          : [
+              "border-border/70",
+              "text-muted",
+              "hover:text-white",
+              "hover:border-[rgb(var(--accent)/0.22)]",
+              "hover:bg-[rgb(var(--accent)/0.08)]",
+            ].join(" "),
+      ].join(" ")}
+    >
+      <span className="text-sm font-semibold">{label}</span>
+      <span className="text-muted transition-transform group-hover:translate-x-0.5">›</span>
+    </Link>
+  )
 }
 
 function StarshipMark() {
@@ -853,8 +944,8 @@ export default function NavBarEn() {
                     "pointer-events-none absolute",
                     "-top-1 -left-1",
                     "h-2.5 w-2.5 rounded-full",
-                    "bg-accent",
-                    "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(var(--accent),0.45)]",
+                    "bg-[rgb(var(--accent))]",
+                    "shadow-[0_0_0_2px_rgb(var(--bg)/0.85),0_0_14px_rgb(var(--accent)/0.45)]",
                   ].join(" ")}
                 />
               ) : null}
@@ -870,7 +961,7 @@ export default function NavBarEn() {
                   }
                   45% {
                     transform: translateY(-1px) scale(1.02);
-                    filter: drop-shadow(0 0 14px rgba(var(--accent), 0.22));
+                    filter: drop-shadow(0 0 14px rgb(var(--accent) / 0.22));
                   }
                   100% {
                     transform: translateY(0) scale(1);
@@ -899,7 +990,7 @@ export default function NavBarEn() {
                     Curious
                   </span>
                 </span>
-                <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/80 transition-all duration-300 group-hover:w-full" />
+                <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-[rgb(var(--accent)/0.8)] transition-all duration-300 group-hover:w-full" />
               </span>
 
               <style jsx>{`
@@ -1027,22 +1118,7 @@ export default function NavBarEn() {
             >
               {links.map((l) => {
                 const active = isActive(pathname, l.href)
-                return (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className={[
-                      "relative rounded-full px-3 py-1.5 transition",
-                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                      active ? "text-text" : "text-muted hover:text-text",
-                    ].join(" ")}
-                  >
-                    {l.label}
-                    {active ? (
-                      <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" />
-                    ) : null}
-                  </Link>
-                )
+                return <NavLinkItem key={l.href} href={l.href} label={l.label} active={active} />
               })}
 
               <span className="mx-2 hidden h-5 w-px bg-border/70 sm:block" />
@@ -1069,8 +1145,8 @@ export default function NavBarEn() {
                   border border-border/80 bg-surface-1
                   px-3 py-1.5 text-xs font-semibold text-text
                   shadow-soft transition
-                  hover:border-accent/35 hover:bg-surface-2
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                  hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                 "
               >
                 ES
@@ -1105,7 +1181,7 @@ export default function NavBarEn() {
                       "-top-1.5 -left-1.5",
                       "h-2.5 w-2.5 rounded-full",
                       "bg-[#E8C674]",
-                      "shadow-[0_0_0_2px_rgba(var(--bg),0.85),0_0_14px_rgba(232,198,116,0.38)]",
+                      "shadow-[0_0_0_2px_rgb(var(--bg)/0.85),0_0_14px_rgba(232,198,116,0.38)]",
                     ].join(" ")}
                   />
                 ) : null}
@@ -1156,8 +1232,8 @@ export default function NavBarEn() {
                 border border-border/80 bg-surface-1
                 px-4 text-sm font-semibold text-text
                 shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
               "
             >
               ES
@@ -1171,8 +1247,8 @@ export default function NavBarEn() {
                 border border-border/80 bg-surface-1
                 px-4 text-sm font-semibold text-text
                 shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
               "
               aria-label="Open menu"
               aria-haspopup="dialog"
@@ -1213,7 +1289,7 @@ export default function NavBarEn() {
                     border border-border/80 bg-surface-1
                     px-3 py-1.5 text-xs font-semibold text-text
                     shadow-soft transition hover:bg-surface-2
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                   "
                   aria-label="Close"
                 >
@@ -1222,30 +1298,19 @@ export default function NavBarEn() {
               </div>
 
               <div className="relative px-5 py-5">
-                <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(var(--accent),0.12)] blur-[90px]" />
-                <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(var(--accent-alt),0.10)] blur-[110px]" />
+                <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgb(var(--accent)/0.12)] blur-[90px]" />
+                <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgb(var(--accent-alt)/0.10)] blur-[110px]" />
 
                 <div className="space-y-2">
                   {links.map((l) => {
                     const active = isActive(pathname, l.href)
                     return (
-                      <Link
+                      <MobileNavLinkItem
                         key={l.href}
                         href={l.href}
-                        className={[
-                          "group flex items-center justify-between rounded-2xl border px-4 py-3",
-                          "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
-                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                          active
-                            ? "border-accent/35 text-text"
-                            : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
-                        ].join(" ")}
-                      >
-                        <span className="text-sm font-semibold">{l.label}</span>
-                        <span className="text-muted transition-transform group-hover:translate-x-0.5">
-                          ›
-                        </span>
-                      </Link>
+                        label={l.label}
+                        active={active}
+                      />
                     )
                   })}
                 </div>
@@ -1280,14 +1345,14 @@ export default function NavBarEn() {
                         border border-border/80 bg-surface-1
                         px-3 py-1.5 text-xs font-semibold text-text
                         shadow-soft transition
-                        hover:border-accent/35 hover:bg-surface-2
-                        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                        hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                       "
                     >
                       Editor&apos;s note
                     </button>
 
-                    <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
+                    <span className="inline-flex items-center rounded-full border border-[rgb(var(--accent)/0.25)] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
                       EN
                     </span>
 
@@ -1298,8 +1363,8 @@ export default function NavBarEn() {
                         border border-border/80 bg-surface-1
                         px-3 py-1.5 text-xs font-semibold text-text
                         shadow-soft transition
-                        hover:border-accent/35 hover:bg-surface-2
-                        focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                        hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                       "
                     >
                       ES <span className="ml-2 text-muted">›</span>
@@ -1360,7 +1425,7 @@ export default function NavBarEn() {
                 <span className="ac-atomic">Atomic</span>
                 <span className="ac-curious">Curious</span>
               </span>
-              <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-accent/60 transition-all duration-300 group-hover:w-full" />
+              <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-[rgb(var(--accent)/0.6)] transition-all duration-300 group-hover:w-full" />
             </span>
 
             <style jsx>{`
@@ -1400,22 +1465,7 @@ export default function NavBarEn() {
           >
             {links.map((l) => {
               const active = isActive(pathname, l.href)
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={[
-                    "relative rounded-full px-3 py-1.5 transition whitespace-nowrap",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                    active ? "text-text" : "text-muted hover:text-text",
-                  ].join(" ")}
-                >
-                  {l.label}
-                  {active ? (
-                    <span className="pointer-events-none absolute inset-x-3 -bottom-[6px] h-[2px] rounded-full bg-accent/70" />
-                  ) : null}
-                </Link>
-              )
+              return <NavLinkItem key={l.href} href={l.href} label={l.label} active={active} />
             })}
           </div>
         </nav>
@@ -1441,8 +1491,8 @@ export default function NavBarEn() {
                 border border-border/80 bg-surface-1
                 px-3 py-1.5 text-xs font-semibold text-text
                 shadow-soft transition
-                hover:border-accent/35 hover:bg-surface-2
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
               "
             >
               ES
@@ -1470,8 +1520,8 @@ export default function NavBarEn() {
               border border-border/80 bg-surface-1
               px-4 text-sm font-semibold text-text
               shadow-soft transition
-              hover:border-accent/35 hover:bg-surface-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
             "
           >
             ES
@@ -1485,8 +1535,8 @@ export default function NavBarEn() {
               border border-border/80 bg-surface-1
               px-4 text-sm font-semibold text-text
               shadow-soft transition
-              hover:border-accent/35 hover:bg-surface-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+              hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
             "
             aria-label="Open menu"
             aria-haspopup="dialog"
@@ -1527,7 +1577,7 @@ export default function NavBarEn() {
                   border border-border/80 bg-surface-1
                   px-3 py-1.5 text-xs font-semibold text-text
                   shadow-soft transition hover:bg-surface-2
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                 "
                 aria-label="Close"
               >
@@ -1536,30 +1586,19 @@ export default function NavBarEn() {
             </div>
 
             <div className="relative px-5 py-5">
-              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgba(var(--accent),0.12)] blur-[90px]" />
-              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgba(var(--accent-alt),0.10)] blur-[110px]" />
+              <div className="pointer-events-none absolute -top-24 right-[-120px] h-64 w-64 rounded-full bg-[rgb(var(--accent)/0.12)] blur-[90px]" />
+              <div className="pointer-events-none absolute bottom-[-140px] right-[-120px] h-72 w-72 rounded-full bg-[rgb(var(--accent-alt)/0.10)] blur-[110px]" />
 
               <div className="space-y-2">
                 {links.map((l) => {
                   const active = isActive(pathname, l.href)
                   return (
-                    <Link
+                    <MobileNavLinkItem
                       key={l.href}
                       href={l.href}
-                      className={[
-                        "group flex items-center justify-between rounded-2xl border px-4 py-3",
-                        "bg-surface-1/55 backdrop-blur-xl shadow-soft transition",
-                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                        active
-                          ? "border-accent/35 text-text"
-                          : "border-border/70 text-muted hover:text-text hover:border-accent/25 hover:bg-surface-2",
-                      ].join(" ")}
-                    >
-                      <span className="text-sm font-semibold">{l.label}</span>
-                      <span className="text-muted transition-transform group-hover:translate-x-0.5">
-                        ›
-                      </span>
-                    </Link>
+                      label={l.label}
+                      active={active}
+                    />
                   )
                 })}
               </div>
@@ -1572,9 +1611,13 @@ export default function NavBarEn() {
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {showToggles ? (
+               <>
                   <ThemeToggle />
                   <CharacterToggle />
-                  <SupportButtonEn mobile />
+              </>
+                 ) : null}
+                <SupportButtonEn mobile />
 
                   <button
                     ref={noteRefMobile}
@@ -1589,14 +1632,14 @@ export default function NavBarEn() {
                       border border-border/80 bg-surface-1
                       px-3 py-1.5 text-xs font-semibold text-text
                       shadow-soft transition
-                      hover:border-accent/35 hover:bg-surface-2
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                      hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                     "
                   >
                     Editor&apos;s note
                   </button>
 
-                  <span className="inline-flex items-center rounded-full border border-accent/25 bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
+                  <span className="inline-flex items-center rounded-full border border-[rgb(var(--accent)/0.25)] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-text">
                     EN
                   </span>
 
@@ -1607,8 +1650,8 @@ export default function NavBarEn() {
                       border border-border/80 bg-surface-1
                       px-3 py-1.5 text-xs font-semibold text-text
                       shadow-soft transition
-                      hover:border-accent/35 hover:bg-surface-2
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+                      hover:border-[rgb(var(--accent)/0.35)] hover:bg-surface-2
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                     "
                   >
                     ES <span className="ml-2 text-muted">›</span>

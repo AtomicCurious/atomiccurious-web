@@ -6,7 +6,7 @@ import CharacterModeBoot from "@/components/CharacterModeBoot"
 import QuillFeatherIcon from "@/components/QuillFeatherIcon"
 
 type FooterSocialItem = {
-  label: "YouTube" | "TikTok" | "Instagram" | "Facebook"
+  label: "YouTube" | "TikTok" | "Instagram" 
   href: string
 }
 
@@ -147,16 +147,13 @@ const footerSocialItems: FooterSocialItem[] = [
   { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
   { label: "TikTok", href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram", href: "https://instagram.com/atomiccurious" },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61586519350627",
-  },
+  
 ]
 
 /* positive = right | negative = left */
 const SIGNATURE_NUDGE_PX = -90
-const SOCIAL_NUDGE_PX = -60
-const LEGAL_NUDGE_PX = -20
+const SOCIAL_NUDGE_PX = -45
+const LEGAL_NUDGE_PX = -25
 const COPYRIGHT_NUDGE_PX = 70
 
 /* =========================================================

@@ -1,6 +1,13 @@
 import type { ReactNode } from "react"
 
-const proseStyles = `
+type Host = "atom" | "iris" | "core"
+
+type Props = {
+  children: ReactNode
+  host?: Host
+}
+
+const baseProseStyles = `
   prose prose-invert max-w-none
   selection:bg-[rgba(var(--accent),0.25)] selection:text-white
 
@@ -38,27 +45,63 @@ const proseStyles = `
 
   prose-blockquote:border-l-[3px]
   prose-blockquote:border-[rgba(var(--accent),0.6)]
-  prose-blockquote:bg-white/[0.04]
+  prose-blockquote:bg-[rgba(var(--accent),0.04)]
   prose-blockquote:px-5 prose-blockquote:py-4
   prose-blockquote:rounded-r-xl
   prose-blockquote:text-white/85
   prose-blockquote:not-italic
 
   prose-code:text-[rgb(var(--accent))]
-  prose-code:bg-white/[0.06]
+  prose-code:bg-[rgba(var(--accent),0.075)]
   prose-code:px-1.5 prose-code:py-0.5
   prose-code:rounded-md prose-code:text-sm
 `
 
-export function PostProse({ children }: { children: ReactNode }) {
+const irisProseStyles = `
+  prose-p:leading-[2]
+  prose-p:text-white/76
+  prose-p:mb-8
+
+  prose-headings:font-medium
+  prose-headings:tracking-[-0.04em]
+
+  prose-h2:text-[2rem] sm:prose-h2:text-[2.75rem]
+  prose-h3:text-[1.18rem]
+  prose-h3:font-medium
+  prose-h3:text-white/86
+
+  prose-li:text-white/74
+  prose-li:leading-8
+
+  prose-blockquote:bg-[rgba(var(--accent),0.035)]
+  prose-blockquote:border-[rgba(var(--accent),0.42)]
+  prose-blockquote:text-white/78
+`
+
+const coreProseStyles = `
+  prose-p:text-white/78
+
+  prose-headings:tracking-[-0.03em]
+
+  prose-h2:text-[2rem] sm:prose-h2:text-[2.65rem]
+  prose-h3:text-[1.2rem]
+
+  prose-blockquote:bg-[rgba(var(--accent),0.045)]
+  prose-blockquote:border-[rgba(var(--accent),0.5)]
+`
+
+export function PostProse({ children, host = "atom" }: Props) {
+  const isIris = host === "iris"
+  const isCore = host === "core"
+
   return (
-    <div data-post-prose className="relative">
+    <div data-post-prose data-host={host} className="relative">
       <style>
         {`
           [data-post-prose] h2 {
             position: relative;
-            margin-top: 5rem;
-            margin-bottom: 2.5rem;
+            margin-top: ${isIris ? "5.5rem" : isCore ? "5.25rem" : "5rem"};
+            margin-bottom: ${isIris ? "2.75rem" : isCore ? "2.6rem" : "2.5rem"};
             padding-top: 2rem;
             border-bottom: 0 !important;
           }
@@ -66,11 +109,11 @@ export function PostProse({ children }: { children: ReactNode }) {
           [data-post-prose] p + h2,
           [data-post-prose] ul + h2,
           [data-post-prose] ol + h2 {
-            margin-top: 5rem;
+            margin-top: ${isIris ? "5.5rem" : isCore ? "5.25rem" : "5rem"};
           }
 
           [data-post-prose] [data-post-block] + h2 {
-            margin-top: 6rem;
+            margin-top: ${isIris ? "6.5rem" : isCore ? "6.25rem" : "6rem"};
           }
 
           [data-post-prose] h2::before {
@@ -78,24 +121,29 @@ export function PostProse({ children }: { children: ReactNode }) {
             position: absolute;
             top: -18px;
             left: 0;
-            width: 60%;
-            height: 3px;
+            width: ${isIris ? "48%" : isCore ? "54%" : "60%"};
+            height: ${isIris ? "2px" : isCore ? "3px" : "3px"};
             border-radius: 999px;
 
             background: linear-gradient(
               90deg,
-              rgb(var(--accent) / 0.85) 0%,
-              rgb(var(--accent) / 0.55) 35%,
-              rgb(var(--accent) / 0.22) 70%,
+              rgb(var(--accent) / ${isIris ? "0.68" : isCore ? "0.78" : "0.85"}) 0%,
+              rgb(var(--accent) / ${isIris ? "0.42" : isCore ? "0.5" : "0.55"}) 35%,
+              rgb(var(--accent) / ${isIris ? "0.16" : isCore ? "0.2" : "0.22"}) 70%,
               transparent 100%
             );
 
-            box-shadow: 0 0 12px rgb(var(--accent) / 0.25);
+            box-shadow: 0 0 ${isIris ? "8px" : isCore ? "10px" : "12px"} rgb(var(--accent) / ${isIris ? "0.16" : isCore ? "0.22" : "0.25"});
           }
         `}
       </style>
 
-      <div className={`ac-post-reveal ${proseStyles}`} data-delay="2">
+      <div
+        className={`ac-post-reveal ${baseProseStyles} ${
+          isIris ? irisProseStyles : isCore ? coreProseStyles : ""
+        }`}
+        data-delay="2"
+      >
         {children}
       </div>
     </div>

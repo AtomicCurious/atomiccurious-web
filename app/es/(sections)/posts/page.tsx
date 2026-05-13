@@ -1,4 +1,5 @@
 // app/es/posts/page.tsx
+import type { CSSProperties } from "react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
@@ -42,6 +43,13 @@ type PageProps = {
 type PostFilter = "all" | PostFormat
 type HostKey = "atom" | "iris" | "core"
 
+type UpcomingPost = {
+  number: number
+  title: string
+  format: PostFormat
+  releaseDate: Date
+}
+
 // ─── Static data ──────────────────────────────────────────────────────────────
 
 const filterKeys = ["all", "curiosity", "ranked", "quiz"] as const
@@ -68,6 +76,9 @@ const formatStyles: Record<
     tagBg: string
     dot: string
     upcomingText: string
+    ring: string
+    bg: string
+    text: string
     glow: string
   }
 > = {
@@ -78,7 +89,10 @@ const formatStyles: Record<
     tagBg: "bg-emerald-400/5",
     dot: "bg-emerald-400/70",
     upcomingText: "text-emerald-400/60",
-    glow: "rgba(52,211,153,0.10)",
+    ring: "rgba(52, 211, 153, 0.30)",
+    bg: "rgba(52, 211, 153, 0.045)",
+    text: "rgb(52 211 153)",
+    glow: "rgba(52, 211, 153, 0.16)",
   },
   ranked: {
     line: "from-cyan-300/40 via-cyan-300/10 to-transparent",
@@ -87,7 +101,10 @@ const formatStyles: Record<
     tagBg: "bg-cyan-400/5",
     dot: "bg-cyan-400/70",
     upcomingText: "text-cyan-400/60",
-    glow: "rgba(34,211,238,0.10)",
+    ring: "rgba(34, 211, 238, 0.30)",
+    bg: "rgba(34, 211, 238, 0.045)",
+    text: "rgb(34 211 238)",
+    glow: "rgba(34, 211, 238, 0.16)",
   },
   quiz: {
     line: "from-orange-300/40 via-orange-300/10 to-transparent",
@@ -96,7 +113,10 @@ const formatStyles: Record<
     tagBg: "bg-orange-400/5",
     dot: "bg-orange-400/70",
     upcomingText: "text-orange-400/60",
-    glow: "rgba(255,140,0,0.12)",
+    ring: "rgba(251, 146, 60, 0.30)",
+    bg: "rgba(251, 146, 60, 0.045)",
+    text: "rgb(251 146 60)",
+    glow: "rgba(251, 146, 60, 0.16)",
   },
 }
 
@@ -140,19 +160,134 @@ const hostContent: Record<
   },
 }
 
-const upcomingPosts: Array<{
-  number: number
-  title: string
-  format: PostFormat
-}> = [
+// 5:00 PM New York (EDT)
+const scheduledUpcomingPosts: UpcomingPost[] = [
   {
     number: 2,
-    title: "El efecto Dunning-Kruger: lo que no sabes que no sabes",
+    title: "Top 7 hábitos más respaldados por la ciencia",
+    format: "ranked",
+    releaseDate: new Date("2026-05-20T17:00:00-04:00"),
+  },
+  {
+    number: 3,
+    title:
+      "La Cadena del WTF: cómo un flamenco rosado termina conectado con tu respiración",
+    format: "quiz",
+    releaseDate: new Date("2026-05-27T17:00:00-04:00"),
+  },
+  {
+    number: 4,
+    title: "Enamorarte literalmente altera tu cerebro",
     format: "curiosity",
+    releaseDate: new Date("2026-06-03T17:00:00-04:00"),
+  },
+  {
+    number: 5,
+    title: "Leer vs escuchar: qué retiene realmente más información",
+    format: "ranked",
+    releaseDate: new Date("2026-06-10T17:00:00-04:00"),
+  },
+  {
+    number: 6,
+    title:
+      "Tu cerebro vs la realidad: ¿puedes leer “PARIS EN LA LA PRIMAVERA” sin fallar?",
+    format: "quiz",
+    releaseDate: new Date("2026-06-17T17:00:00-04:00"),
+  },
+  {
+    number: 7,
+    title:
+      "La IA no entiende nada… entonces ¿por qué ya toma decisiones por ti?",
+    format: "curiosity",
+    releaseDate: new Date("2026-06-24T17:00:00-04:00"),
+  },
+  {
+    number: 8,
+    title: "Las 7 formas de aprender — ordenadas por lo que realmente funciona",
+    format: "ranked",
+    releaseDate: new Date("2026-07-01T17:00:00-04:00"),
+  },
+  {
+    number: 9,
+    title:
+      "¿Qué tienen en común estas imágenes? El test que revela cómo conecta patrones tu cerebro",
+    format: "quiz",
+    releaseDate: new Date("2026-07-08T17:00:00-04:00"),
+  },
+  {
+    number: 10,
+    title: "¿Por qué la música funciona incluso sin traducción?",
+    format: "curiosity",
+    releaseDate: new Date("2026-07-15T17:00:00-04:00"),
+  },
+  {
+    number: 11,
+    title: "Las 5 decisiones financieras que más cambian tu vida",
+    format: "ranked",
+    releaseDate: new Date("2026-07-22T17:00:00-04:00"),
+  },
+  {
+    number: 12,
+    title: "¿Humano o IA? El momento en que dejamos de distinguirlos",
+    format: "quiz",
+    releaseDate: new Date("2026-07-29T17:00:00-04:00"),
+  },
+  {
+    number: 13,
+    title: "El entretenimiento moderno fue diseñado para no soltarte",
+    format: "curiosity",
+    releaseDate: new Date("2026-08-05T17:00:00-04:00"),
+  },
+  {
+    number: 14,
+    title: "Las 7 cosas que aprendiste en la escuela… y casi nunca usas",
+    format: "ranked",
+    releaseDate: new Date("2026-08-12T17:00:00-04:00"),
+  },
+  {
+    number: 15,
+    title: "¿Cuántos corazones tiene un pulpo? El quiz que casi todos fallan",
+    format: "quiz",
+    releaseDate: new Date("2026-08-19T17:00:00-04:00"),
+  },
+  {
+    number: 16,
+    title:
+      "¿Por qué todas las generaciones creen que la siguiente está arruinada?",
+    format: "curiosity",
+    releaseDate: new Date("2026-08-26T17:00:00-04:00"),
+  },
+  {
+    number: 17,
+    title: "Introvertidos vs extrovertidos: quién tiene ventaja en el mundo actual",
+    format: "ranked",
+    releaseDate: new Date("2026-09-02T17:00:00-04:00"),
+  },
+  {
+    number: 18,
+    title: "La secuencia imposible: el patrón que tu cerebro quiere completar",
+    format: "quiz",
+    releaseDate: new Date("2026-09-09T17:00:00-04:00"),
   },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function isPublishedDate(date: Date): boolean {
+  return date <= new Date()
+}
+
+function getPublishedPosts() {
+  return postsEs
+    .filter((post) => isPublishedDate(post.date))
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+}
+
+function getUpcomingPosts() {
+  return scheduledUpcomingPosts
+    .filter((post) => post.releaseDate > new Date())
+    .sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
+}
 
 function getReadingTime(post: (typeof postsEs)[number]): string {
   if (typeof post.readingTime === "number" && Number.isFinite(post.readingTime)) {
@@ -170,6 +305,34 @@ function getPostNumber(post: (typeof postsEs)[number]): string | null {
   if (!match) return null
 
   return `#${match[1].padStart(3, "0")}`
+}
+
+function getFilterCountLabel(count: number, activeFormat: PostFilter): string {
+  if (activeFormat === "curiosity") {
+    return count === 1 ? "curiosidad" : "curiosidades"
+  }
+
+  if (activeFormat === "ranked") {
+    return count === 1 ? "ranking" : "rankings"
+  }
+
+  if (activeFormat === "quiz") {
+    return "quiz"
+  }
+
+  return count === 1 ? "exploración" : "exploraciones"
+}
+
+function getCardAccentStyle(format: PostFormat): CSSProperties {
+  const s = formatStyles[format]
+
+  return {
+    "--ac-card-ring": s.ring,
+    "--ac-card-bg": s.bg,
+    "--ac-card-text": s.text,
+    "--ac-card-glow": s.glow,
+    boxShadow: `0 1px 0 rgba(255,255,255,0.04), 0 24px 60px -32px ${s.glow}`,
+  } as CSSProperties
 }
 
 // ─── Character switcher CSS ───────────────────────────────────────────────────
@@ -280,60 +443,33 @@ function CharacterSwitcherCss() {
         );
       }
 
-      html:not([data-character]) .ac-host-card,
-      body:not([data-character]) .ac-host-card,
-      html[data-character="atom"] .ac-host-card,
-      body[data-character="atom"] .ac-host-card {
-        --ac-host-ring: rgba(52, 211, 153, 0.18);
-        --ac-host-bg: rgba(52, 211, 153, 0.04);
-        --ac-host-text: rgb(52 211 153);
-        --ac-host-glow: rgba(52, 211, 153, 0.14);
+      .ac-post-card:hover {
+        border-color: var(--ac-card-ring);
+        background: color-mix(in srgb, var(--ac-card-bg) 100%, transparent);
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.04),
+          0 28px 70px -34px var(--ac-card-glow);
       }
 
-      html[data-character="iris"] .ac-host-card,
-      body[data-character="iris"] .ac-host-card {
-        --ac-host-ring: rgba(34, 211, 238, 0.18);
-        --ac-host-bg: rgba(34, 211, 238, 0.04);
-        --ac-host-text: rgb(34 211 238);
-        --ac-host-glow: rgba(34, 211, 238, 0.14);
-      }
-
-      html[data-character="core"] .ac-host-card,
-      body[data-character="core"] .ac-host-card {
-        --ac-host-ring: rgba(251, 146, 60, 0.18);
-        --ac-host-bg: rgba(251, 146, 60, 0.04);
-        --ac-host-text: rgb(251 146 60);
-        --ac-host-glow: rgba(251, 146, 60, 0.14);
-      }
-
-      .ac-host-card:hover {
-        border-color: var(--ac-host-ring, rgba(52, 211, 153, 0.18));
-        background: color-mix(in srgb, var(--ac-host-bg, rgba(52, 211, 153, 0.04)) 100%, transparent);
-      }
-
-      .ac-host-cta {
+      .ac-post-cta {
         transition: color 220ms ease, transform 220ms ease;
       }
 
-      .ac-host-card:hover .ac-host-cta {
-        color: var(--ac-host-text, rgb(52 211 153));
+      .ac-post-card:hover .ac-post-cta {
+        color: var(--ac-card-text);
       }
 
-      .ac-host-card:hover .ac-host-cta-arrow {
+      .ac-post-card:hover .ac-post-cta-arrow {
         transform: translateX(2px);
       }
 
-      .ac-host-card:hover .ac-host-upcoming-number {
-        color: var(--ac-host-text, rgb(52 211 153));
+      .ac-post-card:hover .ac-post-upcoming-number {
+        color: var(--ac-card-text);
         opacity: 0.9;
       }
 
-      .ac-host-card:hover .ac-host-upcoming-panel {
-        border-color: var(--ac-host-ring, rgba(52, 211, 153, 0.18));
-      }
-
-      .ac-host-card:hover .ac-host-upcoming-glow {
-        box-shadow: 0 24px 60px -32px var(--ac-host-glow, rgba(52, 211, 153, 0.14));
+      .ac-post-card:hover .ac-post-upcoming-panel {
+        border-color: var(--ac-card-ring);
       }
 
       html:not([data-character]) .ac-newsletter,
@@ -492,7 +628,7 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
         <div className="flex flex-1 flex-col justify-between overflow-hidden rounded-[24px] border border-border bg-surface-1 p-5 shadow-soft">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
-              La colección
+              La biblioteca
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted text-justify">
               Entra por curiosidad y quédate por criterio: preguntas que abren
@@ -521,25 +657,25 @@ function HostVisualWithSidebar({ totalPosts }: { totalPosts: number }) {
         </div>
 
         <div className="overflow-hidden rounded-[24px] border border-border bg-surface-1 px-5 py-4 shadow-soft">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
-                Publicación
+                Biblioteca
               </p>
               <p className="mt-1.5 text-sm font-semibold text-text">
-                Cada semana
+                Exploraciones publicadas
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted">
-                Posts nuevos de AtomicCurious
+                Contenido ya disponible para explorar.
               </p>
             </div>
 
-            <div className="flex shrink-0 flex-col items-end gap-0.5">
-              <span className="text-2xl font-semibold tabular-nums leading-none text-text">
+            <div className="flex shrink-0 flex-col items-center justify-center self-center gap-1">
+              <span className="text-3xl font-semibold tabular-nums leading-none text-text">
                 {totalPosts}
               </span>
-              <span className="text-[10px] text-muted">
-                {totalPosts === 1 ? "post" : "posts"}
+              <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
+                exploraciones
               </span>
             </div>
           </div>
@@ -558,13 +694,11 @@ function PostCard({ post }: { post: (typeof postsEs)[number] }) {
     <Link
       href={`/es/posts/${post.slug}`}
       className="
-        ac-host-card group relative overflow-hidden rounded-2xl border border-border
+        ac-post-card group relative overflow-hidden rounded-2xl border border-border
         bg-surface-1 p-6 shadow-soft transition duration-300
         hover:-translate-y-0.5
       "
-      style={{
-        boxShadow: `0 1px 0 rgba(255,255,255,0.04), 0 24px 60px -32px ${s.glow}`,
-      }}
+      style={getCardAccentStyle(post.format)}
     >
       <div
         aria-hidden="true"
@@ -610,11 +744,11 @@ function PostCard({ post }: { post: (typeof postsEs)[number] }) {
       </p>
 
       <div className="mt-6 flex items-center justify-between gap-3">
-        <span className="ac-host-cta inline-flex items-center gap-2 text-sm font-semibold text-text">
+        <span className="ac-post-cta inline-flex items-center gap-2 text-sm font-semibold text-text">
           Leer post
           <span
             aria-hidden="true"
-            className="ac-host-cta-arrow transition-transform duration-200"
+            className="ac-post-cta-arrow transition-transform duration-200"
           >
             →
           </span>
@@ -650,11 +784,18 @@ function PostCard({ post }: { post: (typeof postsEs)[number] }) {
   )
 }
 
-function UpcomingCard({ item }: { item: (typeof upcomingPosts)[number] }) {
+function UpcomingCard({ item }: { item: UpcomingPost }) {
   const s = formatStyles[item.format]
 
   return (
-    <div className="ac-host-card ac-host-upcoming-panel ac-host-upcoming-glow relative overflow-hidden rounded-2xl border border-dashed border-border bg-surface-1/40 p-5 opacity-70 transition duration-300 hover:opacity-100 sm:p-6">
+    <div
+      className="
+        ac-post-card ac-post-upcoming-panel relative overflow-hidden rounded-2xl
+        border border-dashed border-border bg-surface-1/40 p-5 opacity-70
+        transition duration-300 hover:opacity-100 sm:p-6
+      "
+      style={getCardAccentStyle(item.format)}
+    >
       <div
         aria-hidden="true"
         className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${s.line}`}
@@ -664,7 +805,7 @@ function UpcomingCard({ item }: { item: (typeof upcomingPosts)[number] }) {
         <div className="flex flex-col gap-2">
           <span className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
             <span className="size-1.5 animate-pulse rounded-full bg-muted/60" />
-            Próximamente
+            Próximamente · {formatPostDate(item.releaseDate, "es-MX")}
           </span>
 
           <p className={`text-base font-semibold ${s.upcomingText}`}>
@@ -674,7 +815,7 @@ function UpcomingCard({ item }: { item: (typeof upcomingPosts)[number] }) {
           <p className="text-xs text-muted">{formatPillLabels[item.format]}</p>
         </div>
 
-        <span className="ac-host-upcoming-number shrink-0 text-3xl font-semibold tabular-nums text-border transition-colors duration-300">
+        <span className="ac-post-upcoming-number shrink-0 text-3xl font-semibold tabular-nums text-border transition-colors duration-300">
           #{String(item.number).padStart(3, "0")}
         </span>
       </div>
@@ -686,6 +827,8 @@ function UpcomingCard({ item }: { item: (typeof upcomingPosts)[number] }) {
 
 export default async function Page({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams
+  const publishedPosts = getPublishedPosts()
+  const upcomingPosts = getUpcomingPosts()
 
   const activeFormat: PostFilter =
     resolvedSearchParams.format === "curiosity" ||
@@ -696,14 +839,15 @@ export default async function Page({ searchParams }: PageProps) {
 
   const filteredPosts =
     activeFormat === "all"
-      ? postsEs
-      : postsEs.filter((post) => post.format === activeFormat)
+      ? publishedPosts
+      : publishedPosts.filter((post) => post.format === activeFormat)
 
   const visibleUpcoming =
     activeFormat === "all"
       ? upcomingPosts
       : upcomingPosts.filter((u) => u.format === activeFormat)
 
+  const totalPublishedPosts = publishedPosts.length
   const hasContent = filteredPosts.length > 0 || visibleUpcoming.length > 0
 
   return (
@@ -729,7 +873,7 @@ export default async function Page({ searchParams }: PageProps) {
           <HostCopy />
         </header>
 
-        <HostVisualWithSidebar totalPosts={postsEs.length} />
+        <HostVisualWithSidebar totalPosts={totalPublishedPosts} />
 
         <section className="mt-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -757,7 +901,7 @@ export default async function Page({ searchParams }: PageProps) {
 
             <span className="text-xs tabular-nums text-muted">
               {filteredPosts.length}{" "}
-              {filteredPosts.length === 1 ? "post" : "posts"}
+              {getFilterCountLabel(filteredPosts.length, activeFormat)}
             </span>
           </div>
         </section>
@@ -792,11 +936,7 @@ export default async function Page({ searchParams }: PageProps) {
                     <span aria-hidden="true" className="h-px flex-1 bg-border" />
                   </div>
 
-                  <div
-                    className={`grid gap-4 ${
-                      visibleUpcoming.length >= 2 ? "md:grid-cols-2" : ""
-                    }`}
-                  >
+                  <div className="grid gap-4">
                     {visibleUpcoming.map((item) => (
                       <UpcomingCard key={item.number} item={item} />
                     ))}

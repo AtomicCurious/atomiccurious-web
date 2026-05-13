@@ -45,6 +45,49 @@ const accentRgbByPost: Record<PostAccent, string> = {
   core: "245 158 11",
 }
 
+const thesisCardStyles: Record<
+  PostAccent,
+  {
+    section: string
+    glow: string
+    bar: string
+    label: string
+    text: string
+  }
+> = {
+  atom: {
+    section:
+      "rounded-[34px] bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_15%,#06160f_85%)_0%,color-mix(in_srgb,rgb(var(--accent))_7%,#050b08_93%)_56%,rgba(255,255,255,0.018)_100%)]",
+    glow:
+      "bg-[radial-gradient(circle_at_8%_18%,rgba(var(--accent),0.22),transparent_38%)]",
+    bar: "w-[5px] shadow-[0_0_22px_rgba(var(--accent),0.55)]",
+    label: "tracking-[0.22em] text-[rgb(var(--accent))]",
+    text: "font-semibold text-white/92",
+  },
+  iris: {
+    section:
+      "rounded-[34px] bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_15%,#061018_85%)_0%,color-mix(in_srgb,rgb(var(--accent))_7%,#070b12_93%)_54%,rgba(255,255,255,0.018)_100%)]",
+    glow:
+      "bg-[radial-gradient(circle_at_8%_18%,rgba(var(--accent),0.22),transparent_38%)]",
+    bar: "w-[5px] shadow-[0_0_22px_rgba(var(--accent),0.52)]",
+    label: "tracking-[0.24em] text-[rgb(var(--accent))]",
+    text: "font-semibold text-white/92",
+  },
+  core: {
+    section:
+      "rounded-[34px] bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_15%,#171005_85%)_0%,color-mix(in_srgb,rgb(var(--accent))_7%,#0c0803_93%)_56%,rgba(255,255,255,0.018)_100%)]",
+    glow:
+      "bg-[radial-gradient(circle_at_10%_20%,rgba(var(--accent),0.22),transparent_38%)]",
+    bar: "w-[5px] shadow-[0_0_22px_rgba(var(--accent),0.52)]",
+    label: "tracking-[0.22em] text-[rgb(var(--accent))]",
+    text: "font-semibold text-white/92",
+  },
+}
+
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ")
+}
+
 async function readMdxEs(slug: string) {
   const filePath = path.join(
     process.cwd(),
@@ -104,6 +147,7 @@ export default async function Page({ params }: PageProps) {
 
   const words = estimateWords(mdxSource)
   const host = formatToHost(metaPost.format) as PostAccent
+  const thesisStyle = thesisCardStyles[host]
 
   const readingTime = metaPost.readingTime
     ? `${metaPost.readingTime} min`
@@ -115,15 +159,19 @@ export default async function Page({ params }: PageProps) {
     source: mdxSource,
     components: {
       MakeItRealCard: (props: any) => (
-        <MakeItRealCard host={host} {...props} />
+        <MakeItRealCard host={host} locale="es" {...props} />
       ),
       CharacterCallout: (props: any) => (
-        <CharacterCallout host={host} {...props} />
+        <CharacterCallout host={host} locale="es" {...props} />
       ),
-      PostFaq,
-      PostShell,
-      PostProse,
-      PostEndCTA,
+      PostFaq: (props: any) => (
+        <PostFaq host={host} locale="es" {...props} />
+      ),
+      PostShell: (props: any) => <PostShell accent={host} {...props} />,
+      PostProse: (props: any) => <PostProse host={host} {...props} />,
+      PostEndCTA: (props: any) => (
+        <PostEndCTA locale="es" host={host} {...props} />
+      ),
     },
     options: { parseFrontmatter: true },
   })
@@ -156,35 +204,50 @@ export default async function Page({ params }: PageProps) {
           tag={metaPost.tag}
           postDate={postDate}
           readingTime={readingTime}
+          host={host}
         />
 
         {thesis ? (
           <section
             aria-label="La idea central del post"
-            className="
-              mx-auto w-full max-w-4xl overflow-hidden rounded-2xl
-              border border-white/10
-              bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_8%,#0b1f14_92%)_0%,#0b1f14_65%,rgba(255,255,255,0.025)_100%)]
-              shadow-[0_18px_60px_rgba(0,0,0,0.32)]
-            "
+            className={cn(
+              "mx-auto w-full max-w-5xl overflow-hidden border border-[rgba(var(--accent),0.18)] shadow-[0_20px_70px_rgba(0,0,0,0.36)]",
+              thesisStyle.section
+            )}
           >
-            <div className="relative px-6 py-5 sm:px-7 sm:py-6">
+            <div className="relative px-7 py-7 sm:px-10 sm:py-9">
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_20%,rgba(var(--accent),0.16),transparent_34%)]"
+                className={cn(
+                  "pointer-events-none absolute inset-0",
+                  thesisStyle.glow
+                )}
               />
 
               <div
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-full w-[5px] bg-[rgb(var(--accent))] shadow-[0_0_18px_rgba(var(--accent),0.55)]"
+                className={cn(
+                  "absolute left-0 top-0 h-full bg-[rgb(var(--accent))]",
+                  thesisStyle.bar
+                )}
               />
 
               <div className="relative">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--accent))]">
+                <p
+                  className={cn(
+                    "mb-4 text-[12px] font-semibold uppercase",
+                    thesisStyle.label
+                  )}
+                >
                   La idea central
                 </p>
 
-                <p className="max-w-3xl text-balance text-lg font-semibold leading-relaxed text-text sm:text-xl">
+                <p
+                  className={cn(
+                    "max-w-4xl text-balance text-[1.65rem] leading-[1.5] sm:text-[2.15rem]",
+                    thesisStyle.text
+                  )}
+                >
                   {thesis}
                 </p>
               </div>
@@ -218,10 +281,10 @@ export default async function Page({ params }: PageProps) {
               </div>
             </div>
 
-              <PostNote variant="video">
-               Actualmente no contamos con videos en español.  
-               Puedes activar los subtítulos en YouTube — ya están adaptados para ti.
-              </PostNote>
+            <PostNote variant="video" locale="es">
+              Actualmente no contamos con videos en español. Puedes activar los
+              subtítulos en YouTube — ya están adaptados para ti.
+            </PostNote>
           </section>
         ) : null}
 
@@ -304,12 +367,16 @@ export default async function Page({ params }: PageProps) {
         </section>
 
         <section className="mx-auto mt-14 w-full max-w-5xl">
-          <PostEndCTA locale="es" />
+          <PostEndCTA locale="es" host={host} />
         </section>
 
         {metaPost.affiliateItems && (
-          <AffiliateBlock items={metaPost.affiliateItems} locale="es" />
-      )}
+          <AffiliateBlock
+           items={metaPost.affiliateItems}
+           locale="es"
+           host={host}
+        />
+        )}
 
         <section className="mx-auto mt-12 w-full max-w-5xl">
           <Link

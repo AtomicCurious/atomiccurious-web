@@ -6,8 +6,8 @@ import CharacterModeBoot from "@/components/CharacterModeBoot"
 import QuillFeatherIcon from "@/components/QuillFeatherIcon"
 
 const SIGNATURE_NUDGE_PX = -90
-const SOCIAL_NUDGE_PX = -50
-const LEGAL_NUDGE_PX = 0
+const SOCIAL_NUDGE_PX = -45
+const LEGAL_NUDGE_PX = -25
 const COPYRIGHT_NUDGE_PX = 70
 
 /* =========================================================
@@ -19,13 +19,9 @@ const COPYRIGHT_NUDGE_PX = 70
 const FEATHER_NUDGE_PX = 0
 
 const SOCIAL_ITEMS = [
-  { label: "YouTube" as const, href: "https://www.youtube.com/@AtomicCurious" },
+  { label: "YouTube" as const, href: "https://www.youtube.com/@atomiccurious" },
   { label: "TikTok" as const, href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram" as const, href: "https://instagram.com/atomiccurious" },
-  {
-    label: "Facebook" as const,
-    href: "https://www.facebook.com/profile.php?id=61586519350627",
-  },
 ]
 
 function LegalLinksEs() {

@@ -1,37 +1,62 @@
 import { Host } from "./CharacterSprite"
 
+type Locale = "es" | "en"
+
 type Step = { text: string }
 
 type Props = {
   host: Host
+  locale?: Locale
   title?: string
   eyebrow?: string
   steps: Step[]
   note?: string
 }
 
-const makeItRealCopyByHost: Record<
-  Host,
-  {
-    title: string
-    eyebrow: string
-    noteLabel: string
-  }
+const makeItRealCopyByLocale: Record<
+  Locale,
+  Record<
+    Host,
+    {
+      title: string
+      eyebrow: string
+      noteLabel: string
+    }
+  >
 > = {
-  atom: {
-    title: "Make It Real",
-    eyebrow: "Prueba esto para cuestionar lo que asumes",
-    noteLabel: "Idea",
+  es: {
+    atom: {
+      title: "Hazlo real",
+      eyebrow: "Prueba esto para cuestionar lo que asumes",
+      noteLabel: "Idea",
+    },
+    iris: {
+      title: "Aplica los criterios",
+      eyebrow: "Evalúa el hábito antes de intentar cambiarlo",
+      noteLabel: "Criterio",
+    },
+    core: {
+      title: "Hazlo real",
+      eyebrow: "Haz esto ahora mismo",
+      noteLabel: "Tip",
+    },
   },
-  iris: {
-    title: "Make It Real",
-    eyebrow: "Prueba esto para tomar una mejor decisión",
-    noteLabel: "Criterio",
-  },
-  core: {
-    title: "Make It Real",
-    eyebrow: "Haz esto ahora mismo",
-    noteLabel: "Tip",
+  en: {
+    atom: {
+      title: "Make It Real",
+      eyebrow: "Try this to question what you assume",
+      noteLabel: "Idea",
+    },
+    iris: {
+      title: "Apply the Criteria",
+      eyebrow: "Evaluate the habit before trying to change it",
+      noteLabel: "Criterion",
+    },
+    core: {
+      title: "Make It Real",
+      eyebrow: "Do this right now",
+      noteLabel: "Tip",
+    },
   },
 }
 
@@ -40,24 +65,44 @@ const hostVisualMeta: Record<
   {
     avatarSrc: string
     avatarAlt: string
-    panelLabel: string
+    panelLabel: Record<Locale, string>
   }
 > = {
   atom: {
     avatarSrc: "/images/sections/posts/atom_posts_reales_v1.webp",
     avatarAlt: "Atom",
-    panelLabel: "Curiosity",
+    panelLabel: {
+      es: "Curiosidad",
+      en: "Curiosity",
+    },
   },
   iris: {
     avatarSrc: "/images/sections/posts/iris_posts_reales_v1.webp",
     avatarAlt: "Iris",
-    panelLabel: "Ranked",
+    panelLabel: {
+      es: "Ranking",
+      en: "Ranked",
+    },
   },
   core: {
     avatarSrc: "/images/sections/posts/core_posts_reales_v1.webp",
     avatarAlt: "Core",
-    panelLabel: "Quiz",
+    panelLabel: {
+      es: "Quiz",
+      en: "Quiz",
+    },
   },
+}
+
+const backgroundByHost: Record<Host, string> = {
+  atom:
+    "bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_12%,#06160f_88%)_0%,color-mix(in_srgb,rgb(var(--accent))_6%,#050b08_94%)_58%,rgba(255,255,255,0.025)_100%)]",
+
+  iris:
+    "bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_12%,#061018_88%)_0%,color-mix(in_srgb,rgb(var(--accent))_6%,#070b12_94%)_58%,rgba(255,255,255,0.025)_100%)]",
+
+  core:
+    "bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_12%,#171005_88%)_0%,color-mix(in_srgb,rgb(var(--accent))_6%,#0c0803_94%)_58%,rgba(255,255,255,0.025)_100%)]",
 }
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -66,26 +111,28 @@ function cn(...classes: Array<string | false | null | undefined>) {
 
 export default function MakeItRealCard({
   host,
+  locale = "es",
   title,
   eyebrow,
   steps,
   note,
 }: Props) {
-  const copy = makeItRealCopyByHost[host]
+  const copy = makeItRealCopyByLocale[locale][host]
   const visual = hostVisualMeta[host]
   const visibleSteps = steps.slice(0, 6)
 
   return (
     <section
-      className="my-12"
+      className={cn("my-12", host === "iris" && "my-14")}
       data-post-block="make-it-real"
       data-host={host}
+      data-locale={locale}
       aria-labelledby="make-it-real-title"
     >
       <div
         className={cn(
           "relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_70px_rgba(0,0,0,0.36)]",
-          "bg-[linear-gradient(135deg,color-mix(in_srgb,rgb(var(--accent))_10%,#0b1f14_90%)_0%,#0b1f14_58%,rgba(255,255,255,0.025)_100%)]"
+          backgroundByHost[host]
         )}
       >
         <div
@@ -101,7 +148,14 @@ export default function MakeItRealCard({
         <div className="relative flex items-stretch">
           <aside className="relative hidden w-[156px] shrink-0 border-r border-white/10 sm:block">
             <div className="absolute left-7 top-7">
-              <div className="relative h-[84px] w-[84px] overflow-hidden rounded-full border border-[rgba(var(--accent),0.35)] bg-black/20 shadow-[0_0_22px_rgba(var(--accent),0.28)]">
+              <div
+                className={cn(
+                  "relative h-[84px] w-[84px] overflow-hidden rounded-full border bg-black/20",
+                  host === "iris"
+                    ? "border-[rgba(var(--accent),0.24)] shadow-[0_0_18px_rgba(var(--accent),0.18)]"
+                    : "border-[rgba(var(--accent),0.35)] shadow-[0_0_22px_rgba(var(--accent),0.28)]"
+                )}
+              >
                 <img
                   src={visual.avatarSrc}
                   alt={visual.avatarAlt}
@@ -110,8 +164,13 @@ export default function MakeItRealCard({
               </div>
             </div>
 
-            <p className="absolute bottom-6 left-7 text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--accent))]/80">
-              {visual.panelLabel}
+            <p
+              className={cn(
+                "absolute bottom-6 left-7 text-[10px] font-semibold uppercase text-[rgb(var(--accent))]/80",
+                host === "iris" ? "tracking-[0.22em]" : "tracking-[0.18em]"
+              )}
+            >
+              {visual.panelLabel[locale]}
             </p>
 
             <div
@@ -121,28 +180,53 @@ export default function MakeItRealCard({
           </aside>
 
           <div className="min-w-0 flex-1 px-5 py-6 sm:px-7">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--accent))]">
+            <p
+              className={cn(
+                "text-[11px] font-semibold uppercase text-[rgb(var(--accent))]",
+                host === "iris" ? "tracking-[0.22em]" : "tracking-[0.18em]"
+              )}
+            >
               {title ?? copy.title}
             </p>
 
             <h3
               id="make-it-real-title"
-              className="mt-1 max-w-2xl text-balance text-lg font-semibold tracking-tight text-text"
+              className={cn(
+                "mt-1 max-w-2xl text-balance text-lg tracking-tight text-text",
+                host === "iris" ? "font-medium leading-[1.55]" : "font-medium"
+              )}
             >
               {eyebrow ?? copy.eyebrow}
             </h3>
 
-            <ol className="mt-5 grid gap-3 text-sm leading-relaxed text-muted">
+            <ol
+              className={cn(
+                "mt-5 grid gap-3 text-sm text-muted",
+                host === "iris" ? "leading-[1.9]" : "leading-relaxed"
+              )}
+            >
               {visibleSteps.map((step, index) => (
                 <li
                   key={`${index}-${step.text}`}
                   className="group flex gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3 transition hover:border-[rgba(var(--accent),0.24)] hover:bg-[rgba(var(--accent),0.055)]"
                 >
-                  <span className="mt-[1px] inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[rgba(var(--accent),0.12)] text-[11px] font-semibold text-[rgb(var(--accent))] ring-1 ring-[rgba(var(--accent),0.28)] transition group-hover:bg-[rgba(var(--accent),0.18)]">
+                  <span
+                    className={cn(
+                      "mt-[1px] inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-[rgb(var(--accent))] ring-1 transition",
+                      host === "iris"
+                        ? "bg-[rgba(var(--accent),0.08)] ring-[rgba(var(--accent),0.18)] group-hover:bg-[rgba(var(--accent),0.12)]"
+                        : "bg-[rgba(var(--accent),0.12)] ring-[rgba(var(--accent),0.28)] group-hover:bg-[rgba(var(--accent),0.18)]"
+                    )}
+                  >
                     {index + 1}
                   </span>
 
-                  <span className="text-pretty text-text/78">
+                  <span
+                    className={cn(
+                      "text-pretty",
+                      host === "iris" ? "text-text/74" : "text-text/78"
+                    )}
+                  >
                     {step.text}
                   </span>
                 </li>
@@ -151,7 +235,12 @@ export default function MakeItRealCard({
 
             {note ? (
               <div className="mt-5 rounded-xl border border-white/[0.08] bg-black/10 px-4 py-3">
-                <p className="text-xs leading-relaxed text-muted/85">
+                <p
+                  className={cn(
+                    "text-xs leading-relaxed text-muted/85",
+                    host === "iris" && "leading-[1.8]"
+                  )}
+                >
                   <span className="font-semibold text-[rgb(var(--accent))]">
                     {copy.noteLabel}:
                   </span>{" "}

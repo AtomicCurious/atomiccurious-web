@@ -31,7 +31,7 @@ export function getLatestPostTileEn() {
 export function getLatestPostTileEs() {
   return {
     href: "/es/newsletter",
-    badge: "NEWSLETTER",
+    badge: "BOLETÍN",
     badgeDot: "teal" as const,
     title: "Entra a AtomicCurious",
     description:

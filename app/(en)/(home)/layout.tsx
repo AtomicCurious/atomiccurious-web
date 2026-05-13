@@ -5,15 +5,15 @@ import Link from "next/link"
 import CharacterModeBoot from "@/components/CharacterModeBoot"
 
 type FooterSocialItem = {
-  label: "YouTube" | "TikTok" | "Instagram" | "Facebook"
+  label: "YouTube" | "TikTok" | "Instagram"
   href: string
 }
 
 const SUPPORT_HREF_EN = "/support"
 
 // positive = right | negative = left
-const LEGAL_NUDGE_PX = -140
-const SOCIAL_NUDGE_PX = -70
+const LEGAL_NUDGE_PX = -110
+const SOCIAL_NUDGE_PX = 0
 const SUPPORT_NUDGE_PX = 20
 const COPYRIGHT_NUDGE_PX = 70
 
@@ -97,13 +97,9 @@ function SupportInlineEn() {
 }
 
 const footerSocialItems: FooterSocialItem[] = [
-  { label: "YouTube", href: "https://www.youtube.com/@AtomicCurious" },
-  { label: "TikTok", href: "https://tiktok.com/@atomic_curious" },
+  { label: "YouTube", href: "https://www.youtube.com/@atomiccurious" },
+  { label: "TikTok", href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram", href: "https://instagram.com/atomiccurious" },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61586519350627",
-  },
 ]
 
 export default function EnHomeLayout({ children }: { children: ReactNode }) {

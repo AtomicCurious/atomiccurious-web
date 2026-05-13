@@ -4,19 +4,15 @@ import SocialLinks from "@/components/SocialLinks"
 import Link from "next/link"
 import CharacterModeBoot from "@/components/CharacterModeBoot"
 
-const LEGAL_NUDGE_PX = -140
-const SOCIAL_NUDGE_PX = -70
-const SUPPORT_NUDGE_PX = 20
-const COPYRIGHT_NUDGE_PX = 70
+const LEGAL_NUDGE_PX = -110
+const SOCIAL_NUDGE_PX = 0
+const SUPPORT_NUDGE_PX = 40
+const COPYRIGHT_NUDGE_PX = 100
 
 const SOCIAL_ITEMS = [
-  { label: "YouTube" as const, href: "https://www.youtube.com/@AtomicCurious" },
-  { label: "TikTok" as const, href: "https://tiktok.com/@atomic_curious" },
+  { label: "YouTube" as const, href: "https://www.youtube.com/@atomiccurious" },
+  { label: "TikTok" as const, href: "https://tiktok.com/@atomiccurious" },
   { label: "Instagram" as const, href: "https://instagram.com/atomiccurious" },
-  {
-    label: "Facebook" as const,
-    href: "https://www.facebook.com/profile.php?id=61586519350627",
-  },
 ]
 
 const SUPPORT_HREF_ES = "/es/apoyar"
@@ -179,4 +175,3 @@ export default function EsHomeLayout({ children }: { children: ReactNode }) {
     </div>
   )
 }
-

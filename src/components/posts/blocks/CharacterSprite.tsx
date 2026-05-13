@@ -38,17 +38,16 @@ export default function CharacterSprite({
   className,
   priority,
 }: Props) {
-  const src =
-    SPRITES[host]?.[variant] ??
-    "/images/hosts/atom-presenter.webp"
-
+  const src = SPRITES[host]?.[variant] ?? "/images/hosts/atom-presenter.webp"
   const a11y = alt ?? `${host} ${variant}`
 
   return (
     <span
       className={[
         "relative inline-block shrink-0 rounded-full",
-        "ring-1 ring-white/10 bg-white/[0.03] backdrop-blur",
+        "ring-1 ring-[rgba(var(--accent),0.22)]",
+        "bg-[rgba(var(--accent),0.045)] backdrop-blur",
+        "shadow-[0_0_18px_rgba(var(--accent),0.12)]",
         className ?? "",
       ].join(" ")}
       style={{ width: size, height: size }}
