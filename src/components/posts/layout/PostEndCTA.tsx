@@ -3,7 +3,10 @@ type Host = "atom" | "iris" | "core"
 type Props = {
   locale?: "es" | "en"
   host?: Host
+  youtubeId?: string
 }
+
+const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@atomiccurious"
 
 const copyByLocaleAndHost = {
   es: {
@@ -92,9 +95,20 @@ const ctaVisualByHost: Record<
   },
 }
 
-export function PostEndCTA({ locale = "es", host = "atom" }: Props) {
+function getYouTubeHref(youtubeId?: string) {
+  if (!youtubeId) return YOUTUBE_CHANNEL_URL
+
+  return `https://www.youtube.com/watch?v=${youtubeId}`
+}
+
+export function PostEndCTA({
+  locale = "es",
+  host = "atom",
+  youtubeId,
+}: Props) {
   const copy = copyByLocaleAndHost[locale][host]
   const visual = ctaVisualByHost[host]
+  const youtubeHref = getYouTubeHref(youtubeId)
 
   return (
     <section
@@ -138,7 +152,9 @@ export function PostEndCTA({ locale = "es", host = "atom" }: Props) {
 
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <a
-            href="/youtube"
+            href={youtubeHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="
               rounded-full border border-[rgba(var(--accent),0.55)]
               bg-[rgb(var(--accent))] px-5 py-2.5

@@ -170,8 +170,13 @@ export default async function Page({ params }: PageProps) {
       PostShell: (props: any) => <PostShell accent={host} {...props} />,
       PostProse: (props: any) => <PostProse host={host} {...props} />,
       PostEndCTA: (props: any) => (
-        <PostEndCTA locale="en" host={host} {...props} />
-      ),
+       <PostEndCTA
+        locale="en"
+       host={host}
+       {...props}
+       youtubeId={props.youtubeId ?? frontmatter?.youtubeId}
+  />
+),
     },
     options: { parseFrontmatter: true },
   })
@@ -366,9 +371,9 @@ export default async function Page({ params }: PageProps) {
           )}
         </section>
 
-        <section className="mx-auto mt-14 w-full max-w-5xl">
-          <PostEndCTA locale="en" host={host} />
-        </section>
+      <section className="mx-auto mt-14 w-full max-w-5xl">
+      <PostEndCTA locale="en" host={host} youtubeId={youtubeId} />
+      </section>
 
         {metaPost.affiliateItems && (
           <AffiliateBlock
