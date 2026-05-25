@@ -210,6 +210,7 @@ export default async function Page({ params }: PageProps) {
           postDate={postDate}
           readingTime={readingTime}
           host={host}
+          locale="en"
         />
 
         {thesis ? (
