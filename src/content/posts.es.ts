@@ -164,9 +164,9 @@ export const postsEs: PostListItem[] = [
     {
   slug: "por-que-enamorarte-te-vuelve-mas-tonto",
   id: "ac-004",
-  title: "Por qué enamorarte te vuelve más tonto",
+  title: "Por qué enamorarte afecta temporalmente tu juicio",
   description:
-    "El amor romántico afecta pensamiento crítico, memoria y toma de decisiones más de lo que la mayoría imagina.",
+    "El amor romántico puede cambiar temporalmente tu pensamiento crítico, percepción del riesgo y toma de decisiones más de lo que imaginas.",
 
   // 5:00 PM New York (EDT)
   date: new Date("2026-06-03T17:00:00-04:00"),

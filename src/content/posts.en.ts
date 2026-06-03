@@ -171,9 +171,9 @@ export const postsEn: PostListItem[] = [
     {
   slug: "why-falling-in-love-makes-you-dumber",
   id: "ac-004",
-  title: "Falling in Love Literally Changes Your Brain",
+  title: "Why Falling in Love Changes How Clearly You Think",
   description:
-    "Romantic love affects critical thinking, memory, and decision-making more than most people realize.",
+    "Romantic love can temporarily affect judgment, risk perception, and decision-making more than most people realize.",
 
   // 5:00 PM New York (EDT)
   date: new Date("2026-06-03T17:00:00-04:00"),
