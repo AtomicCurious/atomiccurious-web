@@ -27,47 +27,46 @@ export type PostListItem = {
 
 export const postsEs: PostListItem[] = [
   {
-    slug: "la-cadena-del-wtf-flamencos",
-    id: "ac-003",
-    title:
-      "La Cadena del WTF: cómo un flamenco rosado está conectado con tu próxima respiración",
+    slug: "por-que-8-hrs",
+    id: "ac-001",
+    title: "Por qué trabajamos 8 horas al día",
     description:
-      "Los flamencos no nacen rosados. Los camarones tampoco. Y esa cadena termina en el oxígeno que respiras.",
+      "El origen real de la jornada laboral de 8 horas y por qué no fue diseñada para el tipo de trabajo que haces hoy.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-05-27T17:00:00-04:00"),
+    date: new Date("2026-05-13T17:00:00-04:00"),
 
-    format: "quiz",
-    tag: "Ciencia / Sistemas",
-    readingTime: 9,
+    format: "curiosity",
+    tag: "Trabajo / Productividad",
+    readingTime: 7,
     bullets: [
-      "Los flamencos no nacen rosados",
-      "La cadena invisible que llega hasta tu respiración",
+      "El origen real de las 8 horas",
+      "Por qué tu cerebro no funciona así",
     ],
-    featured: true,
+    featured: false,
 
     affiliateItems: [
       {
-        name: "Entangled Life — Merlin Sheldrake",
-        href: "https://amzn.to/48ZOMVz",
+        name: "Deep Work — Cal Newport",
+        href: "https://amzn.to/3OGP110",
         tag: "Libro",
         description:
-          "Explora cómo redes invisibles de hongos conectan ecosistemas completos bajo la superficie.",
+          "Explora cómo la concentración profunda se volvió una ventaja escasa en la economía moderna.",
       },
       {
-        name: "Carson MicroBrite Plus",
-        href: "https://amzn.to/4dFZXW4",
+        name: "Rize",
+        href: "https://rize.io",
         tag: "Herramienta",
-        description:
-          "Un microscopio de bolsillo para explorar texturas, organismos y detalles invisibles del mundo cotidiano.",
-      },
-      {
-        name: "iNaturalist",
-        href: "https://www.inaturalist.org",
-        tag: "App",
         cta: "Explorar herramienta →",
         description:
-          "Herramienta para identificar especies y convertir tu curiosidad en observaciones que contribuyen a la ciencia.",
+          "Herramienta para visualizar tiempo de enfoque, distracciones y patrones reales de trabajo en tiempo real.",
+      },
+      {
+        name: "Four Thousand Weeks — Oliver Burkeman",
+        href: "https://amzn.to/48vWyq8",
+        tag: "Libro",
+        description:
+          "Una reflexión sobre tiempo, productividad y los límites reales de la vida humana.",
       },
     ],
   },
@@ -118,96 +117,99 @@ export const postsEs: PostListItem[] = [
   },
 
   {
-    slug: "por-que-8-hrs",
-    id: "ac-001",
-    title: "Por qué trabajamos 8 horas al día",
+    slug: "la-cadena-del-wtf-flamencos",
+    id: "ac-003",
+    title:
+      "La Cadena del WTF: cómo un flamenco rosado está conectado con tu próxima respiración",
     description:
-      "El origen real de la jornada laboral de 8 horas y por qué no fue diseñada para el tipo de trabajo que haces hoy.",
+      "Los flamencos no nacen rosados. Los camarones tampoco. Y esa cadena termina en el oxígeno que respiras.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-05-13T17:00:00-04:00"),
+    date: new Date("2026-05-27T17:00:00-04:00"),
+
+    format: "quiz",
+    tag: "Ciencia / Sistemas",
+    readingTime: 9,
+    bullets: [
+      "Los flamencos no nacen rosados",
+      "La cadena invisible que llega hasta tu respiración",
+    ],
+    featured: true,
+
+    affiliateItems: [
+      {
+        name: "Entangled Life — Merlin Sheldrake",
+        href: "https://amzn.to/48ZOMVz",
+        tag: "Libro",
+        description:
+          "Explora cómo redes invisibles de hongos conectan ecosistemas completos bajo la superficie.",
+      },
+      {
+        name: "Carson MicroBrite Plus",
+        href: "https://amzn.to/4dFZXW4",
+        tag: "Herramienta",
+        description:
+          "Un microscopio de bolsillo para explorar texturas, organismos y detalles invisibles del mundo cotidiano.",
+      },
+      {
+        name: "iNaturalist",
+        href: "https://www.inaturalist.org",
+        tag: "App",
+        cta: "Explorar herramienta →",
+        description:
+          "Herramienta para identificar especies y convertir tu curiosidad en observaciones que contribuyen a la ciencia.",
+      },
+    ],
+  },
+
+  {
+    slug: "por-que-enamorarte-te-vuelve-mas-tonto",
+    id: "ac-004",
+    title: "Por qué enamorarte afecta temporalmente tu juicio",
+    description:
+      "El amor romántico puede cambiar temporalmente tu pensamiento crítico, percepción del riesgo y toma de decisiones más de lo que imaginas.",
+
+    // 5:00 PM New York (EDT)
+    date: new Date("2026-06-03T17:00:00-04:00"),
 
     format: "curiosity",
-    tag: "Trabajo / Productividad",
-    readingTime: 7,
+    tag: "Psicología / Neurociencia",
+    readingTime: 8,
+
     bullets: [
-      "El origen real de las 8 horas",
-      "Por qué tu cerebro no funciona así",
+      "Qué hace realmente el amor en tu cerebro",
+      "Por qué enamorarte cambia tu pensamiento crítico",
     ],
+
     featured: false,
 
     affiliateItems: [
       {
-        name: "Deep Work — Cal Newport",
-        href: "https://amzn.to/3OGP110",
+        name: "Why We Love — Helen Fisher",
+        href: "https://amzn.to/4nM7YfS",
         tag: "Libro",
         description:
-          "Explora cómo la concentración profunda se volvió una ventaja escasa en la economía moderna.",
+          "La investigadora que ayudó a mapear el cerebro enamorado. Una exploración de la neurociencia y química del amor romántico.",
       },
+
       {
-        name: "Rize",
-        href: "https://rize.io",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
-        description:
-          "Herramienta para visualizar tiempo de enfoque, distracciones y patrones reales de trabajo en tiempo real.",
-      },
-      {
-        name: "Four Thousand Weeks — Oliver Burkeman",
-        href: "https://amzn.to/48vWyq8",
+        name: "Attached — Amir Levine",
+        href: "https://amzn.to/3RR4D2S",
         tag: "Libro",
         description:
-          "Una reflexión sobre tiempo, productividad y los límites reales de la vida humana.",
+          "Cómo los estilos de apego moldean vínculos, decisiones emocionales y la forma en que experimentamos las relaciones.",
+      },
+
+      {
+        name: "Emotional Intelligence — Daniel Goleman",
+        href: "https://amzn.to/4ujnFxf",
+        tag: "Libro",
+        description:
+          "Por qué las emociones influyen en pensamiento, conducta y toma de decisiones mucho más de lo que solemos asumir.",
       },
     ],
   },
-    {
-  slug: "por-que-enamorarte-te-vuelve-mas-tonto",
-  id: "ac-004",
-  title: "Por qué enamorarte afecta temporalmente tu juicio",
-  description:
-    "El amor romántico puede cambiar temporalmente tu pensamiento crítico, percepción del riesgo y toma de decisiones más de lo que imaginas.",
 
-  // 5:00 PM New York (EDT)
-  date: new Date("2026-06-03T17:00:00-04:00"),
-
-  format: "curiosity",
-  tag: "Psicología / Neurociencia",
-  readingTime: 8,
-
-  bullets: [
-    "Qué hace realmente el amor en tu cerebro",
-    "Por qué enamorarte cambia tu pensamiento crítico",
-  ],
-
-  featured: false,
-
-  affiliateItems: [
-    {
-      name: "Why We Love — Helen Fisher",
-      href: "https://amzn.to/4nM7YfS",
-      tag: "Libro",
-      description:
-        "La investigadora que ayudó a mapear el cerebro enamorado. Una exploración de la neurociencia y química del amor romántico.",
-    },
-
-    {
-      name: "Attached — Amir Levine",
-      href: "https://amzn.to/3RR4D2S",
-      tag: "Libro",
-      description:
-        "Cómo los estilos de apego moldean vínculos, decisiones emocionales y la forma en que experimentamos las relaciones.",
-    },
-
-    {
-      name: "Emotional Intelligence — Daniel Goleman",
-      href: "https://amzn.to/4ujnFxf",
-      tag: "Libro",
-      description:
-        "Por qué las emociones influyen en pensamiento, conducta y toma de decisiones mucho más de lo que solemos asumir.",
-    },
-  ],
-},
   {
     slug: "leer-vs-audiolibros-que-retiene-mas",
     id: "ac-005",
@@ -229,26 +231,26 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Make It Stick — Peter C. Brown",
+        href: "https://amzn.to/3Ql8UeG",
         tag: "Libro",
         description:
-          "Recurso pendiente para explorar memoria, lectura, escucha y aprendizaje basado en evidencia.",
+          "Un libro basado en ciencia cognitiva sobre memoria, aprendizaje y retención. Ideal para entender por qué recordar depende de la atención y la recuperación activa.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
+        name: "Stolen Focus — Johann Hari",
+        href: "https://amzn.to/4uT3SoG",
+        tag: "Libro / Audiolibro",
+        description:
+          "Un gran complemento para el lado auditivo del tema. Explora la atención, la distracción y por qué el enfoque profundo importa cuando quieres que la información realmente se quede.",
+      },
+      {
+        name: "Readwise Reader",
+        href: "https://readwise.io/read",
+        tag: "App",
         cta: "Explorar herramienta →",
         description:
-          "Herramienta pendiente para mejorar retención, lectura, notas o seguimiento de aprendizaje.",
-      },
-      {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
-        description:
-          "Recurso complementario pendiente para comparar métodos de estudio y consumo de información.",
+          "Una app para guardar artículos, newsletters, PDFs, EPUBs y subrayados en un solo lugar, con lectura limpia y text-to-speech.",
       },
     ],
   },

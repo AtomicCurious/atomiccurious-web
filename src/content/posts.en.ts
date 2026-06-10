@@ -28,49 +28,48 @@ export type PostListItem = {
 
 export const postsEn: PostListItem[] = [
   {
-    slug: "the-wtf-chain-flamingos",
-    id: "ac-003",
-    title:
-      "The WTF Chain: How a Pink Flamingo Is Connected to Your Next Breath",
+    slug: "why-8-hrs",
+    id: "ac-001",
+    title: "Why We Work 8 Hours a Day",
     description:
-      "Flamingos aren’t born pink. Shrimp aren’t either. And that chain ends with the oxygen you breathe.",
+      "The real origin of the 8-hour workday and why it was never designed for the kind of work you do today.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-05-27T17:00:00-04:00"),
+    date: new Date("2026-05-13T17:00:00-04:00"),
 
-    format: "quiz",
-    tag: "Science / Systems",
-    readingTime: 9,
+    format: "curiosity",
+    tag: "Work / Productivity",
+    readingTime: 7,
     bullets: [
-      "Flamingos are not born pink",
-      "The invisible chain that reaches your next breath",
+      "Where the 8-hour workday actually comes from",
+      "Why your brain was never built for it",
     ],
-    featured: true,
+    featured: false,
 
     affiliateItems: [
       {
-        name: "Entangled Life — Merlin Sheldrake",
-        href: "https://amzn.to/48ZOMVz",
+        name: "Deep Work — Cal Newport",
+        href: "https://amzn.to/3OGP110",
         tag: "Book",
         description:
-          "Explores how invisible fungal networks connect entire ecosystems beneath the surface.",
+          "Explores how deep focus became one of the rarest and most valuable skills in modern work.",
       },
 
       {
-        name: "Carson MicroBrite Plus",
-        href: "https://amzn.to/4dFZXW4",
+        name: "Rize",
+        href: "https://rize.io",
         tag: "Tool",
-        description:
-          "A pocket microscope for exploring textures, organisms, and hidden details in the everyday world.",
-      },
-
-      {
-        name: "iNaturalist",
-        href: "https://www.inaturalist.org",
-        tag: "App",
         cta: "Explore tool →",
         description:
-          "A tool for identifying species and turning curiosity into observations that contribute to science.",
+          "A tool for visualizing focus time, distractions, and real work patterns in real time.",
+      },
+
+      {
+        name: "Four Thousand Weeks — Oliver Burkeman",
+        href: "https://amzn.to/48vWyq8",
+        tag: "Book",
+        description:
+          "A reflection on time, productivity, and the real limits of human life.",
       },
     ],
   },
@@ -123,94 +122,97 @@ export const postsEn: PostListItem[] = [
   },
 
   {
-    slug: "why-8-hrs",
-    id: "ac-001",
-    title: "Why We Work 8 Hours a Day",
+    slug: "the-wtf-chain-flamingos",
+    id: "ac-003",
+    title:
+      "The WTF Chain: How a Pink Flamingo Is Connected to Your Next Breath",
     description:
-      "The real origin of the 8-hour workday and why it was never designed for the kind of work you do today.",
+      "Flamingos aren’t born pink. Shrimp aren’t either. And that chain ends with the oxygen you breathe.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-05-13T17:00:00-04:00"),
+    date: new Date("2026-05-27T17:00:00-04:00"),
+
+    format: "quiz",
+    tag: "Science / Systems",
+    readingTime: 9,
+    bullets: [
+      "Flamingos are not born pink",
+      "The invisible chain that reaches your next breath",
+    ],
+    featured: true,
+
+    affiliateItems: [
+      {
+        name: "Entangled Life — Merlin Sheldrake",
+        href: "https://amzn.to/48ZOMVz",
+        tag: "Book",
+        description:
+          "Explores how invisible fungal networks connect entire ecosystems beneath the surface.",
+      },
+
+      {
+        name: "Carson MicroBrite Plus",
+        href: "https://amzn.to/4dFZXW4",
+        tag: "Tool",
+        description:
+          "A pocket microscope for exploring textures, organisms, and hidden details in the everyday world.",
+      },
+
+      {
+        name: "iNaturalist",
+        href: "https://www.inaturalist.org",
+        tag: "App",
+        cta: "Explore tool →",
+        description:
+          "A tool for identifying species and turning curiosity into observations that contribute to science.",
+      },
+    ],
+  },
+
+  {
+    slug: "why-falling-in-love-makes-you-dumber",
+    id: "ac-004",
+    title: "Why Falling in Love Changes How Clearly You Think",
+    description:
+      "Romantic love can temporarily affect judgment, risk perception, and decision-making more than most people realize.",
+
+    // 5:00 PM New York (EDT)
+    date: new Date("2026-06-03T17:00:00-04:00"),
 
     format: "curiosity",
-    tag: "Work / Productivity",
-    readingTime: 7,
+    tag: "Psychology / Neuroscience",
+    readingTime: 8,
     bullets: [
-      "Where the 8-hour workday actually comes from",
-      "Why your brain was never built for it",
+      "What love actually does to your brain",
+      "Why falling in love changes your critical thinking",
     ],
     featured: false,
 
     affiliateItems: [
       {
-        name: "Deep Work — Cal Newport",
-        href: "https://amzn.to/3OGP110",
+        name: "Why We Love — Helen Fisher",
+        href: "https://amzn.to/4nM7YfS",
         tag: "Book",
         description:
-          "Explores how deep focus became one of the rarest and most valuable skills in modern work.",
+          "The researcher who helped map the brain in love. A clear look at the neuroscience and chemistry behind romantic attraction.",
       },
-
       {
-        name: "Rize",
-        href: "https://rize.io",
-        tag: "Tool",
-        cta: "Explore tool →",
-        description:
-          "A tool for visualizing focus time, distractions, and real work patterns in real time.",
-      },
-
-      {
-        name: "Four Thousand Weeks — Oliver Burkeman",
-        href: "https://amzn.to/48vWyq8",
+        name: "Attached — Amir Levine",
+        href: "https://amzn.to/3RR4D2S",
         tag: "Book",
         description:
-          "A reflection on time, productivity, and the real limits of human life.",
+          "How attachment styles shape emotional decisions, bonds, and the way we experience relationships.",
+      },
+      {
+        name: "Emotional Intelligence — Daniel Goleman",
+        href: "https://amzn.to/4ujnFxf",
+        tag: "Book",
+        description:
+          "Why emotions influence thinking, behavior, and decision-making far more than we usually assume.",
       },
     ],
   },
-    {
-  slug: "why-falling-in-love-makes-you-dumber",
-  id: "ac-004",
-  title: "Why Falling in Love Changes How Clearly You Think",
-  description:
-    "Romantic love can temporarily affect judgment, risk perception, and decision-making more than most people realize.",
 
-  // 5:00 PM New York (EDT)
-  date: new Date("2026-06-03T17:00:00-04:00"),
-
-  format: "curiosity",
-  tag: "Psychology / Neuroscience",
-  readingTime: 8,
-  bullets: [
-    "What love actually does to your brain",
-    "Why falling in love changes your critical thinking",
-  ],
-  featured: false,
-
-  affiliateItems: [
-    {
-      name: "Why We Love — Helen Fisher",
-      href: "https://amzn.to/4nM7YfS",
-      tag: "Book",
-      description:
-        "The researcher who helped map the brain in love. A clear look at the neuroscience and chemistry behind romantic attraction.",
-    },
-    {
-      name: "Attached — Amir Levine",
-      href: "https://amzn.to/3RR4D2S",
-      tag: "Book",
-      description:
-        "How attachment styles shape emotional decisions, bonds, and the way we experience relationships.",
-    },
-    {
-      name: "Emotional Intelligence — Daniel Goleman",
-      href: "https://amzn.to/4ujnFxf",
-      tag: "Book",
-      description:
-        "Why emotions influence thinking, behavior, and decision-making far more than we usually assume.",
-    },
-  ],
-},
   {
     slug: "reading-vs-audiobooks-which-retains-more",
     id: "ac-005",
@@ -232,26 +234,26 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Make It Stick — Peter C. Brown",
+        href: "https://amzn.to/3Ql8UeG",
         tag: "Book",
         description:
-          "Placeholder resource for exploring memory, reading, listening and evidence-based learning.",
+          "A science-based book on memory, learning, and retention. A strong fit if you want to understand why remembering depends on attention, retrieval, and how you process information.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
+        name: "Stolen Focus — Johann Hari",
+        href: "https://amzn.to/4uT3SoG",
+        tag: "Book / Audiobook",
+        description:
+          "A strong companion for the audio side of this topic. It explores attention, distraction, and why deep focus matters when you want information to actually land.",
+      },
+      {
+        name: "Readwise Reader",
+        href: "https://readwise.io/read",
+        tag: "App",
         cta: "Explore tool →",
         description:
-          "Placeholder tool for improving retention, reading habits, note-taking or learning systems.",
-      },
-      {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
-        description:
-          "Placeholder resource for comparing study methods and information retention.",
+          "A read-it-later app for articles, newsletters, PDFs, EPUBs, highlights, and text-to-speech. Useful for turning reading and listening into a cleaner system for attention and retention.",
       },
     ],
   },
@@ -392,7 +394,8 @@ export const postsEn: PostListItem[] = [
       },
     ],
   },
-    {
+
+  {
     slug: "association-test-what-do-these-images-have-in-common",
     id: "ac-009",
     title:
@@ -711,8 +714,7 @@ export const postsEn: PostListItem[] = [
   {
     slug: "why-every-generation-thinks-the-last-one-did-everything-wrong",
     id: "ac-016",
-    title:
-      "Why Every Generation Thinks the Next One Is Ruined",
+    title: "Why Every Generation Thinks the Next One Is Ruined",
     description:
       "Every generation thinks the next one has lost values, discipline or intelligence. This has been happening for centuries.",
 
@@ -757,8 +759,7 @@ export const postsEn: PostListItem[] = [
   {
     slug: "introvert-vs-extrovert-who-has-the-advantage-today",
     id: "ac-017",
-    title:
-      "Introvert vs Extrovert: Who Has the Advantage Today?",
+    title: "Introvert vs Extrovert: Who Has the Advantage Today?",
     description:
       "Personality shapes work, relationships and social adaptation far more than it seems.",
 
