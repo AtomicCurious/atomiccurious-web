@@ -277,26 +277,27 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
-        tag: "Libro",
+        name: "Artículo: El cerebro predictivo",
+        href: "https://www.quantamagazine.org/to-be-energy-efficient-brains-predict-their-perceptions-20211115/",
+        tag:  "Lectura gratis",
         description:
-          "Recurso pendiente para explorar percepción, sesgos cognitivos y cómo el cerebro interpreta la realidad.",
+          "Un artículo de Quanta Magazine sobre cómo el cerebro puede predecir la percepción en lugar de procesar cada detalle desde cero.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "The Invisible Gorilla — Christopher Chabris & Daniel Simons",
+        href: "https://amzn.to/4xpJDRq",
+        tag:  "Mejor punto de inicio",
+        cta: "Ver libro →",
         description:
-          "Herramienta pendiente para experimentar con percepción, atención visual o entrenamiento cognitivo.",
+          "La mejor lectura para continuar con la parte de atención de este episodio. Un libro accesible sobre por qué nos perdemos más cosas de las que creemos.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "The Brain: The Story of You — David Eagleman",
+        href: "https://amzn.to/4egC1YH",
+        tag:  "Mejor introducción",
+        cta:  "Ver libro →",
         description:
-          "Recurso complementario pendiente para profundizar en ilusiones, atención y procesamiento mental.",
+          "Una introducción clara y accesible a cómo el cerebro da forma a la percepción, la memoria, la identidad y la experiencia.",
       },
     ],
   },

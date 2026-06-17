@@ -280,26 +280,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
-        tag: "Book",
+        name: "Article: The Predictive Brain",
+        href: "https://www.quantamagazine.org/to-be-energy-efficient-brains-predict-their-perceptions-20211115/",
+        tag:  "Free read",
+        cta:  "Read article →",
         description:
-          "Placeholder resource for exploring perception, cognitive bias and how the brain interprets reality.",
+          "A Quanta Magazine article about how the brain predicts perception instead of processing every detail from scratch.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "The Invisible Gorilla — Christopher Chabris & Daniel Simons",
+        href: "https://amzn.to/4xpJDRq",
+        tag:  "Best starting point",
+        cta:  "View book →",
         description:
-          "Placeholder tool for experimenting with perception, visual attention or cognitive training.",
+          "The best follow-up to the attention part of this episode. A readable book about why we miss more than we think.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "The Brain: The Story of You — David Eagleman",
+        href: "https://amzn.to/4egC1YH",
+        tag:  "Best intro",
+        cta: "View book →",
         description:
-          "Placeholder resource for exploring illusions, attention and mental processing in more depth.",
+          "A clear and accessible introduction to how the brain shapes perception, memory, identity, and experience.",
       },
     ],
   },
