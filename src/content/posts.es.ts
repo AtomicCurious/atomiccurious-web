@@ -689,7 +689,7 @@ affiliateItems: [
       "Los pulpos parecen criaturas alienígenas por una razón: gran parte de su biología rompe intuiciones humanas.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-01-19T17:00:00-04:00"),
+    date: new Date("2026-08-19T17:00:00-04:00"),
 
     format: "quiz",
     tag: "Biología / Quiz",

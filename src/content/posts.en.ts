@@ -694,7 +694,7 @@ affiliateItems: [
       "Octopuses feel alien for a reason: much of their biology breaks human intuition.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-01-19T17:00:00-04:00"),
+    date: new Date("2026-08-19T17:00:00-04:00"),
 
     format: "quiz",
     tag: "Biology / Quiz",
