@@ -324,26 +324,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Filterworld: How Algorithms Flattened Culture",
+        href: "https://amzn.to/4w2Q8rU",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar inteligencia artificial, algoritmos y decisiones automatizadas.",
+          "Un libro moderno y accesible sobre cómo los algoritmos moldean lo que vemos, escuchamos, nos gusta y descubrimos en internet.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "The Chaos Machine",
+        href: "https://amzn.to/3SQGyK0",
+        tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Herramienta pendiente para probar, entender o comparar sistemas de IA en tareas cotidianas.",
+          "Una mirada atrapante a cómo los sistemas de redes sociales pueden amplificar emociones, conflicto, indignación y atención.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Amazon Kindle Paperwhite 16 GB",
+        href: "https://amzn.to/4uFBghP",
+        tag: "Tecnología",
+        cta: "Explorar Kindle →",
         description:
-          "Recurso complementario pendiente para analizar cómo la IA influye en información, trabajo y comportamiento.",
+          "Una forma simple de leer ideas más largas sin que tu feed compita por tu atención cada pocos segundos.",
       },
     ],
   },
@@ -369,26 +371,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Make It Stick",
+        href: "https://amzn.to/4xCeqdx",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar aprendizaje efectivo, memoria y técnicas de estudio basadas en ciencia.",
+          "Uno de los mejores libros para entender por qué la recuperación activa, el espaciado y los métodos de estudio más difíciles suelen producir un aprendizaje más duradero.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
+        name: "Readwise Reader",
+        href: "https://readwise.io/read",
         tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        cta: "Explorar Reader →",
         description:
-          "Herramienta pendiente para practicar repetición espaciada, recuperación activa o organización del estudio.",
+          "Una herramienta para leer con más intención, guardar ideas importantes y volver a revisar tus subrayados en vez de dejarlos olvidados después de una sola lectura.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Anki",
+        href: "https://apps.ankiweb.net/",
+        tag: "Herramienta",
+        cta: "Explorar Anki →",
         description:
-          "Recurso complementario pendiente para mejorar hábitos de aprendizaje y retención a largo plazo.",
+          "Una herramienta de repetición espaciada para practicar recuperación activa en lugar de releer el mismo material una y otra vez de forma pasiva.",
       },
     ],
   },
@@ -415,26 +419,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Lateral Thinking",
+        href: "https://amzn.to/4ezFNwj",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar patrones, asociación mental y pensamiento intuitivo.",
+          "Una guía clásica para romper patrones habituales, cambiar de perspectiva y encontrar alternativas que el pensamiento convencional suele pasar por alto.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "A Whack on the Side of the Head",
+        href: "https://amzn.to/4w459tu",
+        tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Herramienta pendiente para entrenar pensamiento lateral, reconocimiento de patrones o creatividad.",
+          "Una guía accesible y entretenida, llena de ejercicios, acertijos y ejemplos para superar bloqueos creativos y descubrir nuevas formas de pensar.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "PuzzGrid",
+        href: "https://puzzgrid.com/",
+        tag: "Herramienta gratuita",
+        cta: "Probar PuzzGrid →",
         description:
-          "Recurso complementario pendiente para profundizar en cognición, intuición y asociaciones mentales.",
+          "Una herramienta gratuita para resolver y crear retos de conexiones, ideal para practicar el mismo tipo de reconocimiento de patrones y pensamiento lateral que explora este post.",
       },
     ],
   },
@@ -460,26 +466,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Tu cerebro y la música",
+        href: "https://amzn.to/3SRgbni",
         tag: "Libro",
+        cta: "Ver el libro →",
         description:
-          "Recurso pendiente para explorar música, cerebro, emoción y comunicación humana.",
+          "Una introducción accesible a cómo el cerebro procesa el ritmo, la melodía, la emoción, la memoria y el placer que produce la música.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "Musicofilia",
+        href: "https://amzn.to/4oGKYza",
+        tag: "Libro",
+        cta: "Ver el libro →",
         description:
-          "Herramienta pendiente para analizar música, entrenar oído o explorar composición y patrones sonoros.",
+          "Oliver Sacks explora casos reales que muestran cómo la música se relaciona con la memoria, la identidad, el movimiento y distintos trastornos neurológicos.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "The Music Lab — Historia natural de la canción",
+        href: "https://www.themusiclab.org/nhs",
+        tag: "Recurso gratuito",
+        cta: "Explorar el proyecto →",
         description:
-          "Recurso complementario pendiente para profundizar en lenguaje musical, emoción y percepción auditiva.",
+          "Explora grabaciones, datos y experimentos del proyecto científico que estudia canciones procedentes de sociedades de todo el mundo.",
       },
     ],
   },
@@ -505,26 +513,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Money for Couples",
+        href: "https://amzn.to/4xDpjMt",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar decisiones financieras, comportamiento económico y planificación personal.",
+          "La decisión número uno, convertida en libro. Una guía práctica para hablar sobre deudas, gastos y objetivos compartidos sin que cada conversación sobre dinero termine en una pelea.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "The Psychology of Money",
+        href: "https://amzn.to/3SUnCtT",
+        tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Herramienta pendiente para presupuestar, comparar decisiones financieras o visualizar metas a largo plazo.",
+          "Por qué el comportamiento importa tanto como los números. Una mirada accesible, basada en historias, a cómo la paciencia, el riesgo y las experiencias personales influyen en nuestras decisiones financieras.", 
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Calculator.net Interest Calculator",
+        href: "https://www.calculator.net/interest-calculator.html",
+        tag: "Herramienta gratuita",
+        cta: "Probar la calculadora →",
         description:
-          "Recurso complementario pendiente para mejorar criterios financieros y toma de decisiones.",
+          "Mira la decisión número cuatro en la práctica.Cambia la cantidad, la aportación mensual, el rendimiento y el plazo para descubrir cuánto puede influir comenzar antes.",
       },
     ],
   },
@@ -548,30 +558,33 @@ export const postsEs: PostListItem[] = [
     ],
     featured: false,
 
-    affiliateItems: [
-      {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
-        tag: "Libro",
-        description:
-          "Recurso pendiente para explorar imágenes generadas por IA, percepción visual y cultura digital.",
-      },
-      {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
-        description:
-          "Herramienta pendiente para detectar, comparar o crear imágenes con inteligencia artificial.",
-      },
-      {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
-        description:
-          "Recurso complementario pendiente para entender autenticidad visual, deepfakes y medios sintéticos.",
-      },
-    ],
+affiliateItems: [
+  {
+    name: "FAIK",
+    href: "https://amzn.to/43KdlTz",
+    tag: "Libro",
+    cta: "Ver el libro →",
+    description:
+      "Una guía actual, práctica y accesible para comprender los deepfakes, las estafas impulsadas por IA y los engaños digitales, sin necesidad de conocimientos técnicos.",
+  },
+  {
+    name: "Verified",
+    href: "https://amzn.to/4eGF38F",
+    tag: "Libro",
+    cta: "Ver el libro →",
+    description:
+      "Una guía clara para comprobar afirmaciones en línea, rastrear las fuentes originales y tomar mejores decisiones sobre qué creer y compartir.",
+  },
+  {
+    name: "TinEye",
+    href: "https://tineye.com/",
+    tag: "Herramienta gratuita",
+    cta: "Buscar una imagen →",
+    description:
+      "Una herramienta gratuita de búsqueda inversa para encontrar dónde ha aparecido una imagen en línea, localizar versiones anteriores y descubrir fotografías reales reutilizadas con un contexto falso.",
+  },
+],
+
   },
 
   {
@@ -595,26 +608,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "El valor de la atención",
+        href: "https://amzn.to/4f1oip5",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar atención, entretenimiento digital y diseño persuasivo.",
+          "Una investigación narrativa y accesible sobre las fuerzas personales, sociales y tecnológicas que están afectando nuestra capacidad para prestar atención.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
+        name: "one sec",
+        href: "https://one-sec.app/es/",
         tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        cta: "Probar one sec →",
         description:
-          "Herramienta pendiente para medir uso de pantalla, reducir distracciones o recuperar tiempo de enfoque.",
+          "Una herramienta que introduce una breve pausa antes de abrir aplicaciones que suelen distraerte, ayudándote a interrumpir hábitos automáticos y decidir si realmente quieres continuar.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Despertador digital DreamSky",
+        href: "https://amzn.to/4aeTtvt",
+        tag: "Dispositivo",
+        cta: "Ver el despertador →",
         description:
-          "Recurso complementario pendiente para entender aburrimiento, dopamina y hábitos digitales.",
+          "Una alternativa sencilla para dejar de usar el teléfono como alarma y mantener la pantalla fuera del dormitorio durante la noche.",
       },
     ],
   },
@@ -640,26 +655,28 @@ export const postsEs: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "¿Por qué a los estudiantes no les gusta la escuela?",
+        href: "https://amzn.to/4uNcvk1",
         tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Recurso pendiente para explorar educación, aprendizaje y habilidades realmente útiles.",
+          "Una explicación clara y basada en evidencia sobre cómo la memoria, el conocimiento, la atención y la curiosidad influyen en el aprendizaje.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "¿Cómo aprendemos?",
+        href: "https://amzn.to/3QXshuz",
+        tag: "Libro",
+        cta: "Leer el libro →",
         description:
-          "Herramienta pendiente para aprender habilidades prácticas, organizar estudio o reforzar conocimiento útil.",
+          "Stanislas Dehaene explora la atención, la participación activa, la retroalimentación ante el error y la consolidación: cuatro bases del aprendizaje duradero.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "The Learning Scientists",
+        href: "https://www.learningscientists.org/",
+        tag: "Recurso gratuito",
+        cta: "Explorar las estrategias →",
         description:
-          "Recurso complementario pendiente para cuestionar modelos educativos y aprendizaje cotidiano.",
+          "Guías gratuitas basadas en investigación para aplicar recuperación activa, espaciado, intercalado, elaboración, ejemplos concretos y codificación dual.",
       },
     ],
   },
@@ -672,7 +689,7 @@ export const postsEs: PostListItem[] = [
       "Los pulpos parecen criaturas alienígenas por una razón: gran parte de su biología rompe intuiciones humanas.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-08-19T17:00:00-04:00"),
+    date: new Date("2026-01-19T17:00:00-04:00"),
 
     format: "quiz",
     tag: "Biología / Quiz",

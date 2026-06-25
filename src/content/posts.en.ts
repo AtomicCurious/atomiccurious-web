@@ -328,26 +328,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Filterworld: How Algorithms Flattened Culture",
+        href: "https://amzn.to/4w2Q8rU",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring artificial intelligence, algorithms and automated decisions.",
+          "A modern, accessible book about how algorithms shape what we see, hear, like, and discover online.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "The Chaos Machine",
+        href: "https://amzn.to/3SQGyK0",
+        tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder tool for testing, understanding or comparing AI systems in everyday tasks.",
+          "A gripping look at how social media systems can amplify emotion, conflict, outrage, and attention.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "Amazon Kindle Paperwhite 16 GB",
+        href: "https://amzn.to/4uFBghP",
+        tag: "Tech",
+        cta: "Explore Kindle →",
         description:
-          "Placeholder resource for analyzing how AI influences information, work and human behavior.",
+          "A simple way to read longer ideas without your feed fighting for your attention every few seconds.",
       },
     ],
   },
@@ -373,26 +375,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Make It Stick",
+        href: "https://amzn.to/4xCeqdx",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring effective learning, memory and evidence-based study techniques.",
+          "One of the best books on why active recall, spacing and harder study methods often lead to better long-term learning.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
+        name: "Readwise Reader",
+        href: "https://readwise.io/read",
         tag: "Tool",
-        cta: "Explore tool →",
+        cta: "Explore Reader →",
         description:
-          "Placeholder tool for practicing spaced repetition, active recall or structured learning.",
+          "A powerful tool for reading with purpose, saving important ideas and turning highlights into something you can actually revisit.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "Anki",
+        href: "https://apps.ankiweb.net/",
+        tag: "Tool",
+        cta: "Explore Anki →",
         description:
-          "Placeholder resource for improving long-term retention and learning habits.",
+          "A spaced repetition tool for practicing active recall instead of passively rereading the same material over and over.",
       },
     ],
   },
@@ -419,26 +423,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Lateral Thinking",
+        href: "https://amzn.to/4ezFNwj",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring patterns, mental association and intuitive thinking.",
+          "A classic guide to breaking habitual patterns, changing perspective and finding alternatives that conventional thinking often miss.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "A Whack on the Side of the Head",
+        href: "https://amzn.to/4w459tu",
+        tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder tool for training lateral thinking, pattern recognition or creativity.",
+          "An accessible and entertaining guide filled with exercises, puzzles and examples designed to break through creative blocks and encourage new ways of thinking.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "PuzzGrid",
+        href: "https://puzzgrid.com/",
+        tag: "Free Tool",
+        cta: "Try PuzzGrid →",
         description:
-          "Placeholder resource for exploring cognition, intuition and mental associations in more depth.",
+          "A free tool for solving and creating connection puzzles, ideal for practising the same kind of pattern recognition and lateral thinking explored in this post.",
       },
     ],
   },
@@ -464,26 +470,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "This Is Your Brain on Music",
+        href: "https://amzn.to/3SRgbni",
         tag: "Book",
+        cta: "Explore the book →",
         description:
-          "Placeholder resource for exploring music, the brain, emotion and human communication.",
+          "An accessible introduction to how the brain processes rhythm, melody, emotion, memory and the pleasure created by music.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "Musicophilia: Tales of Music and the Brain",
+        href: "https://amzn.to/4oGKYza",
+        tag: "Book",
+        cta: "Explore the book →",
         description:
-          "Placeholder tool for analyzing music, training your ear or exploring composition and sound patterns.",
+          "Oliver Sacks explores real cases that reveal how music interacts with memory, identity, movement and different neurological conditions.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "The Music Lab: Natural History of Song",
+        href: "https://www.themusiclab.org/nhs",
+        tag: "Free resource",
+        cta: "Explore the project →",
         description:
-          "Placeholder resource for exploring musical language, emotion and auditory perception in more depth.",
+          "Explore recordings, data and experiments from the scientific project studying songs from societies around the world.",
       },
     ],
   },
@@ -509,26 +517,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Money for Couples",
+        href: "https://amzn.to/4xDpjMt",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring financial decisions, economic behavior and personal planning.",
+          "Decision #1, in book form. A practical guide to talking about debt, spending and shared goals without every money conversation turning into a fight.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "The Psychology of Money",
+        href: "https://amzn.to/3SUnCtT",
+        tag: "Book",
+        cta: "Read the book →", 
         description:
-          "Placeholder tool for budgeting, comparing financial choices or visualizing long-term goals.",
+          "Why behavior matters as much as the math. A story-driven look at how patience, risk and personal experience shape financial decisions.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "Calculator.net Interest Calculator",
+        href: "https://www.calculator.net/interest-calculator.html",
+        tag: "Free tool",
+        cta: "Try the calculator →",
         description:
-          "Placeholder resource for improving financial judgement and decision-making.",
+          "See Decision #4 in action. Change the amount, monthly contribution, return rate and timeline to see how starting earlier can reshape the result.",
       },
     ],
   },
@@ -552,30 +562,34 @@ export const postsEn: PostListItem[] = [
     ],
     featured: false,
 
-    affiliateItems: [
-      {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
-        tag: "Book",
-        description:
-          "Placeholder resource for exploring AI-generated images, visual perception and digital culture.",
-      },
-      {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
-        description:
-          "Placeholder tool for detecting, comparing or creating images with artificial intelligence.",
-      },
-      {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
-        description:
-          "Placeholder resource for understanding visual authenticity, deepfakes and synthetic media.",
-      },
-    ],
+    
+affiliateItems: [
+  {
+    name: "FAIK",
+    href: "https://amzn.to/43KdlTz",
+    tag: "Book",
+    cta: "Explore the book →",
+    description:
+      "An up-to-date, practical and accessible guide to understanding deepfakes, AI-powered scams and digital deception without requiring technical expertise.",
+  },
+  {
+    name: "Verified",
+    href: "https://amzn.to/4eGF38F",
+    tag: "Book",
+    cta: "Explore the book →",
+    description:
+      "A clear guide to checking online claims, tracing original sources and making better decisions about what to believe and share.",
+  },
+  {
+    name: "TinEye",
+    href: "https://tineye.com/",
+    tag: "Free tool",
+    cta: "Search an image →",
+    description:
+      "A free reverse-image search tool for finding where an image has appeared online, locating earlier versions and uncovering real photographs reused with false context.",
+  },
+],
+
   },
 
   {
@@ -599,26 +613,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Stolen Focus",
+        href: "https://amzn.to/4f1oip5",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring attention, digital entertainment and persuasive design.",
+          "An accessible, story-driven investigation into the personal, social and technological forces affecting our ability to pay attention.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
+        name: "one sec",
+        href: "https://one-sec.app/",
         tag: "Tool",
-        cta: "Explore tool →",
+        cta: "Try one sec →",
         description:
-          "Placeholder tool for measuring screen time, reducing distractions or recovering focus time.",
+          "A tool that introduces a short pause before opening distracting apps, helping you interrupt automatic habits and decide whether you really want to continue.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "DreamSky Digital Alarm Clock",
+        href: "https://amzn.to/4aeTtvt",
+        tag: "Device",
+        cta: "Explore the alarm clock →",
         description:
-          "Placeholder resource for understanding boredom, dopamine and digital habits.",
+          "A simple alarm clock with adjustable brightness and volume, making it easier to stop using your phone as an alarm and keep it outside the bedroom.",
       },
     ],
   },
@@ -644,26 +660,28 @@ export const postsEn: PostListItem[] = [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Why Don’t Students Like School?",
+        href: "https://amzn.to/4uNcvk1",
         tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder resource for exploring education, learning and practical skills.",
+          "A clear, research-based explanation of how memory, knowledge, attention and curiosity shape learning—and what classrooms can do differently.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "How We Learn",
+        href: "https://amzn.to/3QXshuz",
+        tag: "Book",
+        cta: "Read the book →",
         description:
-          "Placeholder tool for learning practical skills, organizing study or strengthening useful knowledge.",
+          "Stanislas Dehaene explores the science behind attention, active engagement, error feedback and consolidation—the four foundations of lasting learning.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "The Learning Scientists",
+        href: "https://www.learningscientists.org/",
+        tag: "Free resource",
+        cta: "Explore the strategies →",
         description:
-          "Placeholder resource for questioning education models and everyday learning.",
+          "Free, research-based guides for using retrieval practice, spacing, interleaving, elaboration, concrete examples and dual coding.",
       },
     ],
   },
@@ -676,7 +694,7 @@ export const postsEn: PostListItem[] = [
       "Octopuses feel alien for a reason: much of their biology breaks human intuition.",
 
     // 5:00 PM New York (EDT)
-    date: new Date("2026-08-19T17:00:00-04:00"),
+    date: new Date("2026-01-19T17:00:00-04:00"),
 
     format: "quiz",
     tag: "Biology / Quiz",
