@@ -1,5 +1,4 @@
-```yaml
-name: Keep Supabase awake
+﻿name: Keep Supabase awake
 
 on:
   schedule:
@@ -21,4 +20,3 @@ jobs:
             --max-time 60 \
             --header "Authorization: Bearer $KEEPALIVE_SECRET" \
             "https://atomiccurious.com/api/keepalive"
-```
