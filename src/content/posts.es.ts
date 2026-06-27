@@ -702,26 +702,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "The Soul of an Octopus",
+        href: "https://amzn.to/4et7Oa6",
         tag: "Libro",
+        cta: "Obtener el libro →",
         description:
-          "Recurso pendiente para explorar pulpos, biología marina e inteligencia animal.",
+          "Un recorrido accesible por la inteligencia, la personalidad y las sorprendentes conexiones que los pulpos pueden formar con los seres humanos.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "Seek by iNaturalist",
+        href: "https://www.inaturalist.org/pages/seek_app",
+        tag: "Aplicación gratuita",
+        cta: "Empezar a explorar →",
         description:
-          "Herramienta pendiente para explorar especies marinas, biodiversidad o aprendizaje visual de biología.",
+          "Una aplicación gratuita que utiliza la cámara para identificar animales, plantas y hongos, mientras convierte la exploración del mundo real en retos e insignias.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "An Immense World",
+        href: "https://amzn.to/43X2ju8",
+        tag: "Libro",
+        cta: "Obtener el libro →",
         description:
-          "Recurso complementario pendiente para profundizar en anatomía, evolución y comportamiento animal.",
+          "Una exploración accesible de cómo los animales perciben la luz, el sonido, los olores, el movimiento y otras partes de la realidad que nuestros sentidos no detectan.",
       },
     ],
   },
@@ -748,26 +750,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "Factfulness — Hans Rosling et al.",
+        href: "https://amzn.to/4eIpD3A",
         tag: "Libro",
+        cta: "Ver libro →",
         description:
-          "Recurso pendiente para explorar generaciones, nostalgia, cambio social y percepción histórica.",
+          "Un libro accesible y lleno de historias que explica por qué solemos percibir decadencia y crisis incluso cuando los datos muestran una realidad mucho más compleja.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "The Generation Myth — Bobby Duffy",
+        href: "https://amzn.to/4wePveU",
+        tag: "Libro",
+        cta: "Ver libro →",
         description:
-          "Herramienta pendiente para comparar datos generacionales, historia cultural o cambios sociales.",
+          "La continuación más directa de este artículo: analiza por qué exageramos las diferencias generacionales y cómo distinguir entre edad, contexto histórico y cohorte.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Pew Research Center — Generations & Age",
+        href: "https://www.pewresearch.org/topic/generations-age/",
+        tag: "Recurso gratuito",
+        cta: "Ver en Pew →",
         description:
-          "Recurso complementario pendiente para entender sesgos generacionales y memoria colectiva.",
+          "Investigaciones y datos gratuitos para contrastar los estereotipos generacionales con cambios reales de edad, contexto histórico y sociedad.",
       },
     ],
   },
@@ -794,26 +798,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
+        name: "The Introverted Leader",
+        href: "https://amzn.to/4waPf0f",
         tag: "Libro",
+        cta: "Ver en Amazon →",
         description:
-          "Recurso pendiente para explorar personalidad, introversión, extroversión y adaptación social.",
+          "Una guía práctica para ganar visibilidad, influir y liderar aprovechando tus fortalezas, sin fingir una personalidad diferente.",
       },
       {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
+        name: "IPIP-NEO — versión corta",
+        href: "https://www.personalitytest.net/ipip/ipipneo120.html",
+        tag: "Herramienta gratuita",
+        cta: "Hacer el test →",
         description:
-          "Herramienta pendiente para explorar rasgos de personalidad, autoconocimiento o dinámicas sociales.",
+          "Una evaluación gratuita basada en el modelo de los Cinco Grandes. Mide la extroversión como una dimensión, no como una etiqueta rígida, siguiendo el mismo enfoque utilizado en este artículo.",
       },
       {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
+        name: "Quiet",
+        href: "https://amzn.to/4eFXDiF",
+        tag: "Libro",
+        cta: "Ver en Amazon →",
         description:
-          "Recurso complementario pendiente para entender comportamiento, comunicación y diferencias individuales.",
+          "El libro que popularizó el debate moderno sobre la introversión. Defiende con fuerza el lado introvertido; este artículo cuestiona algunas de sus conclusiones, pero sigue siendo una lectura clave para entender la conversación.",
       },
     ],
   },
@@ -837,30 +843,33 @@ affiliateItems: [
     ],
     featured: false,
 
-    affiliateItems: [
-      {
-        name: "Libro relacionado pendiente",
-        href: "https://example.com",
-        tag: "Libro",
-        description:
-          "Recurso pendiente para explorar patrones, predicción mental y resolución de secuencias.",
-      },
-      {
-        name: "Herramienta relacionada pendiente",
-        href: "https://example.com",
-        tag: "Herramienta",
-        cta: "Explorar herramienta →",
-        description:
-          "Herramienta pendiente para practicar lógica, patrones, memoria o pensamiento analítico.",
-      },
-      {
-        name: "Recurso adicional pendiente",
-        href: "https://example.com",
-        tag: "Recurso",
-        description:
-          "Recurso complementario pendiente para profundizar en cognición, predicción y razonamiento.",
-      },
-    ],
+affiliateItems: [
+  {
+    name: "How Not to Be Wrong",
+    href: "https://amzn.to/4xQovDN",
+    tag: "Libro",
+    cta: "Ver libro →",
+    description:
+      "Una introducción accesible a cómo el razonamiento matemático ayuda a detectar patrones, cuestionar suposiciones y evitar conclusiones que la evidencia no justifica.",
+  },
+  {
+    name: "The Drunkard’s Walk",
+    href: "https://amzn.to/3T3udCm",
+    tag: "Libro",
+    cta: "Ver libro →",
+    description:
+      "Explora cómo el azar puede parecer una regla o una tendencia, y por qué una racha breve no basta para demostrar un patrón.",
+  },
+  {
+    name: "OEIS",
+    href: "https://oeis.org/",
+    tag: "Herramienta gratuita",
+    cta: "Explorar secuencias →",
+    description:
+      "Base de datos gratuita para buscar secuencias numéricas y consultar fórmulas, referencias y relaciones con otras secuencias.",
+  },
+],
+
   },
 ]
 

@@ -1,62 +1,72 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
+const noStoreHeaders = {
+  "Cache-Control": "no-store",
+};
+
 export async function GET(req: Request) {
-  // 1) Validate keepalive secret
+  // 1. Comprobar que el secreto esté configurado en el servidor.
   const secret = process.env.KEEPALIVE_SECRET;
+
   if (!secret) {
     return NextResponse.json(
-      { ok: false, error: "KEEPALIVE_SECRET not set" },
-      { status: 500 }
+      {
+        ok: false,
+        error: "Server configuration error",
+      },
+      {
+        status: 500,
+        headers: noStoreHeaders,
+      }
     );
   }
 
-  const url = new URL(req.url);
-  const provided = url.searchParams.get("secret");
+  // 2. Recibir el secreto mediante el encabezado Authorization.
+  const authorization = req.headers.get("authorization");
 
-  if (provided !== secret) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (authorization !== `Bearer ${secret}`) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Unauthorized",
+      },
+      {
+        status: 401,
+        headers: noStoreHeaders,
+      }
+    );
   }
 
-  // 2) Debug + call Supabase
+  // 3. Ejecutar una consulta mínima para generar actividad en PostgreSQL.
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    await prisma.$queryRaw`SELECT 1`;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Missing env vars",
-          hasUrl: Boolean(supabaseUrl),
-          hasAnonKey: Boolean(supabaseAnonKey),
-        },
-        { status: 500 }
-      );
-    }
-
-    // Minimal request to Supabase PostgREST (counts as activity)
-    const res = await fetch(`${supabaseUrl}/rest/v1/Lead?select=id&limit=1`, {
-      headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
-      },
-      cache: "no-store",
-    });
-
-    const text = await res.text().catch(() => "");
-
-    return NextResponse.json({
-      ok: res.ok,
-      status: res.status,
-      bodyPreview: text.slice(0, 200),
-      ts: new Date().toISOString(),
-    });
-  } catch (e: any) {
     return NextResponse.json(
-      { ok: false, error: e?.message ?? "Supabase request failed" },
-      { status: 500 }
+      {
+        ok: true,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        status: 200,
+        headers: noStoreHeaders,
+      }
+    );
+  } catch (error: unknown) {
+    console.error("Keepalive database query failed:", error);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Database query failed",
+      },
+      {
+        status: 500,
+        headers: noStoreHeaders,
+      }
     );
   }
 }
+

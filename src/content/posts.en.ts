@@ -707,26 +707,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "The Soul of an Octopus",
+        href: "https://amzn.to/4et7Oa6",
         tag: "Book",
+        cta: "Get the book →",
         description:
-          "Placeholder resource for exploring octopuses, marine biology and animal intelligence.",
+          "An engaging journey into octopus intelligence, personality, and the surprising connections these animals can form with humans.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "Seek by iNaturalist",
+        href: "https://www.inaturalist.org/pages/seek_app",
+        tag: "Free App",
+        cta: "Start exploring →",
         description:
-          "Placeholder tool for exploring marine species, biodiversity or visual biology learning.",
+          "A free app that uses your camera to identify wildlife, plants, and fungi while turning real-world exploration into challenges and badges.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "An Immense World",
+        href: "https://amzn.to/43X2ju8",
+        tag: "Book",
+        cta: "Get the book →",
         description:
-          "Placeholder resource for exploring anatomy, evolution and animal behavior.",
+          "An accessible exploration of how animals experience light, sound, smell, movement, and parts of reality that human senses cannot detect.",
       },
     ],
   },
@@ -752,26 +754,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "Factfulness — Hans Rosling et al.",
+        href: "https://amzn.to/4eIpD3A",
         tag: "Book",
+        cta: "View book →",
         description:
-          "Placeholder resource for exploring generations, nostalgia, social change and historical perception.",
+          "An accessible, story-driven book explaining why we often perceive decline and crisis even when the data reveals a much more complex reality.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "The Generation Myth — Bobby Duffy",
+        href: "https://amzn.to/4wePveU",
+        tag: "Book",
+        cta: "View book →",
         description:
-          "Placeholder tool for comparing generational data, cultural history or social change.",
+          "The most direct continuation of this article, exploring why we exaggerate generational differences and how to distinguish between age, historical context and cohort.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "Pew Research Center — Generations & Age",
+        href: "https://www.pewresearch.org/topic/generations-age/",
+        tag: "Free Resource",
+        cta: "Explore the data →",
         description:
-          "Placeholder resource for understanding generational bias and collective memory.",
+           "Free research and data for comparing generational stereotypes with real changes in age, historical context and society.",
       },
     ],
   },
@@ -797,26 +801,28 @@ affiliateItems: [
 
     affiliateItems: [
       {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
+        name: "The Introverted Leader",
+        href: "https://amzn.to/4waPf0f",
         tag: "Book",
+        cta: "View on Amazon →",
         description:
-          "Placeholder resource for exploring personality, introversion, extroversion and social adaptation.",
+          "A practical guide to becoming more visible, influential and effective as a leader without pretending to have a different personality.",
       },
       {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
+        name: "IPIP-NEO — Short Version",
+        href: "https://www.personalitytest.net/ipip/ipipneo120.html",
+        tag: "Free Tool",
+        cta: "Take the test →",
         description:
-          "Placeholder tool for exploring personality traits, self-knowledge or social dynamics.",
+          "A free assessment based on the Big Five model. It measures extroversion as a dimension rather than a rigid label, following the same approach used in this article.",
       },
       {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
+        name: "Quiet",
+        href: "https://amzn.to/4eFXDiF",
+        tag: "Book",
+        cta: "View on Amazon →",
         description:
-          "Placeholder resource for understanding behavior, communication and individual differences.",
+          "The book that popularized the modern debate about introversion. It argues strongly for the introverted side; this article challenges some of its conclusions, but it remains essential reading for understanding the conversation.",
       },
     ],
   },
@@ -840,30 +846,32 @@ affiliateItems: [
     ],
     featured: false,
 
-    affiliateItems: [
-      {
-        name: "Related Book Placeholder",
-        href: "https://example.com",
-        tag: "Book",
-        description:
-          "Placeholder resource for exploring patterns, mental prediction and sequence solving.",
-      },
-      {
-        name: "Related Tool Placeholder",
-        href: "https://example.com",
-        tag: "Tool",
-        cta: "Explore tool →",
-        description:
-          "Placeholder tool for practicing logic, patterns, memory or analytical thinking.",
-      },
-      {
-        name: "Additional Resource Placeholder",
-        href: "https://example.com",
-        tag: "Resource",
-        description:
-          "Placeholder resource for exploring cognition, prediction and reasoning.",
-      },
-    ],
+affiliateItems: [
+  {
+    name: "How Not to Be Wrong",
+    href: "https://amzn.to/4xQovDN",
+    tag: "Book",
+    cta: "View book →",
+    description:
+      "An accessible introduction to how mathematical reasoning can reveal patterns, challenge assumptions and prevent unsupported conclusions.",
+  },
+  {
+    name: "The Drunkard’s Walk",
+    href: "https://amzn.to/3T3udCm",
+    tag: "Book",
+    cta: "View book →",
+    description:
+      "Explores how randomness can look like a rule or trend, and why a short streak is not enough to prove a genuine pattern.",
+  },
+  {
+    name: "OEIS",
+    href: "https://oeis.org/",
+    tag: "Free tool",
+    cta: "Explore sequences →",
+    description:
+      "A free database for searching number sequences and exploring their formulas, references and connections to related sequences.",
+  },
+],
   },
 ]
 
